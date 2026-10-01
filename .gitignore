@@ -145,3 +145,5 @@ _TeamCity*
 *.accdb
 *.mdb
 *.realm
+
+certs/*
