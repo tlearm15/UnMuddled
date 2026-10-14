@@ -24,23 +24,30 @@ public class HomeController : Controller
     {
         try
         {
-            //Check if EF Core can successfully reach the database
-            var canConnect = await _context.Database.CanConnectAsync();
+            //test if can connect to db
+            bool canConnect = await _context.Database.CanConnectAsync();
 
+            //if connection successful
             if (canConnect)
             {
-  
-                var userCount = await _context.Users.CountAsync();
-                return Ok(new { Success = true, Message = "Successfully connected to PostgreSQL via mTLS!", UserCount = userCount });
+                //success
+                return Json(new { success = true, message = "Database connection is successful!" });
             }
             else
             {
-                return StatusCode(500, new { Success = false, Message = "Could not connect to the database." });
+                //connection made but other error
+                return Json(new { success = false, message = "Database connection returned false (server reachable, but refused connection)." });
             }
         }
+        //connection unsuccessful 
         catch (Exception ex)
         {
-            return StatusCode(500, new { Success = false, Error = ex.Message, InnerError = ex.InnerException?.Message });
+            return Json(new { 
+                //print error message
+                success = false, 
+                message = "Database connection failed.", 
+                error = ex.Message 
+            });
         }
     }
 }
