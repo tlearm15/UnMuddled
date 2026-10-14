@@ -1,16 +1,16 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using GroupProject.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    private readonly UnMuddledDbContext _context;
+    
+    public HomeController(UnMuddledDbContext context)
     {
-        _logger = logger;
+        _context = context;
     }
 
     public IActionResult Index()
@@ -18,14 +18,29 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Privacy()
+    //TO BE REMOVED
+    [HttpGet("test-db")]
+    public async Task<IActionResult> TestDb()
     {
-        return View();
-    }
+        try
+        {
+            //Check if EF Core can successfully reach the database
+            var canConnect = await _context.Database.CanConnectAsync();
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (canConnect)
+            {
+  
+                var userCount = await _context.Users.CountAsync();
+                return Ok(new { Success = true, Message = "Successfully connected to PostgreSQL via mTLS!", UserCount = userCount });
+            }
+            else
+            {
+                return StatusCode(500, new { Success = false, Message = "Could not connect to the database." });
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Success = false, Error = ex.Message, InnerError = ex.InnerException?.Message });
+        }
     }
 }

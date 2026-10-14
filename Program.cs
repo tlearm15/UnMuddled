@@ -3,17 +3,25 @@ using GroupProject.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
-var certPath = Path.Combine(builder.Environment.ContentRootPath, "certs", "dev.pfx");
-var clientCert = new X509Certificate2(certPath, "Unmudd13d");
+
+var certsDir = Path.Combine(builder.Environment.ContentRootPath, "certs");
+
+//Load the client certificate 
+var clientCertPath = Path.Combine(certsDir, "dev.pfx");
+var clientCert = new X509Certificate2(clientCertPath, "Unmudd13d");
+
+var caCertPath = Path.Combine(certsDir, "ca.crt");
+var caCert = new X509Certificate2(caCertPath);
 
 var connString = builder.Configuration.GetConnectionString("Default");
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connString);
+
 dataSourceBuilder.UseClientCertificate(clientCert);
+dataSourceBuilder.UseRootCertificate(caCert);
+
 var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddDbContext<UnMuddledDbContext>(options =>
@@ -21,11 +29,9 @@ builder.Services.AddDbContext<UnMuddledDbContext>(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -41,6 +47,4 @@ app.MapControllerRoute(
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-
 app.Run();
-
