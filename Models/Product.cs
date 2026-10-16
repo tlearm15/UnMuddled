@@ -13,5 +13,5 @@ public class Product
     public string Category { get; set; } = string.Empty;
 
     // Navigation property for relationships
-    public ICollection<ProducDisposal> ProducDisposals { get; set; } = new List<ProducDisposal>();
+    public ICollection<ProductDisposal> ProducDisposals { get; set; } = new List<ProductDisposal>();
 }
