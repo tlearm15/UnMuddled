@@ -12,10 +12,10 @@ public class ProductHistory
     public string UserID { get; set; } = string.Empty;
     public User? User { get; set; }
 
-    [Display(Name = "Date Disposed")]
+    [Display(Name = "Date Logged")]
     [DataType(DataType.DateTime)]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
-    public DateTime DateDisposed { get; set; } = DateTime.Now;
+    public DateTime DateLogged { get; set; } = DateTime.Now;
 
     //Navigation property
     public ICollection<Item> Items { get; set; } = new List<Item>();
