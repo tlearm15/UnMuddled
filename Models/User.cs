@@ -1,16 +1,48 @@
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
 namespace GroupProject.Models;
 
-public class User
+public class User : IdentityUser
+
 {
-    [Key]
-    public int Id { get; set; }
-        
-    public string Username { get; set; } = string.Empty;
-        
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    [Required(ErrorMessage = "Please provide your First Name")]
+    [Display (Name = "First Name")]
+    public string FirstName { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Please provide your Last Name")]
+    [Display (Name = "Last Name")]
+    public string LastName { get; set; } = string.Empty;
+    [Display(Name = "Address Line 1")]
+    public string AddressLine1 { get; set; } = string.Empty;
+    [Display(Name = "Address Line 2")]
+    public string AddressLine2 { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Please provide your City")]
+    [Display(Name = "City")]
+    public string City { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Please provide your Post Code")]
+    [RegularExpression(
+        @"^(GIR\s?0AA|(?:[A-Z]{1,2}[0-9][A-Z0-9]?\s?[0-9][ABD-HJLNP-UW-Z]{2}))$",
+        ErrorMessage = "Please enter a valid UK postcode"
+    )]
+    [Display(Name = "Post Code")]
+    public string PostCode { get; set; } = string.Empty;
+    //Ensures that the user provides full address info during Registration and Editing-RW
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (string.IsNullOrWhiteSpace(AddressLine1) || string.IsNullOrWhiteSpace(AddressLine2) || string.IsNullOrWhiteSpace(City))
+        {
+            yield return new ValidationResult("Please provide your full address", new[] { nameof(AddressLine1), nameof(AddressLine2), nameof(City) });
+        }
+    }
+
+    [Display(Name = "Date joined")]
+    [DataType((DataType.DateTime))]
+    [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
+    public DateTime JoinedOn { get; set; } = DateTime.Now;
 
     // Navigation property
     public ICollection<ProducDisposal> ProducDisposals { get; set; } = new List<ProducDisposal>();
+
+    
 }
