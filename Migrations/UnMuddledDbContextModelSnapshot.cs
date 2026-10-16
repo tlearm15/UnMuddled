@@ -169,7 +169,28 @@ namespace GroupProject.Migrations
                     b.ToTable("ItemDisposals");
                 });
 
-            modelBuilder.Entity("GroupProject.Models.ProducDisposal", b =>
+            modelBuilder.Entity("GroupProject.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("GroupProject.Models.ProductDisposal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -198,28 +219,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ProducDisposals");
-                });
-
-            modelBuilder.Entity("GroupProject.Models.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Products");
+                    b.ToTable("ProductDisposals", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
@@ -554,7 +554,7 @@ namespace GroupProject.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("GroupProject.Models.ProducDisposal", b =>
+            modelBuilder.Entity("GroupProject.Models.ProductDisposal", b =>
                 {
                     b.HasOne("GroupProject.Models.DisposalLocation", "DisposalLocation")
                         .WithMany()
