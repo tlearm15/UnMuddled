@@ -16,3 +16,11 @@ public enum RoomTag
     Office,
     Other
 }
+
+public enum DisposalMethod
+{
+    Recycle,
+    Landfill,
+    Donate,
+    Resell,
+}
