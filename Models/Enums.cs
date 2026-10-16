@@ -17,10 +17,5 @@ public enum RoomTag
     Other
 }
 
-public enum DisposalMethod
-{
-    Recycle,
-    Landfill,
-    Donate,
-    Resell,
-}
+//TL - Unused DisposalMethod left here because it was in the schema
+//public enum DisposalMethod { }

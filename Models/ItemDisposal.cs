@@ -12,7 +12,8 @@ public class ItemDisposal
     public int ItemID { get; set; }
     public Item? Item { get; set; }
 
-    [Required(ErrorMessage = "Please specify the disposal method")]
-    [Display(Name = "Disposal Method")]
-    public DisposalMethod DisposalMethod { get; set; }
+    //TL - Removed DisposalMethod property but kept as comment as leftover from DB Schema 
+    //[Required(ErrorMessage = "Please specify the disposal method")]
+    //[Display(Name = "Disposal Method")]
+    //public DisposalMethod DisposalMethod { get; set; }
 }

@@ -159,9 +159,6 @@ namespace GroupProject.Migrations
                     b.Property<int>("ItemID")
                         .HasColumnType("integer");
 
-                    b.Property<int>("DisposalMethod")
-                        .HasColumnType("integer");
-
                     b.HasKey("DisposalID", "ItemID");
 
                     b.HasIndex("ItemID");
@@ -230,7 +227,7 @@ namespace GroupProject.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HistoryID"));
 
-                    b.Property<DateTime>("DateDisposed")
+                    b.Property<DateTime>("DateLogged")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserID")
