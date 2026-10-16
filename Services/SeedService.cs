@@ -16,7 +16,7 @@ namespace GroupProject.Services
             // Get the required services from the scope
             var context = scope.ServiceProvider.GetRequiredService<UnMuddledDbContext>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();// TQ- dead code, for now
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<SeedService>>();
 
             try
@@ -25,12 +25,17 @@ namespace GroupProject.Services
                 await context.Database.EnsureCreatedAsync();
 
                 logger.LogInformation("Seeding roles.");
-                await AddRoles(roleManager, "Admin");//FIX THIS. ADD ROLES NOT FOUND-RW to fix
+                //await AddRoles(roleManager, "Admin");//FIX THIS. ADD ROLES NOT FOUND-RW to fix
+                // TQ- just directly invoke the roleManager methods.
+                if( !await roleManager.RoleExistsAsync( "Admin" ) )// Create Admin role, if that wasn't already obvious
+                    await roleManager.CreateAsync(new IdentityRole( "Admin" ) );
+
+                if (!await roleManager.RoleExistsAsync("Staff"))// Create Staff role, ^^^^
+                    await roleManager.CreateAsync(new IdentityRole("Staff"));
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occurred while seeding the database.");
-
             }
         }
     }
