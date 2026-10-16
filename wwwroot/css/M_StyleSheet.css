@@ -14,6 +14,17 @@
     background-color: #5F695D !important;
 }
 
+.footer {
+    background-color: #242926 !important;
+    position: relative;
+    margin-top: auto;
+    margin-bottom: 0;
+    margin-top: auto;
+    color: #E9EAF0 !important;
+}
+
+
+
 /*m setting the bg colour as well as the fotn colour for the whole body of the site*/
 body {
     background-color: #E9EAF0;
@@ -21,37 +32,92 @@ body {
 }
 
 /*m ensuring the paragraphs have no margin, as this was causing issues within styles*/
-
 p {
     margin:0;
 }
 
-h5 {
-
+/*styling main name text*/
+.unmuddled {
+    font-size: 100px;
+    padding: 5px;
+    letter-spacing: 15px;
+    font-weight: bold;
+    color: #5A465C;
+    display: flex;
+    justify-content: center;
 }
 
+/*styling titles, subtitles and variants*/
 .titlegreen {
-
+    color: #5F695D;
+    display: flex;
+    justify-content: center;
+    font-size: 50px;
+    letter-spacing: 7px;
+    font-weight: bold;
 }
+.titlegreen-var {
+    color: #5F695D;
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    letter-spacing: 5px;
+    font-weight: bold;
+}
+
 .titlepurple {
+    color: #5A465C;
+    display: flex;
+    justify-content: center;
+    font-size: 50px;
+    letter-spacing: 7px;
+    font-weight: bold;
+}
+.titlepurple-var {
+    color: #5A465C;
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    letter-spacing: 5px;
+    font-weight: bold;
 }
 
 .subtitlegreen {
-
+    color: #5F695D;
+    font-size: 30px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    padding-top: 5px;
 }
 .subtitlepurple {
-
+    color: #5A465C;
+    font-size: 30px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    padding-top: 5px;
 }
 
-.smalltext {
-
+.smalltextgreen {
+    color: #5F695D;
+    font-size: 0.8rem;
+    padding: 5px;
 }
-.tinytext {
-
+.smalltextpurple {
+    color: #5A465C;
+    font-size: 0.8rem;
+    padding: 5px;
 }
 
-
-
+.tinytextgreen {
+    color: #5F695D;
+    font-size: 0.6rem;
+    padding: 5px;
+}
+.tinytextpurple {
+    color: #5A465C;
+    font-size: 0.6rem;
+    padding: 5px;
+}
 
 
 /*m setting up the different cards for the site*/
@@ -120,7 +186,7 @@ h5 {
     height: auto;
     width: 150px;
 }
-.btndustygreen:hover {
+.btndustygreen:hover, .btndustygreen-long:hover {
     transform: scale(1.02);
     background-color: #829190;
 
@@ -159,7 +225,20 @@ h5 {
     height: auto;
     width: 150px;
 }
-.btnpurple:hover {
+.btnpurple:hover, .btnpurple-long:hover {
     transform: scale(1.02);
     background-color: #443445;
+}
+
+.linegreen {
+    height: 3px;
+    background: #93A3A2;
+    border-radius:2px;
+    border: none;
+}
+.linepurple {
+    height: 3px;
+    background: #5A465C;
+    border-radius: 2px;
+    border: none;
 }
