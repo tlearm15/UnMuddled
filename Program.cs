@@ -1,5 +1,6 @@
 using System.Security.Cryptography.X509Certificates;
 using GroupProject.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -27,6 +28,20 @@ var dataSource = dataSourceBuilder.Build();
 builder.Services.AddDbContext<UnMuddledDbContext>(options =>
     options.UseNpgsql(dataSource));
 
+// Add Identity services with custom password and user options-RW
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 8;
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = false;
+    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+}).AddEntityFrameworkStores<UnMuddledDbContext>()
+    .AddDefaultTokenProviders();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -37,6 +52,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
