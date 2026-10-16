@@ -1,2 +1,91 @@
-﻿body {
+﻿
+/*m setting the navbar style for the site, including the colour of the nav bar, text spacing and font colour*/
+
+.navbar {
+    background-color: #242926 !important;
+    z-index: 9999 !important;
+}
+.navbar .nav-link,.navbar .navbar-brand,.navbar .navbar-text,.navbar span {
+    color: #E9EAF0 !important;
+    letter-spacing: 3px;
+
+}
+.navbar-toggler-icon, .navbar-toggler {
+    background-color: #5F695D !important;
+}
+
+/*m setting the bg colour as well as the fotn colour for the whole body of the site*/
+body {
+    background-color: #E9EAF0;
+    color: #3A4338;
+}
+
+/*m ensuring the paragraphs have no margin, as this was causing issues within styles*/
+
+p {
+    margin:0;
+}
+
+
+/*m setting up the different cards for the site*/
+.cardlightgreen {
+    background-color: #C7D0CB;
+    margin-top: 20px;
+    border-radius: 10px;
+    padding: 10px;
+    color: #242926;
+}
+
+.carddustygreen {
+    background-color: #93A3A2;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding-inline: 10px;
+    color: #242926;
+}
+
+.cardpurple {
+    background-color: #CBC2D0;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding-inline: 10px;
+    color: #382B38;
+}
+
+.cardnobg {
+    margin-top: 20px;
+    padding-inline: 10px;
+    color: #382B38;
+}
+
+/*m setting up the 2 different button styles for the site, green and purple*/
+.btndustygreen {
+    background-color: #93A3A2;
+    border: solid 2px;
+    border-color: #717E7E;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding: 5px;
+    color: #1E0F2E;
+    text-decoration: none;
+}
+.btnpurple {
+    background-color: #5A465C;
+    border: solid 2px;
+    border-color: #382B38;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding: 5px;
+    color: #E9EAF0;
+    text-decoration: none;
 }
