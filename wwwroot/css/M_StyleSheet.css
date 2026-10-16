@@ -26,6 +26,33 @@ p {
     margin:0;
 }
 
+h5 {
+
+}
+
+.titlegreen {
+
+}
+.titlepurple {
+}
+
+.subtitlegreen {
+
+}
+.subtitlepurple {
+
+}
+
+.smalltext {
+
+}
+.tinytext {
+
+}
+
+
+
+
 
 /*m setting up the different cards for the site*/
 .cardlightgreen {
@@ -40,7 +67,7 @@ p {
     background-color: #93A3A2;
     border-radius: 10px;
     margin-top: 20px;
-    padding-inline: 10px;
+    padding: 10px;
     color: #242926;
 }
 
@@ -48,7 +75,7 @@ p {
     background-color: #CBC2D0;
     border-radius: 10px;
     margin-top: 20px;
-    padding-inline: 10px;
+    padding: 10px;
     color: #382B38;
 }
 
@@ -70,9 +97,33 @@ p {
     height: 30px;
     width: 350px;
     margin-top: 10px;
-    padding: 5px;
+    padding-inline: 10px;
     color: #1E0F2E;
     text-decoration: none;
+    height: auto;
+    width: auto;
+}
+.btndustygreen-long {
+    background-color: #93A3A2;
+    border: solid 2px;
+    border-color: #717E7E;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;s
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #1E0F2E;
+    text-decoration: none;
+    height: auto;
+    width: 150px;
+}
+.btndustygreen:hover {
+    transform: scale(1.02);
+    background-color: #829190;
+
 }
 .btnpurple {
     background-color: #5A465C;
@@ -85,7 +136,30 @@ p {
     height: 30px;
     width: 350px;
     margin-top: 10px;
-    padding: 5px;
+    padding-inline: 10px;
     color: #E9EAF0;
     text-decoration: none;
+    height: auto;
+    width: auto;
+}
+.btnpurple-long {
+    background-color: #5A465C;
+    border: solid 2px;
+    border-color: #382B38;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #E9EAF0;
+    text-decoration: none;
+    height: auto;
+    width: 150px;
+}
+.btnpurple:hover {
+    transform: scale(1.02);
+    background-color: #443445;
 }
