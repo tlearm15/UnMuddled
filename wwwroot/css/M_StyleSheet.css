@@ -246,25 +246,60 @@ p {
 /*M styling for image assets*/
 
 .logocircle {
-    height: 500px;
+    height: 250px;
     width: auto;
     display: block;
     object-fit: contain;
+    margin: 50px 0px 50px 0px;
 }
 .logocord {
-
+    height: 150px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
 }
 .logofull {
-
+    height: 250px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
 }
 .logosnail {
-
+    height: 200px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
 }
 .logotext {
-
+    height: 70px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
 }
 
 .mascot {
-
+    height: 250px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.mascotsmall {
+    height: 100px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.mascotbig {
+    height: 550px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
 }
 
