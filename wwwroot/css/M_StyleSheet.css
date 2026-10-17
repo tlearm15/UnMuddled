@@ -242,3 +242,29 @@ p {
     border-radius: 2px;
     border: none;
 }
+
+/*M styling for image assets*/
+
+.logocircle {
+    height: 500px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+}
+.logocord {
+
+}
+.logofull {
+
+}
+.logosnail {
+
+}
+.logotext {
+
+}
+
+.mascot {
+
+}
+
