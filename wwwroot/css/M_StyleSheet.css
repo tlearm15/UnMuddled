@@ -38,7 +38,7 @@ p {
 
 /*styling main name text*/
 .unmuddled {
-    font-size: 100px;
+    font-size: clamp(40px, 12vw, 100px);
     padding: 5px;
     letter-spacing: 15px;
     font-weight: bold;
