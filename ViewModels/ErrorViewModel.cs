@@ -1,4 +1,4 @@
-namespace GroupProject.Models;
+namespace GroupProject.ViewModels;
 
 public class ErrorViewModel
 {
