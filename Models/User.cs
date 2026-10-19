@@ -47,7 +47,7 @@ public class User : IdentityUser, IValidatableObject
     [Display(Name = "Date joined")]
     [DataType(DataType.DateTime)]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
-    public DateTime JoinedOn { get; set; } = DateTime.Now;
+    public DateTime JoinedOn { get; set; } = DateTime.UtcNow;
 
     [Display(Name = "History ID")]
     public int? HistoryID { get; set; }
