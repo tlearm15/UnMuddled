@@ -16,7 +16,7 @@ public class ItemController : Controller
         _context = context;
     }
 
-    //GETS THE ITEMS AND FILTERS THEM BASED ON THE SEARCH TERM, CATEGORY, ROOM TAG, AND RECYCLABLE STATUS
+    //JL - GETS THE ITEMS AND FILTERS THEM BASED ON THE SEARCH TERM, CATEGORY, ROOM TAG, AND RECYCLABLE STATUS 
     public async Task<IActionResult> Index(string? searchTerm, int? categoryId, RoomTag? roomTag, bool? isRecyclable)
     {
         var items = _context.Items
@@ -63,7 +63,7 @@ public class ItemController : Controller
         return View(itemList);
     }
 
-    // GETS THE DETAILS OF A SPECIFIC ITEM BASED ON ITS ID
+    // JL - GETS THE DETAILS OF A SPECIFIC ITEM BASED ON ITS ID 
     public async Task<IActionResult> Details(int id)
     {
         var item = await _context.Items
@@ -78,7 +78,7 @@ public class ItemController : Controller
         return View(item);
     }
 
-    // CREATES A NEW ITEM AND POPULATES THE CATEGORY DROPDOWN LIST
+    //JL -  CREATES A NEW ITEM AND POPULATES THE CATEGORY DROPDOWN LIST 
     public IActionResult Create()
     {
         ViewBag.Categories = new SelectList(
@@ -88,7 +88,7 @@ public class ItemController : Controller
 
         return View();
     }
-    // CREATES A NEW ITEM AND SAVES IT TO THE DATABASE IF THE MODEL STATE IS VALID, OTHERWISE RETURNS THE VIEW WITH THE CATEGORY DROPDOWN LIST POPULATED
+    //JL -  CREATES A NEW ITEM AND SAVES IT TO THE DATABASE IF THE MODEL STATE IS VALID, OTHERWISE RETURNS THE VIEW WITH THE CATEGORY DROPDOWN LIST POPULATED
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Item item)
@@ -110,7 +110,7 @@ public class ItemController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // CREATES AN EDIT VIEW FOR A SPECIFIC ITEM BASED ON ITS ID AND POPULATES THE CATEGORY DROPDOWN LIST
+    //JL - CREATES AN EDIT VIEW FOR A SPECIFIC ITEM BASED ON ITS ID AND POPULATES THE CATEGORY DROPDOWN LIST 
     public async Task<IActionResult> Edit(int id)
     {
         var item = await _context.Items.FindAsync(id);
@@ -128,7 +128,7 @@ public class ItemController : Controller
         return View(item);
     }
 
-    // UPDATES A SPECIFIC ITEM BASED ON ITS ID AND THE PROVIDED ITEM OBJECT, SAVES CHANGES TO THE DATABASE IF THE MODEL STATE IS VALID, OTHERWISE RETURNS THE VIEW WITH THE CATEGORY DROPDOWN LIST POPULATED
+    // JL - UPDATES A SPECIFIC ITEM BASED ON ITS ID AND THE PROVIDED ITEM OBJECT, SAVES CHANGES TO THE DATABASE IF THE MODEL STATE IS VALID, OTHERWISE RETURNS THE VIEW WITH THE CATEGORY DROPDOWN LIST POPULATED 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, Item item)
@@ -167,7 +167,7 @@ public class ItemController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // DELETES A SPECIFIC ITEM BASED ON ITS ID AND CONFIRMS THE DELETION, REMOVING IT FROM THE DATABASE
+    // JL - DELETES A SPECIFIC ITEM BASED ON ITS ID AND CONFIRMS THE DELETION, REMOVING IT FROM THE DATABASE 
     public async Task<IActionResult> Delete(int id)
     {
         var item = await _context.Items
@@ -182,7 +182,7 @@ public class ItemController : Controller
         return View(item);
     }
 
-    // CONFIRMS THE DELETION OF A SPECIFIC ITEM BASED ON ITS ID AND REMOVES IT FROM THE DATABASE
+    // JL - CONFIRMS THE DELETION OF A SPECIFIC ITEM BASED ON ITS ID AND REMOVES IT FROM THE DATABASE -JL
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
