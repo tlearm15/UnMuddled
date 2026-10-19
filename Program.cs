@@ -1,8 +1,9 @@
-using System.Security.Cryptography.X509Certificates;
 using GroupProject.Models;
+using GroupProject.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,8 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 
 var app = builder.Build();
+
+await SeedService.SeedDatabase(app.Services);
 
 if (!app.Environment.IsDevelopment())
 {

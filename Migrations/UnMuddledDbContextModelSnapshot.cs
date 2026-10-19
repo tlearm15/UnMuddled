@@ -37,7 +37,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.DisposalLocation", b =>
@@ -81,7 +81,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("DisposalID");
 
-                    b.ToTable("DisposalLocations");
+                    b.ToTable("DisposalLocations", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.Image", b =>
@@ -106,7 +106,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.Item", b =>
@@ -148,7 +148,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("HistoryID");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.ItemDisposal", b =>
@@ -163,7 +163,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("ItemDisposals");
+                    b.ToTable("ItemDisposals", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.Product", b =>
@@ -184,7 +184,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.ProductDisposal", b =>
@@ -239,7 +239,7 @@ namespace GroupProject.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("ProductHistories");
+                    b.ToTable("ProductHistories", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.Request", b =>
@@ -263,7 +263,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Requests");
+                    b.ToTable("Requests", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.User", b =>
