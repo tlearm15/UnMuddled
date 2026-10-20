@@ -19,3 +19,11 @@ public enum RoomTag
 
 //TL - Unused DisposalMethod left here because it was in the schema
 //public enum DisposalMethod { }
+
+// TQ- Tracks status of User requested items to be added
+public enum RequestStatus
+{
+    Pending,
+    Approved,
+    Rejected
+}

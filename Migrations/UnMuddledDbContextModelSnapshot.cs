@@ -250,14 +250,38 @@ namespace GroupProject.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RequestID"));
 
-                    b.Property<int>("ItemID")
+                    b.Property<int>("CategoryID")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ItemID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RecyclingLocations")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("SubmittedOn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("RequestID");
+
+                    b.HasIndex("CategoryID");
 
                     b.HasIndex("ItemID");
 
@@ -591,17 +615,23 @@ namespace GroupProject.Migrations
 
             modelBuilder.Entity("GroupProject.Models.Request", b =>
                 {
-                    b.HasOne("GroupProject.Models.Item", "Item")
-                        .WithMany("Requests")
-                        .HasForeignKey("ItemID")
+                    b.HasOne("GroupProject.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("GroupProject.Models.Item", "Item")
+                        .WithMany("Requests")
+                        .HasForeignKey("ItemID");
 
                     b.HasOne("GroupProject.Models.User", "User")
                         .WithMany("Requests")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
 
                     b.Navigation("Item");
 
