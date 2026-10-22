@@ -92,9 +92,9 @@ namespace GroupProject.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ImageID"));
 
-                    b.Property<byte[]>("ImageData")
+                    b.Property<string>("ImageURL")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsPrimary")
                         .HasColumnType("boolean");
