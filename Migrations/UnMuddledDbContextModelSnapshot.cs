@@ -37,7 +37,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("GroupProject.Models.DisposalLocation", b =>
@@ -81,7 +81,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("DisposalID");
 
-                    b.ToTable("DisposalLocations", (string)null);
+                    b.ToTable("DisposalLocations");
                 });
 
             modelBuilder.Entity("GroupProject.Models.Image", b =>
@@ -106,7 +106,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("Images", (string)null);
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("GroupProject.Models.Item", b =>
@@ -148,7 +148,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("HistoryID");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("GroupProject.Models.ItemDisposal", b =>
@@ -163,60 +163,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("ItemDisposals", (string)null);
-                });
-
-            modelBuilder.Entity("GroupProject.Models.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Products", (string)null);
-                });
-
-            modelBuilder.Entity("GroupProject.Models.ProductDisposal", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DisposalLocationId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("DisposedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DisposalLocationId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ProductDisposals", (string)null);
+                    b.ToTable("ItemDisposals");
                 });
 
             modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
@@ -239,7 +186,7 @@ namespace GroupProject.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("ProductHistories", (string)null);
+                    b.ToTable("ProductHistories");
                 });
 
             modelBuilder.Entity("GroupProject.Models.Request", b =>
@@ -287,7 +234,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Requests", (string)null);
+                    b.ToTable("Requests");
                 });
 
             modelBuilder.Entity("GroupProject.Models.User", b =>
@@ -575,33 +522,6 @@ namespace GroupProject.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("GroupProject.Models.ProductDisposal", b =>
-                {
-                    b.HasOne("GroupProject.Models.DisposalLocation", "DisposalLocation")
-                        .WithMany()
-                        .HasForeignKey("DisposalLocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GroupProject.Models.Product", "Product")
-                        .WithMany("ProducDisposals")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GroupProject.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DisposalLocation");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
                 {
                     b.HasOne("GroupProject.Models.User", "User")
@@ -706,11 +626,6 @@ namespace GroupProject.Migrations
                     b.Navigation("ItemDisposals");
 
                     b.Navigation("Requests");
-                });
-
-            modelBuilder.Entity("GroupProject.Models.Product", b =>
-                {
-                    b.Navigation("ProducDisposals");
                 });
 
             modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>

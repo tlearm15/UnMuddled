@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GroupProject.Migrations
 {
     [DbContext(typeof(UnMuddledDbContext))]
-    [Migration("20261022202406_UopdateImgtoURLnotBlob")]
-    partial class UopdateImgtoURLnotBlob
+    [Migration("20261022220959_RemoveProductsAndProductDisposals")]
+    partial class RemoveProductsAndProductDisposals
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -169,59 +169,6 @@ namespace GroupProject.Migrations
                     b.ToTable("ItemDisposals");
                 });
 
-            modelBuilder.Entity("GroupProject.Models.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("GroupProject.Models.ProductDisposal", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("DisposalLocationId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("DisposedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DisposalLocationId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ProductDisposals", (string)null);
-                });
-
             modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
                 {
                     b.Property<int>("HistoryID")
@@ -253,14 +200,38 @@ namespace GroupProject.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RequestID"));
 
-                    b.Property<int>("ItemID")
+                    b.Property<int>("CategoryID")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ItemID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("RecyclingLocations")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("SubmittedOn")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("RequestID");
+
+                    b.HasIndex("CategoryID");
 
                     b.HasIndex("ItemID");
 
@@ -554,33 +525,6 @@ namespace GroupProject.Migrations
                     b.Navigation("Item");
                 });
 
-            modelBuilder.Entity("GroupProject.Models.ProductDisposal", b =>
-                {
-                    b.HasOne("GroupProject.Models.DisposalLocation", "DisposalLocation")
-                        .WithMany()
-                        .HasForeignKey("DisposalLocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GroupProject.Models.Product", "Product")
-                        .WithMany("ProducDisposals")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GroupProject.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DisposalLocation");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
                 {
                     b.HasOne("GroupProject.Models.User", "User")
@@ -594,17 +538,23 @@ namespace GroupProject.Migrations
 
             modelBuilder.Entity("GroupProject.Models.Request", b =>
                 {
-                    b.HasOne("GroupProject.Models.Item", "Item")
-                        .WithMany("Requests")
-                        .HasForeignKey("ItemID")
+                    b.HasOne("GroupProject.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("GroupProject.Models.Item", "Item")
+                        .WithMany("Requests")
+                        .HasForeignKey("ItemID");
 
                     b.HasOne("GroupProject.Models.User", "User")
                         .WithMany("Requests")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Category");
 
                     b.Navigation("Item");
 
@@ -679,11 +629,6 @@ namespace GroupProject.Migrations
                     b.Navigation("ItemDisposals");
 
                     b.Navigation("Requests");
-                });
-
-            modelBuilder.Entity("GroupProject.Models.Product", b =>
-                {
-                    b.Navigation("ProducDisposals");
                 });
 
             modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
