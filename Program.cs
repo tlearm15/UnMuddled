@@ -5,9 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Security.Cryptography.X509Certificates;
 
+//loads the env file in the project root - TL
+DotNetEnv.Env.Load(Path.Combine(Directory.GetCurrentDirectory(), ".env"));
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+//Adds oracle and storage service - TL
+builder.Services.AddScoped<IStorageService, OracleStorageService>();
 
 var certsDir = Path.Combine(builder.Environment.ContentRootPath, "certs");
 
