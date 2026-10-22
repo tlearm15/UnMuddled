@@ -1,0 +1,305 @@
+﻿
+/*m setting the navbar style for the site, including the colour of the nav bar, text spacing and font colour*/
+
+.navbar {
+    background-color: #242926 !important;
+    z-index: 9999 !important;
+}
+.navbar .nav-link,.navbar .navbar-brand,.navbar .navbar-text,.navbar span {
+    color: #E9EAF0 !important;
+    letter-spacing: 3px;
+
+}
+.navbar-toggler-icon, .navbar-toggler {
+    background-color: #5F695D !important;
+}
+
+.footer {
+    background-color: #242926 !important;
+    position: relative;
+    margin-top: auto;
+    margin-bottom: 0;
+    margin-top: auto;
+    color: #E9EAF0 !important;
+}
+
+
+
+/*m setting the bg colour as well as the fotn colour for the whole body of the site*/
+body {
+    background-color: #E9EAF0;
+    color: #3A4338;
+}
+
+/*m ensuring the paragraphs have no margin, as this was causing issues within styles*/
+p {
+    margin:0;
+}
+
+/*styling main name text*/
+.unmuddled {
+    font-size: clamp(40px, 12vw, 100px);
+    padding: 5px;
+    letter-spacing: 15px;
+    font-weight: bold;
+    color: #5A465C;
+    display: flex;
+    justify-content: center;
+}
+
+/*styling titles, subtitles and variants*/
+.titlegreen {
+    color: #5F695D;
+    display: flex;
+    justify-content: center;
+    font-size: 50px;
+    letter-spacing: 7px;
+    font-weight: bold;
+}
+.titlegreen-var {
+    color: #5F695D;
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    letter-spacing: 5px;
+    font-weight: bold;
+}
+
+.titlepurple {
+    color: #5A465C;
+    display: flex;
+    justify-content: center;
+    font-size: 50px;
+    letter-spacing: 7px;
+    font-weight: bold;
+}
+.titlepurple-var {
+    color: #5A465C;
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    letter-spacing: 5px;
+    font-weight: bold;
+}
+
+.subtitlegreen {
+    color: #5F695D;
+    font-size: 30px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    padding-top: 5px;
+}
+.subtitlepurple {
+    color: #5A465C;
+    font-size: 30px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    padding-top: 5px;
+}
+
+.smalltextgreen {
+    color: #5F695D;
+    font-size: 0.8rem;
+    padding: 5px;
+}
+.smalltextpurple {
+    color: #5A465C;
+    font-size: 0.8rem;
+    padding: 5px;
+}
+
+.tinytextgreen {
+    color: #5F695D;
+    font-size: 0.6rem;
+    padding: 5px;
+}
+.tinytextpurple {
+    color: #5A465C;
+    font-size: 0.6rem;
+    padding: 5px;
+}
+
+
+/*m setting up the different cards for the site*/
+.cardlightgreen {
+    background-color: #C7D0CB;
+    margin-top: 20px;
+    border-radius: 10px;
+    padding: 10px;
+    color: #242926;
+}
+
+.carddustygreen {
+    background-color: #93A3A2;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding: 10px;
+    color: #242926;
+}
+
+.cardpurple {
+    background-color: #CBC2D0;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding: 10px;
+    color: #382B38;
+}
+
+.cardnobg {
+    margin-top: 20px;
+    padding-inline: 10px;
+    color: #382B38;
+}
+
+/*m setting up the 2 different button styles for the site, green and purple*/
+.btndustygreen {
+    background-color: #93A3A2;
+    border: solid 2px;
+    border-color: #717E7E;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #1E0F2E;
+    text-decoration: none;
+    height: auto;
+    width: auto;
+}
+.btndustygreen-long {
+    background-color: #93A3A2;
+    border: solid 2px;
+    border-color: #717E7E;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #1E0F2E;
+    text-decoration: none;
+    height: auto;
+    width: 150px;
+}
+.btndustygreen:hover, .btndustygreen-long:hover {
+    transform: scale(1.02);
+    background-color: #829190;
+
+}
+.btnpurple {
+    background-color: #5A465C;
+    border: solid 2px;
+    border-color: #382B38;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #E9EAF0;
+    text-decoration: none;
+    height: auto;
+    width: auto;
+}
+.btnpurple-long {
+    background-color: #5A465C;
+    border: solid 2px;
+    border-color: #382B38;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #E9EAF0;
+    text-decoration: none;
+    height: auto;
+    width: 150px;
+}
+.btnpurple:hover, .btnpurple-long:hover {
+    transform: scale(1.02);
+    background-color: #443445;
+}
+
+.linegreen {
+    height: 3px;
+    background: #93A3A2;
+    border-radius:2px;
+    border: none;
+}
+.linepurple {
+    height: 3px;
+    background: #5A465C;
+    border-radius: 2px;
+    border: none;
+}
+
+/*M styling for image assets*/
+
+.logocircle {
+    height: 250px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.logocord {
+    height: 150px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.logofull {
+    height: 250px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.logosnail {
+    height: 200px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.logotext {
+    height: 70px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+
+.mascot {
+    height: 250px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.mascotsmall {
+    height: 100px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.mascotbig {
+    height: 550px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+
