@@ -10,7 +10,7 @@ public class Image
 
     [Required(ErrorMessage = "Image URL is required")]
     [Display(Name = "Image URL")]
-    //Image will be stored as a blob (binary large object), might be changed later depending on DB performance - TL
+    //Image URL will be stored (retrieved from oracle server)- TL
     public string ImageURL { get; set; } = string.Empty;
     
     [Display(Name = "Is Primary")]
