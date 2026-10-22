@@ -94,7 +94,7 @@ namespace GroupProject.Services
                         PostCode = "ST1 2BC"
                     };
                     var staffResult = await userManager.CreateAsync(staff, "Staff1234!");
-                    if (result.Succeeded)
+                    if (staffResult.Succeeded)
                     {
                         await userManager.AddToRoleAsync(staff, "Staff");
                         logger.LogInformation("Staff user created and assigned to Staff role.");
@@ -108,7 +108,7 @@ namespace GroupProject.Services
                     //Create User user if it doesn't exist -RW
                     var user = new User
                     {
-                        UserName = "user@gmail.com",
+                        UserName = "user1@gmail.com",
                         NormalizedUserName = "user@gmail.com".ToUpper(),
                         Email = "user@gmail.com",
                         NormalizedEmail = "user@gmail.com".ToUpper(),
@@ -122,14 +122,14 @@ namespace GroupProject.Services
                         PostCode = "US1 2BC"
                     };
                     var customerResult = await userManager.CreateAsync(user, "User1234!");
-                    if (result.Succeeded)
+                    if (customerResult.Succeeded)
                     {
                         await userManager.AddToRoleAsync(user, "User");
                         logger.LogInformation("User user created and assigned to User role.");
                     }
                     else
                     {
-                        var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                        var errors = string.Join("; ", customerResult.Errors.Select(e => e.Description));
                         logger.LogError($"Error creating user user: {errors}");
                         throw new InvalidOperationException($"Error creating 'User' user: {errors}");
                     }
