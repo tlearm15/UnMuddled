@@ -4,6 +4,7 @@
 .navbar {
     background-color: #242926 !important;
     z-index: 9999 !important;
+
 }
 .navbar .nav-link,.navbar .navbar-brand,.navbar .navbar-text,.navbar span {
     color: #E9EAF0 !important;
@@ -303,3 +304,34 @@ p {
     margin: 50px 0px 50px 0px;
 }
 
+/*m marquee styling and animation*/
+
+.marquee {
+    background-color: #C7D0CB;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 8px 0;
+    font-weight:bold;
+}
+.marquee-content {
+    display: inline-block;
+    animation: marquee 20s linear infinite;
+}
+.marquee-content span {
+    font-size: 0.9rem;
+    letter-spacing: 0.8px;
+    padding-right: 150px;
+
+}
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+.marquee-container:hover .marquee-content {
+    animation-play-state: paused;
+}
