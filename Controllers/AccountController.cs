@@ -7,10 +7,12 @@ namespace GroupProject.Controllers
 {
     public class AccountController : Controller
     {
+        //Get signin manager, user manager and role manager to be able to manage users and roles -RW
         private readonly SignInManager<User> signInManager;
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
 
+        // Constructor to inject the required services -RW
         public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             this.signInManager = signInManager;
@@ -24,6 +26,7 @@ namespace GroupProject.Controllers
             return View();
         }
 
+        // Handles the login POST request, validates the model, and attempts to sign in the user -RW
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LogInViewModel model)
@@ -50,6 +53,7 @@ namespace GroupProject.Controllers
             return View();
         }
 
+        // Handles the registration POST request, validates the model, creates a new user, assigns a default role, and signs in the user -RW
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -89,7 +93,7 @@ namespace GroupProject.Controllers
                 return View(model);
             }
         }
-
+        // Handles the logout POST request and signs out the user -RW
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()

@@ -26,7 +26,7 @@ namespace GroupProject.Services
                 await context.Database.EnsureCreatedAsync();
 
                 logger.LogInformation("Seeding roles.");
-                List<string> roles = new List<string> { "Admin", "Staff", "User" };//Customer references User with accounts. Change if ill-suited -RW
+                List<string> roles = new List<string> { "Admin", "Staff", "User" };
 
                 //Creates the roles -RW
                 foreach (var role in roles)
@@ -77,7 +77,7 @@ namespace GroupProject.Services
                         logger.LogError($"Error creating admin user: {errors}");
                         throw new InvalidOperationException($"Error creating admin user: {errors}");
                     }
-
+                    //Create Staff user if it doesn't exist -RW
                     var staff = new User
                     {
                         UserName = "staff@unmuddled.com",
@@ -105,7 +105,7 @@ namespace GroupProject.Services
                         logger.LogError($"Error creating staff user: {errors}");
                         throw new InvalidOperationException($"Error creating staff user: {errors}");
                     }
-
+                    //Create User user if it doesn't exist -RW
                     var user = new User
                     {
                         UserName = "user@gmail.com",
@@ -121,7 +121,7 @@ namespace GroupProject.Services
                         City = "User City",
                         PostCode = "US1 2BC"
                     };
-                    var customerResult = await userManager.CreateAsync(staff, "User1234!");
+                    var customerResult = await userManager.CreateAsync(user, "User1234!");
                     if (result.Succeeded)
                     {
                         await userManager.AddToRoleAsync(user, "User");
@@ -136,7 +136,7 @@ namespace GroupProject.Services
                 }
             }
             catch (Exception ex)
-            {
+            {// Log any exceptions that occur during the seeding process
                 logger.LogError(ex, "An error occurred while seeding the database.");
 
             }
