@@ -6,8 +6,12 @@ using Npgsql;
 using System.Security.Cryptography.X509Certificates;
 
 //loads the env file in the project root - TL
-DotNetEnv.Env.Load(Path.Combine(Directory.GetCurrentDirectory(), ".env"));
-
+// added saftey check to make sure site build does not fail if env is missing - TL
+var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+if (File.Exists(envPath))
+{
+    DotNetEnv.Env.Load(envPath);
+}
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -16,18 +20,29 @@ builder.Services.AddScoped<IStorageService, OracleStorageService>();
 
 var certsDir = Path.Combine(builder.Environment.ContentRootPath, "certs");
 
-//Load the client certificate 
-var clientCertPath = Path.Combine(certsDir, "dev.pfx");
-var clientCert = new X509Certificate2(clientCertPath, "Unmudd13d");
-
-var caCertPath = Path.Combine(certsDir, "ca.crt");
-var caCert = new X509Certificate2(caCertPath);
-
 var connString = builder.Configuration.GetConnectionString("Default");
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connString);
 
-dataSourceBuilder.UseClientCertificate(clientCert);
-dataSourceBuilder.UseRootCertificate(caCert);
+//TL- Added saftey check for dev certificate
+var clientCertPath = Path.Combine(certsDir, "dev.pfx");
+
+if(File.Exists(clientCertPath))
+{
+    var clientCert = new X509Certificate2(clientCertPath, "Unmudd13d");
+    dataSourceBuilder.UseClientCertificate(clientCert);
+
+}
+
+// Added saftey check for ca.crt - TL
+
+var caCertPath = Path.Combine(certsDir, "ca.crt");
+
+if (File.Exists(caCertPath))
+{
+    var caCert = new X509Certificate2(caCertPath);
+    dataSourceBuilder.UseRootCertificate(caCert);
+
+}
 
 var dataSource = dataSourceBuilder.Build();
 
