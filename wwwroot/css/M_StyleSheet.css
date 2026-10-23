@@ -1,0 +1,445 @@
+﻿
+/*m setting the navbar style for the site, including the colour of the nav bar, text spacing and font colour*/
+
+.navbar {
+    background-color: #242926 !important;
+    z-index: 9999 !important;
+
+}
+.navbar .nav-link,.navbar .navbar-brand,.navbar .navbar-text,.navbar span {
+    color: #E9EAF0 !important;
+    letter-spacing: 3px;
+
+}
+.navbar-toggler-icon, .navbar-toggler {
+    background-color: #5F695D !important;
+}
+
+.footer {
+    background-color: #242926 !important;
+    position: relative;
+    margin-top: auto;
+    margin-bottom: 0;
+    margin-top: auto;
+    color: #E9EAF0 !important;
+}
+
+
+
+/*m setting the bg colour as well as the fotn colour for the whole body of the site*/
+body {
+    background-color: #E9EAF0;
+    color: #3A4338;
+}
+
+/*m ensuring the paragraphs have no margin, as this was causing issues within styles*/
+p {
+    margin:0;
+}
+
+/*styling main name text*/
+.unmuddled {
+    font-size: clamp(40px, 12vw, 100px);
+    padding: 5px;
+    letter-spacing: 15px;
+    font-weight: bold;
+    color: #5A465C;
+    display: flex;
+    justify-content: center;
+}
+
+/*styling titles, subtitles and variants*/
+.titlegreen {
+    color: #5F695D;
+    display: flex;
+    justify-content: center;
+    font-size: 50px;
+    letter-spacing: 7px;
+    font-weight: bold;
+}
+.titlegreen-var {
+    color: #5F695D;
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    letter-spacing: 5px;
+    font-weight: bold;
+}
+
+.titlepurple {
+    color: #5A465C;
+    display: flex;
+    justify-content: center;
+    font-size: 50px;
+    letter-spacing: 7px;
+    font-weight: bold;
+}
+.titlepurple-var {
+    color: #5A465C;
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    letter-spacing: 5px;
+    font-weight: bold;
+}
+
+.subtitlegreen {
+    color: #5F695D;
+    font-size: 30px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    padding-top: 5px;
+}
+.subtitlepurple {
+    color: #5A465C;
+    font-size: 30px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    padding-top: 5px;
+}
+
+.smalltextgreen {
+    color: #5F695D;
+    font-size: 0.8rem;
+    padding: 5px;
+}
+.smalltextpurple {
+    color: #5A465C;
+    font-size: 0.8rem;
+    padding: 5px;
+}
+
+.tinytextgreen {
+    color: #5F695D;
+    font-size: 0.6rem;
+    padding: 5px;
+}
+.tinytextpurple {
+    color: #5A465C;
+    font-size: 0.6rem;
+    padding: 5px;
+}
+
+
+/*m setting up the different cards for the site*/
+.cardlightgreen {
+    background-color: #C7D0CB;
+    margin-top: 20px;
+    border-radius: 10px;
+    padding: 10px;
+    color: #242926;
+}
+
+.carddustygreen {
+    background-color: #93A3A2;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding: 10px;
+    color: #242926;
+}
+
+.cardpurple {
+    background-color: #CBC2D0;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding: 10px;
+    color: #382B38;
+}
+
+.cardnobg {
+    margin-top: 20px;
+    padding-inline: 10px;
+    color: #382B38;
+}
+
+/*m setting up the 2 different button styles for the site, green and purple*/
+.btndustygreen {
+    background-color: #93A3A2;
+    border: solid 2px;
+    border-color: #717E7E;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #1E0F2E;
+    text-decoration: none;
+    height: auto;
+    width: auto;
+}
+.btndustygreen-long {
+    background-color: #93A3A2;
+    border: solid 2px;
+    border-color: #717E7E;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #1E0F2E;
+    text-decoration: none;
+    height: auto;
+    width: 150px;
+}
+.btndustygreen:hover, .btndustygreen-long:hover {
+    transform: scale(1.02);
+    background-color: #829190;
+
+}
+.btnpurple {
+    background-color: #5A465C;
+    border: solid 2px;
+    border-color: #382B38;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #E9EAF0;
+    text-decoration: none;
+    height: auto;
+    width: auto;
+}
+.btnpurple-long {
+    background-color: #5A465C;
+    border: solid 2px;
+    border-color: #382B38;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #E9EAF0;
+    text-decoration: none;
+    height: auto;
+    width: 150px;
+}
+.btnpurple-long-big {
+    background-color: #5A465C;
+    border: solid 2px;
+    border-color: #382B38;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #E9EAF0;
+    text-decoration: none;
+    height: auto;
+    width: 200px;
+}
+.btnpurple:hover, .btnpurple-long:hover, .btnpurple-long-big{
+    transform: scale(1.02);
+    background-color: #443445;
+}
+.btnpurple-long-big-active {
+    background-color: #CBC2D0;
+    border: solid 2px;
+    border-color: #5A465C;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    cursor: pointer;
+    height: auto;
+    width: 200px;
+    margin-top: 10px;
+    padding-inline: 10px;
+    color: #382B38;
+    text-decoration: none;
+}
+
+.linegreen {
+    height: 3px;
+    background: #93A3A2;
+    border-radius:2px;
+    border: none;
+}
+.linepurple {
+    height: 3px;
+    background: #5A465C;
+    border-radius: 2px;
+    border: none;
+}
+
+/*M styling for image assets*/
+
+.logocircle {
+    height: 250px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.logocord {
+    height: 150px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.logofull {
+    height: 250px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.logofullbig {
+    height: 300px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.logosnail {
+    height: 200px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.logotext {
+    height: 70px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+
+.mascot {
+    height: 350px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.mascotsmall {
+    height: 100px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.mascotbig {
+    height: 550px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+
+/*m styling item cards*/
+/*m item card container styling*/
+.item-card {
+    background-color: #C7D0CB;
+    border: solid 2px #717E7E;
+    border-radius: 12px;
+    padding: 15px;
+    width: 210px;
+    text-align: left;
+    color: #242926;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/*m item card title styling*/
+.item-card-title {
+    color: #242926;
+    margin-top: 0;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/*m item card image box container styling*/
+.item-card-img-box {
+    background: #E9EAF0;
+    height: 150px;
+    border: 1px dashed #717E7E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+.item-card-img {
+    max-height: 95px;
+    max-width: 100%;
+    object-fit: contain;
+    overflow: hidden;
+}
+
+.item-tags-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.item-tag {
+    background-color: #93A3A2;
+    color: #242926;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: solid 1px #717E7E;
+    font-weight: 600;
+}
+
+/*m marquee styling and animation*/
+
+.marquee {
+    background-color: #C7D0CB;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 8px 0;
+    font-weight:bold;
+}
+.marquee-content {
+    display: inline-block;
+    animation: marquee 20s linear infinite;
+}
+.marquee-content span {
+    font-size: 0.9rem;
+    letter-spacing: 0.8px;
+    padding-right: 150px;
+
+}
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+.marquee-container:hover .marquee-content {
+    animation-play-state: paused;
+}
+
+.room {
+    width: 100%;
+    max-width: 950px;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    margin: 20px auto 0 auto;
+}
+
+
