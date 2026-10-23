@@ -432,3 +432,14 @@ p {
 .marquee-container:hover .marquee-content {
     animation-play-state: paused;
 }
+
+.room {
+    width: 100%;
+    max-width: 950px;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    margin: 20px auto 0 auto;
+}
+
+

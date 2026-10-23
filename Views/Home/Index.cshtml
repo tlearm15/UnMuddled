@@ -12,11 +12,22 @@
     {
         displayItems.Add(new GroupProject.Models.Item
         {
-            // setting item name to dvd player
+            //m setting item name to dvd player
             ItemName = "DvD Player",
             RoomTag = RoomTag.LivingRoom,
         });
     }
+
+    //m map the active room name to its corresponding image filename from the images folder
+    string roomImageFileName = currentRoom switch
+    {
+        "Living Room" => "livingroom.png",
+        "Kitchen" => "kitchen.png",
+        "Bedroom" => "bedroom.png",
+        "Office" => "office.png",
+        "Other" => "other.png",
+        _ => "livingroom.png"
+    };
 }
 
 <link rel="stylesheet" href="~/css/M_StyleSheet.css" />
@@ -34,6 +45,7 @@
 
     <hr class="linepurple" />
 
+    @*m room tag filter navigation tabs*@
     <div style="display: flex; justify-content: center; gap: 10px; margin: 25px 0; flex-wrap: wrap;">
         <a asp-controller="Home" asp-action="Index" asp-route-room="Living Room"
            class="@(string.Equals(currentRoom, "Living Room", StringComparison.OrdinalIgnoreCase) ? "btnpurple-long-big-active" : "btnpurple-long-big")"
@@ -98,6 +110,11 @@
         {
             <p class="smalltextpurple" style="padding: 20px; font-style: italic;">Sorry, no items found in this room tag yet.</p>
         }
+
+        @*m display the active room image below the item cards*@
+        <div style="margin-top: 30px;">
+            <img src="~/images/@roomImageFileName" class="room" alt="@currentRoom Graphic" />
+        </div>
 
     </div>
 
