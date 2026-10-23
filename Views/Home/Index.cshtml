@@ -1,7 +1,129 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<GroupProject.Models.Item>
+
+@{
+    ViewData["Title"] = "UnMuddled Home";
+    string currentRoom = ViewData["CurrentRoom"] as string ?? "Living Room";
+
+    //m creating a local list that falls back to hardcoded mock items for styling if the database is empty
+    var displayItems = Model?.ToList() ?? new List<GroupProject.Models.Item>();
+
+    //m if there are no items found in the database for the living room then add mock items for front-end styling purposes
+    if (!displayItems.Any() && string.Equals(currentRoom, "Living Room", StringComparison.OrdinalIgnoreCase))
+    {
+        displayItems.Add(new GroupProject.Models.Item
+        {
+            ItemName = "DvD Player",
+            RoomTag = RoomTag.LivingRoom,
+        });
+        displayItems.Add(new GroupProject.Models.Item
+        {
+            ItemName = "TV Remote",
+            RoomTag = RoomTag.LivingRoom,
+        });
+        displayItems.Add(new GroupProject.Models.Item
+        {
+            ItemName = "PS3",
+            RoomTag = RoomTag.LivingRoom,
+        });
+    }
+
+    //m map the active room name to its corresponding image filename from the images folder
+    string roomImageFileName = currentRoom switch
+    {
+        "Living Room" => "livingroom.png",
+        "Kitchen" => "kitchen.png",
+        "Bedroom" => "bedroom.png",
+        "Office" => "office.png",
+        "Other" => "other.png",
+        _ => "livingroom.png"
+    };
 }
 
 <link rel="stylesheet" href="~/css/M_StyleSheet.css" />
 
-<h1 class="unmuddled">UnMuddled</h1>
+<div style="max-width: 1100px; margin: 30px auto; padding: 20px;">
+
+    <h1 class="unmuddled">UnMuddled</h1>
+
+    <hr class="linepurple" />
+
+    <div style="display: flex; justify-content: space-around; align-items: center; margin: 20px 0;">
+        <img src="~/images/logo_full.png" class="logofullbig" alt="UnMuddled Logo" />
+        <img src="~/images/snail.png" class="mascot" alt="Snail Toaster" />
+    </div>
+
+    <hr class="linepurple" />
+
+    <div style="display: flex; justify-content: center; gap: 10px; margin: 25px 0; flex-wrap: wrap;">
+        <a asp-controller="Home" asp-action="Index" asp-route-room="Living Room"
+           class="@(string.Equals(currentRoom, "Living Room", StringComparison.OrdinalIgnoreCase) ? "btnpurple-long-big-active" : "btnpurple-long-big")"
+           style="text-decoration:none; display:flex; align-items:center; justify-content:center;">Living Room</a>
+
+        <a asp-controller="Home" asp-action="Index" asp-route-room="Kitchen"
+           class="@(string.Equals(currentRoom, "Kitchen", StringComparison.OrdinalIgnoreCase) ? "btnpurple-long-big-active" : "btnpurple-long-big")"
+           style="text-decoration:none; display:flex; align-items:center; justify-content:center;">Kitchen</a>
+
+        <a asp-controller="Home" asp-action="Index" asp-route-room="Bedroom"
+           class="@(string.Equals(currentRoom, "Bedroom", StringComparison.OrdinalIgnoreCase) ? "btnpurple-long-big-active" : "btnpurple-long-big")"
+           style="text-decoration:none; display:flex; align-items:center; justify-content:center;">Bedroom</a>
+
+        <a asp-controller="Home" asp-action="Index" asp-route-room="Office"
+           class="@(string.Equals(currentRoom, "Office", StringComparison.OrdinalIgnoreCase) ? "btnpurple-long-big-active" : "btnpurple-long-big")"
+           style="text-decoration:none; display:flex; align-items:center; justify-content:center;">Office</a>
+
+        <a asp-controller="Home" asp-action="Index" asp-route-room="Other"
+           class="@(string.Equals(currentRoom, "Other", StringComparison.OrdinalIgnoreCase) ? "btnpurple-long-big-active" : "btnpurple-long-big")"
+           style="text-decoration:none; display:flex; align-items:center; justify-content:center;">Other</a>
+    </div>
+
+    <div class="cardpurple" style="padding: 25px; text-align: center;">
+        <h2 class="titlepurple-var" style="margin-bottom: 20px;">@currentRoom Items</h2>
+        <hr class="linepurple" />
+
+        @if (displayItems.Any())
+        {
+            <div style="display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 950px; margin: 20px auto; flex-wrap: wrap; gap: 20px;">
+                @foreach (var item in displayItems)
+                {
+                    var firstImage = item.Images?.FirstOrDefault();
+
+                    <div class="item-card">
+                        <h4 class="item-card-title">@item.ItemName</h4>
+
+                        <div class="item-card-img-box">
+                            @if (firstImage != null)
+                            //m if the items first image isnt null then display
+                            {
+                                <img src="~/images/@firstImage" class="item-card-img" alt="@item.ItemName" />
+                            }
+                            else
+                            //m if the items first image is null then display text
+                            {
+                                <span class="tinytextgreen">Sorry, No Image Available</span>
+                            }
+                        </div>
+
+                        <div class="item-tags-container">
+                            <span class="item-tag">@item.RoomTag</span>
+
+                            <span class="item-tag">
+                                @(item.Category != null ? item.Category.GetType().GetProperty("CategoryName")?.GetValue(item.Category) ?? "General" : "General")
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="smalltextpurple" style="padding: 20px; font-style: italic;">Sorry, no items found in this room tag yet.</p>
+        }
+
+        @*m display the active room image below the item cards using the room*@
+        <div style="margin-top: 30px;">
+            <img src="~/images/@roomImageFileName" class="room" alt="@currentRoom Graphic" />
+        </div>
+
+    </div>
+
+</div>

@@ -1,53 +1,43 @@
 using Microsoft.AspNetCore.Mvc;
-using GroupProject.Models;
 using Microsoft.EntityFrameworkCore;
+using GroupProject.Models;
 
 namespace GroupProject.Controllers;
 
 public class HomeController : Controller
 {
     private readonly UnMuddledDbContext _context;
-    
+
     public HomeController(UnMuddledDbContext context)
     {
         _context = context;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index(string? room)
     {
-        return View();
-    }
+        //m loading items with category and images
+        var itemsQuery = _context.Items
+            .Include(i => i.Category)
+            .Include(i => i.Images)
+            .AsQueryable();
 
-    //TO BE REMOVED
-    [HttpGet("test-db")]
-    public async Task<IActionResult> TestDb()
-    {
-        try
-        {
-            //test if can connect to db
-            bool canConnect = await _context.Database.CanConnectAsync();
+        //m setting default room tag to be living room if none is chosen
+        string activeRoom = string.IsNullOrWhiteSpace(room) ? "Living Room" : room;
 
-            //if connection successful
-            if (canConnect)
-            {
-                //success
-                return Json(new { success = true, message = "Database connection is successful!" });
-            }
-            else
-            {
-                //connection made but other error
-                return Json(new { success = false, message = "Database connection returned false (server reachable, but refused connection)." });
-            }
-        }
-        //connection unsuccessful 
-        catch (Exception ex)
+        //m removing spaces so roomtag enum parses correctly
+        string cleanRoomName = activeRoom.Replace(" ", "");
+
+        if (Enum.TryParse<RoomTag>(cleanRoomName, true, out var selectedRoomTag))
         {
-            return Json(new { 
-                //print error message
-                success = false, 
-                message = "Database connection failed.", 
-                error = ex.Message 
-            });
+            itemsQuery = itemsQuery.Where(i => i.RoomTag == selectedRoomTag);
         }
+
+        //m sending active room string to view for highlighting
+        ViewData["CurrentRoom"] = activeRoom;
+
+        var items = await itemsQuery.ToListAsync();
+
+        // m returtning items to view
+        return View(items);
     }
 }
