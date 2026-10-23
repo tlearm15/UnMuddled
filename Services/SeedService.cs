@@ -109,9 +109,9 @@ namespace GroupProject.Services
                     var user = new User
                     {//User Login Fixed. Had to change the user Email-RW
                         UserName = "user1@gmail.com",
-                        NormalizedUserName = "user@gmail.com".ToUpper(),
-                        Email = "user@gmail.com",
-                        NormalizedEmail = "user@gmail.com".ToUpper(),
+                        NormalizedUserName = "user1@gmail.com".ToUpper(),
+                        Email = "user1@gmail.com",
+                        NormalizedEmail = "user1@gmail.com".ToUpper(),
                         EmailConfirmed = true,
                         SecurityStamp = Guid.NewGuid().ToString(),
                         FirstName = "James",
