@@ -107,7 +107,7 @@ namespace GroupProject.Services
                     }
                     //Create User user if it doesn't exist -RW
                     var user = new User
-                    {
+                    {//User Login Fixed. Had to change the user Email-RW
                         UserName = "user1@gmail.com",
                         NormalizedUserName = "user@gmail.com".ToUpper(),
                         Email = "user@gmail.com",
