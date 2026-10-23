@@ -16,15 +16,10 @@ public class UnMuddledDbContext : IdentityDbContext<User>
     public DbSet<ItemDisposal> ItemDisposals => Set<ItemDisposal>();
     public DbSet<ProductHistory> ProductHistories => Set<ProductHistory>();
     public DbSet<Request> Requests => Set<Request>();
-    public DbSet<Product> Products => Set<Product>();
-    public DbSet<ProductDisposal> ProductDisposals => Set<ProductDisposal>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-     
-        //fixed typo in table name - TL
-        builder.Entity<ProductDisposal>().ToTable("ProductDisposals");
         
         builder.Entity<ItemDisposal>()
             .HasKey(id => new { id.DisposalID, id.ItemID });
