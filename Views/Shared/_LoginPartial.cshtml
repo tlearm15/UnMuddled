@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @inject SignInManager<GroupProject.Models.User> signInManager;
 
-<ul class="navbar-nav">
+<ul class="navbar-nav ms-auto">
     @if (signInManager.IsSignedIn(User))
     {
         <li class="nav-item">
