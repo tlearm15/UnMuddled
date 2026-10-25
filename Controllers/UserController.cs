@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Models;
 
 public class UserController(UserManager<User> userManager) : Controller
 {
+
     /// <summary>
     /// GET
     /// TQ- Stub for viewing profile
@@ -144,44 +146,48 @@ public class UserController(UserManager<User> userManager) : Controller
         //TQ- todo: there should be a redirect to the user's page showing their role
         return View();
     }
-    /// <summary>
-    /// GET
-    /// TQ- Terminates a User's account
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    [Authorize(Roles = "Admin")]
-    public IActionResult Ban(string id)
-    {
-        var user = userManager.FindByIdAsync(id).Result;
-        if (user is null)
-            return NotFound();
 
-        return View(user);
-    }
+
+
     /// <summary>
-    /// POST
-    /// TQ- Terminates a User's account
+    /// DMQ - Deletes the Users/Staff account from the database
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [Authorize(Roles = "Admin")]
     [HttpPost]
-    [ActionName("Ban")]
-    public IActionResult BanConfirmed(string id)
+    [ValidateAntiForgeryToken]
+    [Authorize]
+    public async Task<IActionResult> DeleteAccout(string id)
     {
-        var user = userManager.FindByIdAsync(id).Result;
-        if (user is null)
+        //if the id is null - then return a bad request
+        if(id  == null)
+        {
+            return BadRequest();
+        }
+
+        //finds the user by their id
+        var currentUser = await userManager.GetUserAsync(User);
+
+        //if the current user is not 
+        if (currentUser == null)
+        {
             return NotFound();
+        }
 
-        var adminUsers = userManager.GetUsersInRoleAsync("Admin").Result;
-        if (adminUsers.Count <= 1 && adminUsers.Any(u => u.Id == id))
-            //TQ- todo: there should be a redirect to the user's page showing their role
-            return View();
+        //staff and admins cannot delete their own accounts
+        if(User.IsInRole("Admin") || User.IsInRole("Staff"))
+        {
+            return View("Index");
+        }
 
-        userManager.DeleteAsync(user).Wait();
-        
-        //TQ- todo: there should be a redirect to the user's page showing their role
-        return View();
+
+        //delete the user
+        await userManager.DeleteAsync(currentUser);
+
+        //retruns the user home
+        return RedirectToAction("Home", "Index");
     }
+
+
+
 }
