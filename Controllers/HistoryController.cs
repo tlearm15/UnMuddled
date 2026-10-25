@@ -20,19 +20,29 @@ public class HistoryController : Controller
     }
 
     // GET: /History
-    //sisplaying the user's recycled items
-    public async Task<IActionResult> Index()
+    //WM - displaying the user's recycled items
+    //WM - passes in the userid as an optional paramater for viewing a user's recycled product as an admin
+    public async Task<IActionResult> Index(string? userId = null)
     {
-        // get the currently logged-in user's ID so their recycling history can be pulled
-        var userId = _userManager.GetUserId(User);
+        //WM - if there's no passed in user id then grab the logged in user's id.
+        if (string.IsNullOrEmpty(userId))
+        {
+            userId = _userManager.GetUserId(User);
+        }
 
-        //if they arent logged in, redirect to login
+        //WM - if they arent logged in, redirect to login
         if (string.IsNullOrEmpty(userId))
         {
             return RedirectToAction("Login", "Account");
         }
 
-        // getting the user's product history with items categories and disposal locs
+        //WM - if the user's trying to view a history that isn't their own and they aren't an admin, forbid the access
+        if (userId != _userManager.GetUserId(User) && !User.IsInRole("Admin") && !User.IsInRole("Staff"))
+        {
+            return Forbid();
+        }
+
+        // WM - getting the user's product history with items categories and disposal locs
         var userHistory = await _context.ProductHistories
             .Include(ph => ph.Items)
                 .ThenInclude(i => i.Category)
@@ -41,13 +51,13 @@ public class HistoryController : Controller
                     .ThenInclude(id => id.DisposalLocation)
             .FirstOrDefaultAsync(ph => ph.UserID == userId);
 
-        // display empty list if there's no history or items yet
+        //WM - display empty list if there's no history or items yet
         if (userHistory == null || userHistory.Items == null)
         {
             return View(new List<Item>());
         }
 
-        // showing recycled items ordered by desc
+        // WM - showing recycled items ordered by desc
         var recycledItems = userHistory.Items
             .OrderByDescending(i => i.DateAdded)
             .ToList();

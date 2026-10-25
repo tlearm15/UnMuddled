@@ -4,6 +4,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+//WM - Adding entity framework core for database ops
+using Microsoft.EntityFrameworkCore;
 
 
 namespace GroupProject.Services
@@ -155,8 +157,10 @@ namespace GroupProject.Services
                     await context.SaveChangesAsync();
                 }
 
+                //WM - temporarily seeding some products for user to show a history of disposed items for testing.
+                //WM - specifically async to avoid any blockages
                 var normalUser = await userManager.FindByEmailAsync("user@gmail.com");
-                if (normalUser != null && !context.ProductHistories.Any(ph => ph.UserID == normalUser.Id))
+                if (normalUser != null && !await context.ProductHistories.AnyAsync(ph => ph.UserID == normalUser.Id))
                 {
                     var userHistory = new ProductHistory
                     {
