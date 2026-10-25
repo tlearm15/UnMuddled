@@ -11,7 +11,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace GroupProject.Controllers
 {
-    public class DisposalController : Controller
+    public class LoactionController : Controller
     {
 
         //DMQ - making the dbcontext a read-only property
@@ -19,7 +19,7 @@ namespace GroupProject.Controllers
 
 
         //DMQ - Dependency Injection for the database context
-        public DisposalController(UnMuddledDbContext dbContext)
+        public LoactionController(UnMuddledDbContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -64,14 +64,23 @@ namespace GroupProject.Controllers
             //retrieves the users postcode
             var postcode = user.PostCode;
 
-            //combines the post code, and the item name into a "near me query"
-            string searchString = $"{item.ItemName} drop off or recycling near me {postcode}";
+            //gets the disposal locations
+            var allLocations = await _dbContext.DisposalLocations.ToListAsync();
+
+            //get the beggining of the users postcode
+            string userOutcode = user.PostCode.Split(' ')[0].Trim().ToUpper();
+
+            //makes a lsit of the disposal sites near the user
+            var nearbyLocations = await _dbContext.DisposalLocations
+            .Where(d => d.Postcode.ToUpper().StartsWith(userOutcode))
+            .ToListAsync();
 
             //adds the search item name to the viewbag
             ViewBag.ItemName = item.ItemName;
 
+
             //returns the search query to the view
-            return View("Index",searchString);
+            return View("Index", nearbyLocations);
         }//end of action result
 
      
