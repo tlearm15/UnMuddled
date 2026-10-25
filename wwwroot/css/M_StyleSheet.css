@@ -14,6 +14,10 @@
 .navbar-toggler-icon, .navbar-toggler {
     background-color: #5F695D !important;
 }
+.nav-link {
+    margin: 0px 10px 0px 10px;
+    font-weight: 500;
+}
 
 .footer {
     background-color: #242926 !important;
@@ -23,8 +27,6 @@
     margin-top: auto;
     color: #E9EAF0 !important;
 }
-
-
 
 /*m setting the bg colour as well as the fotn colour for the whole body of the site*/
 body {
