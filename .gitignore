@@ -2,6 +2,7 @@
 /.vs/
 /.vs/*
 
+.env
 
 bin/
 obj/

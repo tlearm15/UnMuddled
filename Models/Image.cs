@@ -8,11 +8,11 @@ public class Image
     [Display(Name = "Image ID")]
     public int ImageID { get; set; }
 
-    [Required(ErrorMessage = "Image data is required")]
-    [Display(Name = "Image Data")]
-    //Image will be stored as a blob (binary large object), might be changed later depending on DB performance - TL
-    public byte[] ImageData { get; set; } = Array.Empty<byte>();
-
+    [Required(ErrorMessage = "Image URL is required")]
+    [Display(Name = "Image URL")]
+    //Image URL will be stored (retrieved from oracle server)- TL
+    public string ImageURL { get; set; } = string.Empty;
+    
     [Display(Name = "Is Primary")]
     public bool IsPrimary { get; set; }
 
