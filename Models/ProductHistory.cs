@@ -15,7 +15,7 @@ public class ProductHistory
     [Display(Name = "Date Logged")]
     [DataType(DataType.DateTime)]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
-    public DateTime DateLogged { get; set; } = DateTime.Now;
+    public DateTime DateDisposed { get; set; } = DateTime.Now;
 
     //Navigation property
     public ICollection<Item> Items { get; set; } = new List<Item>();

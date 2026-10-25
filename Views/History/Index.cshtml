@@ -1,0 +1,66 @@
+﻿@model IEnumerable<GroupProject.Models.Item>
+
+@{
+    ViewData["Title"] = "My Recycling History";
+}
+
+<h1>My Recycling History</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You haven't recycled any items yet
+    </div>
+}
+else
+    {
+    <table class="table table-striped table-hover mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Item Details</th>
+                <th>Category</th>
+                <th>Disposal Location</th>
+                <th>Date Disposed</th>
+                <th>Recyclable?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                // grab disposal if one was logged into the system
+                var disposal = item.ItemDisposals?.FirstOrDefault()?.DisposalLocation;
+
+                <tr>
+                    <td>
+                        <strong>@item.ItemName</strong><br />
+                        <small class="text-muted">@item.Description</small>
+                    </td>
+                    <td>@(item.Category?.CategoryName ?? "Uncategorized")</td>
+                    <td>
+                        @if (disposal != null)
+                        {
+                            @disposal.LocationName
+                            <br />
+                            <small class="text-muted">@disposal.Town, @disposal.Postcode</small>
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Location not specified</span>
+                        }
+                    </td>
+                    <td>@item.DateAdded.ToString("d")</td>
+                    <td>
+                        @if (item.IsRecyclable)
+                        {
+                            <span class="badge bg-success">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">No</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

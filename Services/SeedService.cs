@@ -4,6 +4,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+//WM - Adding entity framework core for database ops
+using Microsoft.EntityFrameworkCore;
 
 
 namespace GroupProject.Services
@@ -133,6 +135,74 @@ namespace GroupProject.Services
                         logger.LogError($"Error creating user user: {errors}");
                         throw new InvalidOperationException($"Error creating 'User' user: {errors}");
                     }
+                }
+                logger.LogInformation("Seeding e-waste categories, locations, and history.");
+
+                if (!context.Categories.Any())
+                {
+                    context.Categories.AddRange(
+                        new Category { CategoryName = "Small Electronics" },
+                        new Category { CategoryName = "Large Appliances" },
+                        new Category { CategoryName = "Mobile Devices" }
+                    );
+                    await context.SaveChangesAsync();
+                }
+
+                if (!context.DisposalLocations.Any())
+                {
+                    context.DisposalLocations.AddRange(
+                        new DisposalLocation { LocationName = "Glasgow Central Recycling", Town = "Glasgow", Postcode = "G1 1AA", Latitude = 55.8642m, Longitude = -4.2518m },
+                        new DisposalLocation { LocationName = "Local E-Waste Drop-off", Town = "Glasgow", Postcode = "G2 2BB", Latitude = 55.8600m, Longitude = -4.2500m }
+                    );
+                    await context.SaveChangesAsync();
+                }
+
+                //WM - temporarily seeding some products for user to show a history of disposed items for testing.
+                //WM - specifically async to avoid any blockages
+                var normalUser = await userManager.FindByEmailAsync("user@gmail.com");
+                if (normalUser != null && !await context.ProductHistories.AnyAsync(ph => ph.UserID == normalUser.Id))
+                {
+                    var userHistory = new ProductHistory
+                    {
+                        UserID = normalUser.Id
+                    };
+                    context.ProductHistories.Add(userHistory);
+                    await context.SaveChangesAsync();
+
+                    var catElectronics = context.Categories.First(c => c.CategoryName == "Small Electronics");
+                    var catMobile = context.Categories.First(c => c.CategoryName == "Mobile Devices");
+                    var locCentral = context.DisposalLocations.First(l => l.LocationName == "Glasgow Central Recycling");
+
+                    var item1 = new Item
+                    {
+                        ItemName = "Broken Toaster",
+                        Description = "2-slice toaster, heating element burned out.",
+                        IsRecyclable = true,
+                        CategoryID = catElectronics.CategoryID,
+                        RoomTag = RoomTag.Kitchen,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow.AddDays(-2)
+                    };
+
+                    var item2 = new Item
+                    {
+                        ItemName = "Old Smartphone",
+                        Description = "Screen cracked, battery swollen. Responsibly disposed.",
+                        IsRecyclable = true,
+                        CategoryID = catMobile.CategoryID,
+                        RoomTag = RoomTag.Bedroom,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow.AddDays(-5)
+                    };
+
+                    context.Items.AddRange(item1, item2);
+                    await context.SaveChangesAsync();
+
+                    context.ItemDisposals.AddRange(
+                        new ItemDisposal { ItemID = item1.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item2.ItemID, DisposalID = locCentral.DisposalID }
+                    );
+                    await context.SaveChangesAsync();
                 }
             }
             catch (Exception ex)
