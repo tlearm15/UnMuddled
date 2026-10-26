@@ -1,48 +1,29 @@
+using System.Security.Cryptography.X509Certificates;
 using GroupProject.Models;
 using GroupProject.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
-using System.Security.Cryptography.X509Certificates;
 
-//loads the env file in the project root - TL
-// added saftey check to make sure site build does not fail if env is missing - TL
-var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-if (File.Exists(envPath))
-{
-    DotNetEnv.Env.Load(envPath);
-}
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-//Adds oracle and storage service - TL
-builder.Services.AddScoped<IStorageService, OracleStorageService>();
 
 var certsDir = Path.Combine(builder.Environment.ContentRootPath, "certs");
+
+//Load the client certificate 
+var clientCertPath = Path.Combine(certsDir, "dev.pfx");
+var clientCert = new X509Certificate2(clientCertPath, "Unmudd13d");
+
+var caCertPath = Path.Combine(certsDir, "ca.crt");
+var caCert = new X509Certificate2(caCertPath);
 
 var connString = builder.Configuration.GetConnectionString("Default");
 var dataSourceBuilder = new NpgsqlDataSourceBuilder(connString);
 
-//TL- Added saftey check for dev certificate
-var clientCertPath = Path.Combine(certsDir, "dev.pfx");
-
-if(File.Exists(clientCertPath))
-{
-    var clientCert = new X509Certificate2(clientCertPath, "Unmudd13d");
-    dataSourceBuilder.UseClientCertificate(clientCert);
-
-}
-
-// Added saftey check for ca.crt - TL
-
-var caCertPath = Path.Combine(certsDir, "ca.crt");
-
-if (File.Exists(caCertPath))
-{
-    var caCert = new X509Certificate2(caCertPath);
-    dataSourceBuilder.UseRootCertificate(caCert);
-
-}
+dataSourceBuilder.UseClientCertificate(clientCert);
+dataSourceBuilder.UseRootCertificate(caCert);
 
 var dataSource = dataSourceBuilder.Build();
 
@@ -62,10 +43,12 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.SignIn.RequireConfirmedPhoneNumber = false;
 }).AddEntityFrameworkStores<UnMuddledDbContext>()
     .AddDefaultTokenProviders();
+// TQ- SendGrid email service - API key needs to go in user secrets (SendGrid:ApiKey)
+builder.Services
+    .Configure<SendGridSettings>( builder.Configuration.GetSection( "SendGrid" ) )
+    .AddTransient<IEmailSender, EmailSender>();
 
 var app = builder.Build();
-
-await SeedService.SeedDatabase(app.Services);
 
 if (!app.Environment.IsDevelopment())
 {
