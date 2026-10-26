@@ -1,6 +1,5 @@
 ﻿@using GroupProject.ViewModels
-@model LogInViewModel;
-
+@model GroupProject.ViewModels.LogInViewModel
 @{
     ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -14,48 +13,53 @@
 @* jm: main body for login page, form is inside a green card *@
 <main class="layout">
     <div class="carddustygreen">
-        <div>
-
-            <h2 class="text-center mb-4">Login</h2>
-            @* jm: form starts *@
-            <form asp-action="Login" method="post">
-                @Html.AntiForgeryToken()
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                @* jm: email input *@
-                <div class="mb-3">
-                    <label asp-for="Email" class="form-label"></label>
-                    <input asp-for="Email" class="form-control"/>
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
-                @* jm: password input *@
-                <div class="mb-3">
-                    <label asp-for="Password" class="form-label"></label>
-                    <input asp-for="Password" class="form-control"/>
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                @* jm: when link is clicked on, takes user to forget password page*@
-                <div class="float-end">
-                    <a asp-controller="Account" asp-action="VerifyEmail" class="fw-bold smalltextpurple">
-                        Forgot Password
-                    </a>
-                </div>
-                @* jm: when selected, will remember user's login details *@
-                <div class="form-check mb-3">
-                    <label class="form-check-label">
-                        <input asp-for="RememberMe" class="form-check-input"/>
-                        @Html.DisplayNameFor(a => a.RememberMe)
-                    </label>
-                </div>
-                @* jm: when link is clicked on, takes user to register page *@
-                <input type="submit" value="Login" class="btn btnpurple-long"/>
-                <p class="text-center mt-2">
-                    Don't have an account?
-                    <a asp-controller="Account" asp-action="Register" class="fw-bold smalltextpurple">Register</a>
-                </p>
-            </form>
-            @* jm: form ends *@
+        <div class="login-register-wrapper">
+            <div class="login-register-form">
+                <h2 class="text-center mb-4">Login</h2>
+                @* jm: form starts *@
+                <form asp-action="Login" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="fw-bold text-decoration-underline smalltextpurple"></div>
+                    @* jm: email input *@
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control"/>
+                        <span asp-validation-for="Email" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    @* jm: password input *@
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control"/>
+                        <span asp-validation-for="Password" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    @* jm: when link is clicked on, takes user to forget password page*@
+                    <div class="float-end">
+                        <a asp-controller="Account" asp-action="VerifyEmail" class="fw-bold text-decoration-underline smalltextpurple">
+                            Forgot Password
+                        </a>
+                    </div>
+                    @* jm: when selected, will remember user's login details *@
+                    <div class="form-check mb-3">
+                        <label class="form-check-label">
+                            <input asp-for="RememberMe" class="form-check-input"/>
+                            @Html.DisplayNameFor(a => a.RememberMe)
+                        </label>
+                    </div>
+                    @* jm: when link is clicked on, takes user to register page *@
+                    <input type="submit" value="Login" class="btn btnpurple-long w-100 text-white"/>
+                    <p class="text-center mt-2">
+                        Don't have an account?
+                        <a asp-controller="Account" asp-action="Register" class="fw-bold smalltextpurple">Register</a>
+                    </p>
+                </form>
+                @* jm: form ends *@
+            </div>
+            @* jm: snail image next to form on desktop *@
+            <div class="login-register-image">
+                <img src="~/images/snail.png" class="mascot" alt="Snail Toaster" />
+            </div>
         </div>
-    </div> 
+    </div>
 </main>
 
 @section Scripts {
