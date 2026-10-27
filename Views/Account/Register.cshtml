@@ -1,73 +1,81 @@
-﻿@using GroupProject.ViewModels;
-@model RegisterViewModel;
+﻿@model GroupProject.ViewModels.RegisterViewModel;
 
 @{
     ViewData["Title"] = "Register";
     Layout = "~/Views/Shared/_Layout.cshtml"; 
 }
 
-<div>
-    <div>
-        <h2 class="text-center mb-2">Register</h2>
-        <form asp-action="Register" method="post">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="mb-3">
-                <label asp-for="FirstName" class="form-label">First Name</label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="LastName" class="form-label">Last Name</label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label">Password</label>
-                <input asp-for="Password" class="form-control" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
-                <input asp-for="ConfirmPassword" class="form-control" type="password" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="AddressLine1" class="form-label">Address Line 1</label>
-                <input asp-for="AddressLine1" class="form-control" />
-                <span asp-validation-for="AddressLine1" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="AddressLine2" class="form-label">Address Line 2</label>
-                <input asp-for="AddressLine2" class="form-control" />
-                <span asp-validation-for="AddressLine2" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="City" class="form-label">City</label>
-                <input asp-for="City" class="form-control" />
-                <span asp-validation-for="City" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="PostCode" class="form-label">Postcode</label>
-                <input asp-for="PostCode" class="form-control" />
-                <span asp-validation-for="PostCode" class="text-danger"></span>
-            </div>
-            <input type="submit" value="Register" class="btn btn-success w-100 p-2"/>
-            <p class="text-center mt-2">
-                Already have an account? <a asp-controller="Account" asp-action="Login" class="text-decoration-none">Login here</a>.
-            </p>
-            <div class="text-center">
-                <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Home</a>
-            </div>
-        </form>
-    </div>
-</div>
+@* jm: added styling sheet for components *@
+<link rel="stylesheet" href="~/css/j_stylesheet.css" />
 
+<main class="layout">
+    <div class="carddustygreen">
+        <div class="login-register-wrapper">
+            <div class="login-register-form">
+                <h2 class="text-center mb-2">Register</h2>
+                @* form starts *@
+                <form asp-action="Register" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="fw-bold text-decoration-underline smalltextpurple-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="FirstName" class="form-label">First Name</label>
+                        <input asp-for="FirstName" class="form-control"/>
+                        <span asp-validation-for="FirstName" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="LastName" class="form-label">Last Name</label>
+                        <input asp-for="LastName" class="form-control"/>
+                        <span asp-validation-for="LastName" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control"/>
+                        <span asp-validation-for="Email" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <input asp-for="Password" class="form-control" type="password"/>
+                        <span asp-validation-for="Password" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                        <input asp-for="ConfirmPassword" class="form-control" type="password"/>
+                        <span asp-validation-for="ConfirmPassword" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="AddressLine1" class="form-label">Address Line 1</label>
+                        <input asp-for="AddressLine1" class="form-control"/>
+                        <span asp-validation-for="AddressLine1" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="AddressLine2" class="form-label">Address Line 2</label>
+                        <input asp-for="AddressLine2" class="form-control"/>
+                        <span asp-validation-for="AddressLine2" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="City" class="form-label">City</label>
+                        <input asp-for="City" class="form-control"/>
+                        <span asp-validation-for="City" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="PostCode" class="form-label">Postcode</label>
+                        <input asp-for="PostCode" class="form-control"/>
+                        <span asp-validation-for="PostCode" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+                    <input type="submit" value="Register" class="btn btnpurple-long w-100 text-white"/>
+                    <p class="text-center mt-2">
+                        Already have an account? <a asp-controller="Account" asp-action="Login" class="fw-bold smalltextpurple">Login here</a>.
+                    </p>
+                </form>
+                @* jm: form ends *@
+            </div>
+            @* jm: snail image next to form on desktop *@
+            <div class="login-register-image">
+                <img src="~/images/snail.png" class="mascot" alt="Snail Toaster" />
+            </div>
+        </div>
+    </div>
+</main>
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
