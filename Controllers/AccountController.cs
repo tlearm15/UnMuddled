@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using GroupProject.Models;
 using GroupProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace GroupProject.Controllers
 {
@@ -46,7 +47,7 @@ namespace GroupProject.Controllers
             }
         }
 
-        
+
         [HttpGet]
         public IActionResult Register()
         {
@@ -129,7 +130,7 @@ namespace GroupProject.Controllers
                 return View(model);
             }
             // Check if the new password and confirm new password match
-            var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword , model.NewPassword);
+            var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
             if (result.Succeeded)
             {
                 // Sign the user out after changing the password.
@@ -145,6 +146,36 @@ namespace GroupProject.Controllers
                 }
                 return View(model);
             }
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            //This method is used to confirm the user's email address after registration.
+            //It takes the userId and token as parameters, which are sent in the confirmation email. - RW
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            {
+                return BadRequest("Invalid Link"); 
+            }
+             var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var result = await userManager.ConfirmEmailAsync(user, token);
+
+            if(result.Succeeded)
+            {
+                return View("ConfirmEmail"); //Or whatever view you want to show after successful confirmation
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            return View("Error"); //Or whatever view you want to show in case of an error
         }
     }
 }
