@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using GroupProject.Models;
 using GroupProject.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GroupProject.Controllers
 {
@@ -28,6 +29,7 @@ namespace GroupProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LogInViewModel model)
         {
+            //Uses login viewmodel to validate the login form and then uses the SignInManager to sign in the user if the credentials are valid - RW
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -44,6 +46,7 @@ namespace GroupProject.Controllers
             }
         }
 
+        
         [HttpGet]
         public IActionResult Register()
         {
@@ -54,6 +57,7 @@ namespace GroupProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            //Uses register viewmodel to validate the registration form and then uses the UserManager to create a new user if the credentials are valid - RW
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -94,8 +98,53 @@ namespace GroupProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
+            // Uses the SignInManager to sign out the user and redirect to the home page - RW
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            // Uses the ChangePasswordViewModel to validate the change password form
+            // then uses the UserManager to change the user's password if the credentials are valid - RW
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            // Get the currently logged-in user
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "User not found.");
+                return View(model);
+            }
+            // Check if the new password and confirm new password match
+            var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword , model.NewPassword);
+            if (result.Succeeded)
+            {
+                // Sign the user out after changing the password.
+                // This is a security measure to ensure that the user re-authenticates with the new password.
+                await signInManager.SignOutAsync();
+                return RedirectToAction("Login", "Account");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
         }
     }
 }

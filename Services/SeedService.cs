@@ -28,7 +28,7 @@ namespace GroupProject.Services
                 await context.Database.EnsureCreatedAsync();
 
                 logger.LogInformation("Seeding roles.");
-                List<string> roles = new List<string> { "Admin", "Staff", "User" };//Customer references User with accounts. Change if ill-suited -RW
+                List<string> roles = new List<string> { "Admin", "Staff", "User" };
 
                 //Creates the roles -RW
                 foreach (var role in roles)
@@ -96,7 +96,7 @@ namespace GroupProject.Services
                         PostCode = "ST1 2BC"
                     };
                     var staffResult = await userManager.CreateAsync(staff, "Staff1234!");
-                    if (result.Succeeded)
+                    if (staffResult.Succeeded)
                     {
                         await userManager.AddToRoleAsync(staff, "Staff");
                         logger.LogInformation("Staff user created and assigned to Staff role.");
@@ -110,10 +110,10 @@ namespace GroupProject.Services
 
                     var user = new User
                     {
-                        UserName = "user@gmail.com",
-                        NormalizedUserName = "user@gmail.com".ToUpper(),
-                        Email = "user@gmail.com",
-                        NormalizedEmail = "user@gmail.com".ToUpper(),
+                        UserName = "user1@gmail.com",
+                        NormalizedUserName = "user1@gmail.com".ToUpper(),
+                        Email = "user1@gmail.com",
+                        NormalizedEmail = "user1@gmail.com".ToUpper(),
                         EmailConfirmed = true,
                         SecurityStamp = Guid.NewGuid().ToString(),
                         FirstName = "James",
@@ -123,8 +123,8 @@ namespace GroupProject.Services
                         City = "User City",
                         PostCode = "US1 2BC"
                     };
-                    var customerResult = await userManager.CreateAsync(staff, "User1234!");
-                    if (result.Succeeded)
+                    var customerResult = await userManager.CreateAsync(user, "User1234!");
+                    if (customerResult.Succeeded)
                     {
                         await userManager.AddToRoleAsync(user, "User");
                         logger.LogInformation("User user created and assigned to User role.");
