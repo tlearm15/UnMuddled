@@ -1,43 +1,104 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using GroupProject.Models;
+using GroupProject.ViewModels;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity;
 
 namespace GroupProject.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
+        //Get instance of the database context
+        private readonly UnMuddledDbContext db;
+        private readonly UserManager<User> userManager;
         // GET: AdminController
         public ActionResult Index()
         {
             return View();
         }
 
-        // GET: AdminController/Details/5
-        public ActionResult UserDetails(int id)
+        public ActionResult UserList()
         {
-            return View();
+            //Grabs users into a list for display in view
+            List<User> users = db.Users.ToList();
+            return View(users);
+        }
+
+        // GET: AdminController/Details/5
+        public async Task<ActionResult> UserDetails(string? id)
+        {
+            //Find user by ID and display details in view - RW
+            if (id == null)
+            {
+                return NotFound("User not found");
+            }
+            //Find user by ID
+            User? user = await db.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            
+            return View(user);
+
         }
 
         // GET: AdminController/Create
-        public ActionResult CreateNewUser()
+        [HttpGet]
+        public async Task<ActionResult> CreateNewUser()
         {
-            return View();
+            CreateStaffViewModel model = new CreateStaffViewModel();
+            
+            return View(model);
+            
         }
 
         // POST: AdminController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateNewUser(IFormCollection collection)
+        public async Task <ActionResult> CreateNewUser(CreateStaffViewModel model)
         {
-            try
+            if (!Enum.IsDefined(model.UserRole))
             {
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError("UserRole", "Invalid Role Selected");
+                return View(model);
             }
-            catch
+
+            UserRole selectedRole = model.UserRole;
+
+            var user = new User
             {
-                return View();
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email,
+                UserName = model.Email,
+                AddressLine1 = model.AddressLine1,
+                AddressLine2 = model.AddressLine2,
+                City = model.City,
+                PostCode = model.PostCode,
+                UserRole = selectedRole,
+            };
+
+            var result = await userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                var roleResult = await userManager.AddToRoleAsync(user, selectedRole.ToString());
+                if (roleResult.Succeeded)
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+
+                foreach (var error in roleResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
+            return View(model);
         }
 
         // GET: AdminController/Edit/5

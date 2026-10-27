@@ -82,8 +82,8 @@ namespace GroupProject.Controllers
             {
                 // Assign the default role to the user -RW
                 await userManager.AddToRoleAsync(user, "User");
-                await signInManager.SignInAsync(user, isPersistent: false);
-                SendAccountConfirm(user); // Send account confirmation email -RW
+                //await signInManager.SignInAsync(user, isPersistent: false);
+                await SendAccountConfirm(user); // Send account confirmation email -RW
                 return RedirectToAction("Login", "Account");
             }
             else

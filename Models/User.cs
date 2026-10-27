@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GroupProject.Models;
 //inherits IValidatableObject so that multiple properties can be validated - this can be further expanded on later - TL
@@ -41,6 +42,9 @@ public class User : IdentityUser, IValidatableObject
 
     [Display(Name = "User Role")]
     public UserRole UserRole { get; set; } = UserRole.Member;
+
+    
+
 
     [Display(Name = "2FA Enabled")]
     public bool Is2FAEnabled { get; set; }
