@@ -80,7 +80,7 @@ namespace GroupProject.Controllers
             var result = await userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                // Assign the default role to the user
+                // Assign the default role to the user -RW
                 await userManager.AddToRoleAsync(user, "User");
                 await signInManager.SignInAsync(user, isPersistent: false);
                 return RedirectToAction("Login", "Account");
@@ -122,19 +122,19 @@ namespace GroupProject.Controllers
             {
                 return View(model);
             }
-            // Get the currently logged-in user
+            // Get the currently logged-in user -RW
             var user = await userManager.GetUserAsync(User);
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "User not found.");
                 return View(model);
             }
-            // Check if the new password and confirm new password match
+            // Check if the new password and confirm new password match -RW
             var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
             if (result.Succeeded)
             {
                 // Sign the user out after changing the password.
-                // This is a security measure to ensure that the user re-authenticates with the new password.
+                // This is a security measure to ensure that the user re-authenticates with the new password. -RW
                 await signInManager.SignOutAsync();
                 return RedirectToAction("Login", "Account");
             }
@@ -148,6 +148,21 @@ namespace GroupProject.Controllers
             }
         }
         
+        public async Task SendAccountConfirm(User user)
+        {
+            // This method is used to send an account confirmation email,
+            // to the user after registration. -RW
+
+            //Create Token for Confirmation -RW
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            //Url for the confirmation link, which will be sent to the user's email. -RW
+            var confirmationLink = Url.Action("ConfirmEmail", "Account",
+                new { userId = user.Id, token = token }, Request.Scheme);
+
+            // Here you would send the email using your email service. -RW
+            //await emailService.SendVerificationEmailAsync(user.Email, confirmationLink);
+        }
+
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
@@ -157,25 +172,25 @@ namespace GroupProject.Controllers
             {
                 return BadRequest("Invalid Link"); 
             }
-             var user = await userManager.FindByIdAsync(userId);
+            var user = await userManager.FindByIdAsync(userId);
 
             if (user == null)
             {
                 return NotFound("User not found");
             }
-
+            // Confirm the user's email using the provided token -RW
             var result = await userManager.ConfirmEmailAsync(user, token);
 
             if(result.Succeeded)
             {
-                return View("ConfirmEmail"); //Or whatever view you want to show after successful confirmation
+                return View("ConfirmEmail"); //Or whatever view you want to show after successful confirmation -RW
             }
 
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-            return View("Error"); //Or whatever view you want to show in case of an error
+            return View("Error"); //Or whatever view you want to show in case of an error -RW
         }
     }
 }
