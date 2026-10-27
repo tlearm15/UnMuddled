@@ -1,0 +1,38 @@
+@model GroupProject.Models.Request
+@{
+    ViewData["Title"] = $"Request #{Model.RequestID}";
+}
+
+<h2>Request #@Model.RequestID</h2>
+
+<dl class="row">
+    <dt class="col-sm-2">@Html.DisplayNameFor(m => m.User)</dt>
+    <dd class="col-sm-10">@Model.User?.Email</dd>
+
+    <dt class="col-sm-2">@Html.DisplayNameFor(m => m.ItemName)</dt>
+    <dd class="col-sm-10">@Model.ItemName</dd>
+
+    <dt class="col-sm-2">@Html.DisplayNameFor(m => m.Category)</dt>
+    <dd class="col-sm-10">@Model.Category?.CategoryName</dd>
+
+    <dt class="col-sm-2">@Html.DisplayNameFor(m => m.RecyclingLocations)</dt>
+    <dd class="col-sm-10">@Model.RecyclingLocations</dd>
+
+    <dt class="col-sm-2">@Html.DisplayNameFor(m => m.Status)</dt>
+    <dd class="col-sm-10">@Model.Status</dd>
+
+    <dt class="col-sm-2">@Html.DisplayNameFor(m => m.SubmittedOn)</dt>
+    <dd class="col-sm-10">@Model.SubmittedOn.ToLocalTime().ToShortDateString()</dd>
+</dl>
+
+@if (Model.Status == RequestStatus.Pending)
+{
+    <form asp-action="Approve" asp-route-id="@Model.RequestID" method="post" class="d-inline">
+        <button type="submit" class="btn btn-success">Approve</button>
+    </form>
+    <form asp-action="Reject" asp-route-id="@Model.RequestID" method="post" class="d-inline">
+        <button type="submit" class="btn btn-danger">Reject</button>
+    </form>
+}
+
+<a asp-action="ListRequests" class="btn btn-link">Back to list</a>
