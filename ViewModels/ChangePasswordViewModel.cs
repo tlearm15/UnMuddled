@@ -2,7 +2,7 @@
 
 namespace GroupProject.ViewModels
 {
-    public class ChangePasswordViewModel
+    public class ChangePasswordViewModel//ViewModel for changing password -RW
     {
         [Required(ErrorMessage = "Please enter your current password")]
         [DataType(DataType.Password)]

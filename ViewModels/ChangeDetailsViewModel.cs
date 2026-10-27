@@ -2,7 +2,7 @@
 
 namespace GroupProject.ViewModels
 {
-    public class ChangeDetailsViewModel
+    public class ChangeDetailsViewModel//ViewModel for changing user details -RW
     {
         [Required(ErrorMessage = "First name is required")]
         public string FirstName { get; set; }

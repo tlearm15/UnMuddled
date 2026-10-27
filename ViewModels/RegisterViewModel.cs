@@ -2,7 +2,7 @@
 
 namespace GroupProject.ViewModels
 {
-    public class RegisterViewModel
+    public class RegisterViewModel//ViewModel for user registration -RW
     {
         [Required(ErrorMessage = "Please provide your First Name")]
         [Display(Name = "First Name")]
