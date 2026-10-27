@@ -208,6 +208,59 @@ namespace GroupProject.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            // This method is used to display the delete account confirmation page.
+            // It retrieves the currently logged-in user and passes it to the view. -RW
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            return View(user);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("DeleteAccount")]
+        public async Task<IActionResult> DeleteAccountConfirmed(DeleteAccountViewModel model)
+        {
+            // This method is used to delete the currently logged-in user's account.
+            // It retrieves the user, deletes it using the UserManager, and then signs the user out. -RW
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            // Check if the provided password is correct before deleting the account
+            var passwordValid = await userManager.CheckPasswordAsync(user, model.Password);
+            if(!passwordValid)
+            {
+                ModelState.AddModelError(string.Empty, "Incorrect password. Please try again.");
+                return View(model);
+            }
+
+            // Delete the user account     
+            var result = await userManager.DeleteAsync(user);
+
+            if (result.Succeeded)
+            {
+                await signInManager.SignOutAsync();
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(user);
+            }
+        }
+
         public async Task SendAccountConfirm(User user)
         {
             // This method is used to send an account confirmation email,
