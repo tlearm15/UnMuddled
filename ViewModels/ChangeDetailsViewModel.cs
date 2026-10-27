@@ -8,10 +8,9 @@ namespace GroupProject.ViewModels
         public string FirstName { get; set; }
         [Required(ErrorMessage = "Last name is required")]
         public string LastName { get; set; }
-        [Required(ErrorMessage = "Please provide thhe first line of your address")]
+        [Required(ErrorMessage = "Please provide the first line of your address")]
         public string AddressLine1 { get; set; }
-        [Required(ErrorMessage = "Please provide the second line of your address")]
-        public string AddressLine2 { get; set; }
+        public string? AddressLine2 { get; set; }//Marked as Optional to match real world Addresses -RW
         [Required(ErrorMessage = "Please provide your city")]
         public string City { get; set; }
         [Required(ErrorMessage = "Please provide your post code")]

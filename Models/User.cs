@@ -17,13 +17,14 @@ public class User : IdentityUser, IValidatableObject
 
     [Display(Name = "Address Line 1")]
     [StringLength(75)]
+    [RegularExpression(@"^[A-Za-z0-9][A-Za-z0-9\s,.'/-]*$",
+            ErrorMessage = "Please provide a valid UK Address")]
     public string AddressLine1 { get; set; } = string.Empty;
 
     [Display(Name = "Address Line 2")]
     [StringLength(75)]
-    public string AddressLine2 { get; set; } = string.Empty;
+    public string? AddressLine2 { get; set; }//Marked as Optional to match real world Addresses -RW
 
-    [Required(ErrorMessage = "Please provide your City")]
     [Display(Name = "City")]
     [StringLength(75)]
     public string City { get; set; } = string.Empty;
@@ -55,9 +56,9 @@ public class User : IdentityUser, IValidatableObject
     //Ensures that the user provides full address info during Registration and Editing-RW
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (string.IsNullOrWhiteSpace(AddressLine1) || string.IsNullOrWhiteSpace(AddressLine2) || string.IsNullOrWhiteSpace(City))
+        if (string.IsNullOrWhiteSpace(AddressLine1) || string.IsNullOrWhiteSpace(City))
         {
-            yield return new ValidationResult("Please provide your full address", new[] { nameof(AddressLine1), nameof(AddressLine2), nameof(City) });
+            yield return new ValidationResult("Please provide your full address", new[] { nameof(AddressLine1), nameof(City) });
         }
     }
 

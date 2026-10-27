@@ -148,7 +148,66 @@ namespace GroupProject.Controllers
                 return View(model);
             }
         }
-        
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> ChangeDetails()
+        {
+            // Uses the ChangeDetailsViewModel to populate the change details form with the current user's details - RW
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            var model = new ChangeDetailsViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                AddressLine1 = user.AddressLine1,
+                AddressLine2 = user.AddressLine2,
+                City = user.City,
+                PostCode = user.PostCode
+            };
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeDetails(ChangeDetailsViewModel model)
+        {
+            // Uses the ChangeDetailsViewModel to validate the change details form
+            // then uses the UserManager to update the user's details if the credentials are valid - RW
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.AddressLine1 = model.AddressLine1;
+            user.AddressLine2 = model.AddressLine2;
+            user.City = model.City;
+            user.PostCode = model.PostCode;
+            var result = await userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+        }
+
         public async Task SendAccountConfirm(User user)
         {
             // This method is used to send an account confirmation email,
