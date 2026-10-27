@@ -1,13 +1,31 @@
+using GroupProject.Services;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GroupProject.Models;
 
-public class UnMuddledDbContext : IdentityDbContext<User>
+public class UnMuddledDbContext(
+    DbContextOptions<UnMuddledDbContext> options,
+    IEncryptionKeyProvider keyProvider)
+    : IdentityDbContext<User>(options)
 {
-    public UnMuddledDbContext(DbContextOptions<UnMuddledDbContext> options) : base(options)
-    {
-    }
+    /// <summary>
+    /// TQ- This is the encryption key obtained from where the key lives
+    /// to be used when encrypting/decrypting User information
+    /// for when it is saved to/fetched from the DB
+    /// todo: wiring up to the actual DB operations further down
+    /// </summary>
+    private readonly byte[] _key = keyProvider.GetKey();
+    /// <summary>
+    /// TQ- Automagically makes it so the address can be encrypted/decrypted when
+    /// saved to/fetched from Db - it should require no changes to Models and stuff
+    /// but a new migration is likely
+    /// </summary>
+    /// <returns></returns>
+    private ValueConverter<string, string> EncryptedField() =>
+        new( v => new EncryptionService().Encrypt( v, _key ),
+            v => new EncryptionService().Decrypt( v, _key ) );
 
     public DbSet<Item> Items => Set<Item>();
     public DbSet<Category> Categories => Set<Category>();
@@ -20,7 +38,7 @@ public class UnMuddledDbContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        
+
         builder.Entity<ItemDisposal>()
             .HasKey(id => new { id.DisposalID, id.ItemID });
 
@@ -35,6 +53,8 @@ public class UnMuddledDbContext : IdentityDbContext<User>
             .HasForeignKey(id => id.ItemID);
 
         // One to one relatioinship - User -> ProductHistory - TL
+        // TQ- todo: wire the address stuff to the builder
+        // something like user.Property( u -> u.AddressLine1 ).HasConversion( EncryptedField() )
         builder.Entity<User>()
             .HasOne(u => u.ProductHistory)
             .WithOne(ph => ph.User)
