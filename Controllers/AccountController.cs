@@ -211,16 +211,9 @@ namespace GroupProject.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> DeleteAccount()
+        public IActionResult DeleteAccount()
         {
-            // This method is used to display the delete account confirmation page.
-            // It retrieves the currently logged-in user and passes it to the view. -RW
-            var user = await userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound("User not found");
-            }
-            return View(user);
+            return View(new DeleteAccountViewModel());
         }
 
         [Authorize]
@@ -258,7 +251,7 @@ namespace GroupProject.Controllers
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
-                return View(user);
+                return View(model);
             }
         }
 
