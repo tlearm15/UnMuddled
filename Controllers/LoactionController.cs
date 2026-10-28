@@ -1,6 +1,8 @@
 ﻿using GroupProject.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -111,6 +113,40 @@ namespace GroupProject.Controllers
             return View(disposalLocation);
         }
 
+
+        /// <summary>
+        /// DMQ - creates a new location within the database
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize(Roles ="Staff")]
+        public async Task<IActionResult> CreateLocation()
+        {
+            //creates a new disposla location
+           DisposalLocation disposalLocation = new DisposalLocation();
+
+            //returns the new location object to view
+            return View(disposalLocation);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateLocationConfirmed(
+            [Bind("DisposalID,LocationName,AddressLine1,AddressLine2,Town,Postcode,Latitude,Longitude")] DisposalLocation disposalLocation)
+        {
+            //if the model state is valid - then save the bound variables to the database
+            if (ModelState.IsValid)
+            {
+                _dbContext.DisposalLocations.Add(disposalLocation);
+
+               await _dbContext.SaveChangesAsync();
+
+                return RedirectToAction("Index");
+            }
+            //if the model state was NOT valid - return to view
+            return View(disposalLocation);
+        }
 
     }//end of controller
 }//end of namespace
