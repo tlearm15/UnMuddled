@@ -7,11 +7,11 @@ namespace GroupProject.ViewModels
     {
         [Required(ErrorMessage = "Please enter a valid Email Address")]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage =("Please enter a valid password for the account"))]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
         [Required(ErrorMessage = "Please provide your First Name")]
         [Display(Name = "First Name")]
         [StringLength(55, ErrorMessage = "First name cannot exceed 55 characters")]

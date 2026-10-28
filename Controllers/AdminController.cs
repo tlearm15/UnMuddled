@@ -49,9 +49,9 @@ namespace GroupProject.Controllers
 
         // GET: AdminController/Create
         [HttpGet]
-        public async Task<ActionResult> CreateNewUser()
+        public ActionResult CreateNewUser()
         {
-            CreateStaffViewModel model = new CreateStaffViewModel();
+            CreateStaffViewModel model =  new CreateStaffViewModel();
 
             return View(model);
 
