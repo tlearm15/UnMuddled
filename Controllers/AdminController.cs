@@ -20,7 +20,7 @@ namespace GroupProject.Controllers
         private readonly RoleManager<IdentityRole> roleManager;
 
         public AdminController(UnMuddledDbContext context, UserManager<User> um, RoleManager<IdentityRole> rm)
-        {
+        {//Constructor for the services used in the Controller -RW
             db = context;
             userManager = um;
             roleManager = rm;
@@ -33,7 +33,7 @@ namespace GroupProject.Controllers
 
         public IActionResult UserList()
         {
-            //Grabs users into a list for display in view
+            //Grabs users into a list for display in view -RW
             List<User> users = db.Users.ToList();
             return View(users);
         }
@@ -46,7 +46,7 @@ namespace GroupProject.Controllers
             {
                 return NotFound("User not found");
             }
-            //Find user by ID
+            //Find user by ID -RW
             User? user = await db.Users.FindAsync(id);
             if (user == null)
             {
@@ -72,14 +72,15 @@ namespace GroupProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateNewUser(CreateStaffViewModel model)
         {
+            //Ensure an Enum was selected -Rw
             if (!Enum.IsDefined(model.UserRole))
             {
                 ModelState.AddModelError("UserRole", "Invalid Role Selected");
                 return View(model);
             }
-
+            //Assigns the selected role to var -RW
             UserRole selectedRole = model.UserRole;
-
+            //Builds new User -RW
             var user = new User
             {
                 FirstName = model.FirstName,
@@ -92,18 +93,19 @@ namespace GroupProject.Controllers
                 PostCode = model.PostCode,
                 UserRole = selectedRole,
                 JoinedOn = model.JoinedOn,
-                EmailConfirmed = true
+                EmailConfirmed = true//As it a company email, made sense for auto confirm -RW
             };
 
             if(!ModelState.IsValid)
             {
                 return View(model);
             }
-
+            //Attempts to create User -RW
             var result = await userManager.CreateAsync(user, model.Password);
-
+            //Checks if User Creation succeeded -RW
             if (result.Succeeded)
             {
+                //Attempts to assign a role -RW
                 var roleResult = await userManager.AddToRoleAsync(user, selectedRole.ToString());
                 if (roleResult.Succeeded)
                 {
@@ -133,7 +135,7 @@ namespace GroupProject.Controllers
             {
                 return NotFound("User not found");
             }
-
+            //Builds the model -RW
             var model = new ChangeRoleViewModel
             {
                 Id = user.Id,

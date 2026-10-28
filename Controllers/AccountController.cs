@@ -63,7 +63,7 @@ namespace GroupProject.Controllers
             {
                 return View(model);
             }
-            var member = new User
+            var member = new User//Builds new Member User -RW
             {
                 UserName = model.Email,
                 NormalizedUserName = model.Email.ToUpper(),
@@ -78,6 +78,7 @@ namespace GroupProject.Controllers
                 UserRole = UserRole.Member,
                 JoinedOn = DateTime.UtcNow
             };
+            //Attempts to create the Member -RW
             var result = await userManager.CreateAsync(member, model.Password);
             if (result.Succeeded)
             {
@@ -160,6 +161,7 @@ namespace GroupProject.Controllers
             {
                 return NotFound("User not found");
             }
+            //Grabs details to populate the model -RW
             var model = new ChangeDetailsViewModel
             {
                 FirstName = user.FirstName,
@@ -183,17 +185,20 @@ namespace GroupProject.Controllers
             {
                 return View(model);
             }
+            //Gets the logged in user and assigns it to a var -RW
             var user = await userManager.GetUserAsync(User);
             if (user == null)
             {
                 return NotFound("User not found");
             }
+            //Overwrites the user properties with what is in the model -RW
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.AddressLine1 = model.AddressLine1;
             user.AddressLine2 = model.AddressLine2;
             user.City = model.City;
             user.PostCode = model.PostCode;
+            //Attempts to update the User -RW
             var result = await userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
