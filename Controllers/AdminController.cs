@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using System.Runtime.CompilerServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers
 {
@@ -16,7 +17,14 @@ namespace GroupProject.Controllers
         //Get instance of the database context
         private readonly UnMuddledDbContext db;
         private readonly UserManager<User> userManager;
-        private readonly RoleManager<User> roleManager;
+        private readonly RoleManager<IdentityRole> roleManager;
+
+        public AdminController(UnMuddledDbContext context, UserManager<User> um, RoleManager<IdentityRole> rm)
+        {
+            db = context;
+            userManager = um;
+            roleManager = rm;
+        }
         // GET: AdminController
         public ActionResult Index()
         {
@@ -83,6 +91,8 @@ namespace GroupProject.Controllers
                 City = model.City,
                 PostCode = model.PostCode,
                 UserRole = selectedRole,
+                JoinedOn = model.JoinedOn,
+                EmailConfirmed = true
             };
 
             if(!ModelState.IsValid)
