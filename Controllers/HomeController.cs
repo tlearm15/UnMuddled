@@ -40,4 +40,11 @@ public class HomeController : Controller
         // m returtning items to view
         return View(items);
     }
+
+    // jm: Symbols View
+    public IActionResult Symbols()
+    {
+        
+        return View();
+    }
 }
