@@ -62,7 +62,8 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.SignIn.RequireConfirmedPhoneNumber = false;
 }).AddEntityFrameworkStores<UnMuddledDbContext>()
     .AddDefaultTokenProviders();
-
+// TQ- register EncryptionKeyProvider to services 
+builder.Services.AddSingleton<IEncryptionKeyProvider, EncryptionKeyProvider>();
 var app = builder.Build();
 
 await SeedService.SeedDatabase(app.Services);
