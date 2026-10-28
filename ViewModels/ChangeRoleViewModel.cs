@@ -6,6 +6,9 @@ namespace GroupProject.ViewModels
     public class ChangeRoleViewModel
     {
         //View model to update the role of a user
-        UserRole userRole {  get; set; }
+        [Required]
+        public string Id { get; set; }
+        [Required]
+        public UserRole userRole {  get; set; }
     }
 }

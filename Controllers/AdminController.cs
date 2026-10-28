@@ -6,6 +6,7 @@ using GroupProject.ViewModels;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
+using System.Runtime.CompilerServices;
 
 namespace GroupProject.Controllers
 {
@@ -15,13 +16,14 @@ namespace GroupProject.Controllers
         //Get instance of the database context
         private readonly UnMuddledDbContext db;
         private readonly UserManager<User> userManager;
+        private readonly RoleManager<User> roleManager;
         // GET: AdminController
         public ActionResult Index()
         {
             return View();
         }
 
-        public ActionResult UserList()
+        public IActionResult UserList()
         {
             //Grabs users into a list for display in view
             List<User> users = db.Users.ToList();
@@ -29,7 +31,7 @@ namespace GroupProject.Controllers
         }
 
         // GET: AdminController/Details/5
-        public async Task<ActionResult> UserDetails(string? id)
+        public async Task<IActionResult> UserDetails(string? id)
         {
             //Find user by ID and display details in view - RW
             if (id == null)
@@ -49,7 +51,7 @@ namespace GroupProject.Controllers
 
         // GET: AdminController/Create
         [HttpGet]
-        public ActionResult CreateNewUser()
+        public IActionResult CreateNewUser()
         {
             CreateStaffViewModel model =  new CreateStaffViewModel();
 
@@ -60,7 +62,7 @@ namespace GroupProject.Controllers
         // POST: AdminController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateNewUser(CreateStaffViewModel model)
+        public async Task<IActionResult> CreateNewUser(CreateStaffViewModel model)
         {
             if (!Enum.IsDefined(model.UserRole))
             {
@@ -111,6 +113,97 @@ namespace GroupProject.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditUserRole(string id)
+        {
+            //Gets the User attached to the ID -RW
+            User? user = await userManager.FindByIdAsync(id);
+            
+            if(user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var model = new ChangeRoleViewModel
+            {
+                Id = user.Id,
+                userRole = user.UserRole
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditUserRole(ChangeRoleViewModel model)
+        {
+            //Ensure the model is complete and that a role defined in the 
+            //enum has been defined -RW
+            if(!ModelState.IsValid || !Enum.IsDefined(model.userRole))
+            {
+                ModelState.AddModelError("UserRole","Invalid role selected");
+                return View(model);
+            }
+            //Gets user attached to the ID -RW
+            User? user = await userManager.FindByIdAsync(model.Id);
+            //Checks if user populated -RW
+            if(user == null)
+            {
+                return NotFound("User not found");
+            }
+            //Stores the selected enum val for use -RW
+            UserRole selectedRole = model.userRole;
+            //Parses the enum val as a string to be used in Identity -Rw
+            string newRole = selectedRole.ToString();
+            //Ensure the role actually exists in Identity -RW
+            if(!await roleManager.RoleExistsAsync(newRole))
+            {
+                ModelState.AddModelError("UserRole", "Role does not exist");
+                return View(model);
+            }
+            //Gets current user role -RW
+            var currentRole = await userManager.GetRolesAsync(user);
+            //Remove the user from the role -RW
+            var removeResult = await userManager.RemoveFromRolesAsync(user, currentRole);
+
+            //Checks if role removal succeeded -RW
+            if(!removeResult.Succeeded)
+            {
+                foreach(var error in removeResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+            //Add the new Role to the user -RW
+            var addResult = await userManager.AddToRoleAsync(user, newRole);
+            //Checks if adding the new Role Succeeded -RW
+            if(!addResult.Succeeded)
+            {
+                foreach(var error in addResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty,error.Description);
+                }
+
+                return View(model);
+            }
+            //Assigns the newly selected role to the UserRole enum val -RW
+            user.UserRole = selectedRole;
+            //Upadtes the User -RW
+            var updateResult = await userManager.UpdateAsync(user);
+            //Checks if update was successful -RW
+            if(!updateResult.Succeeded)
+            {
+                foreach(var error in updateResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return View(model);
+            }
+
+            return RedirectToAction("UserList","Admin");
+        }
 
         // GET: AdminController/Delete/5
         [HttpGet]
@@ -140,7 +233,7 @@ namespace GroupProject.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("DeleteUser")]
-        public async Task<ActionResult> DeleteUserConfirmed(string id)
+        public async Task<IActionResult> DeleteUserConfirmed(string id)
         {
             //Check that id has a value -RW
             if (string.IsNullOrEmpty(id))
