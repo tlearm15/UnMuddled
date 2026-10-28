@@ -42,7 +42,7 @@ namespace GroupProject.Controllers
             {
                 return NotFound("User not found");
             }
-            
+
             return View(user);
 
         }
@@ -52,15 +52,15 @@ namespace GroupProject.Controllers
         public async Task<ActionResult> CreateNewUser()
         {
             CreateStaffViewModel model = new CreateStaffViewModel();
-            
+
             return View(model);
-            
+
         }
 
         // POST: AdminController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task <ActionResult> CreateNewUser(CreateStaffViewModel model)
+        public async Task<ActionResult> CreateNewUser(CreateStaffViewModel model)
         {
             if (!Enum.IsDefined(model.UserRole))
             {
@@ -101,46 +101,70 @@ namespace GroupProject.Controllers
             return View(model);
         }
 
-        // GET: AdminController/Edit/5
-        public ActionResult EditUser(int id)
-        {
-            return View();
-        }
-
-        // POST: AdminController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult EditUser(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
         // GET: AdminController/Delete/5
-        public ActionResult DeleteUser(int id)
+        [HttpGet]
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            return View();
+            //Checks if id has value -RW
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound("User not found");
+            }
+            //Finds use attached to id -RW
+            var user = await userManager.FindByIdAsync(id);
+            //Checks user has a value -RW
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            //Checks if id is loggedin users id
+            if (id == userManager.GetUserId(User))
+            {
+                return RedirectToAction("UserList");
+            }
+
+            return View(user);
         }
 
-        // POST: AdminController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteUser(int id, IFormCollection collection)
+        [ActionName("DeleteUser")]
+        public async Task<ActionResult> DeleteUserConfirmed(string id)
         {
-            try
+            //Check that id has a value -RW
+            if (string.IsNullOrEmpty(id))
             {
-                return RedirectToAction(nameof(Index));
+                return NotFound("User not found");
             }
-            catch
+            //Ensure it is not own id -RW
+            if (id == userManager.GetUserId(User))
             {
-                return View();
+                return RedirectToAction("UserList");
             }
-        }
+            //Finds user attached to id -RW
+            User? user = await userManager.FindByIdAsync(id);
+            //Checks user has value -RW
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+            //Attempts to Delete User -RW
+            var result = await userManager.DeleteAsync(user);
+            //If Deletion fail. Return to view -RW
+            if (!result.Succeeded)
+            {
+                foreach(var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return View("DeleteUser", user);
+            }
+            //Deletion success. Returns to User List page
+            return RedirectToAction("UserList", "Admin");
+            // POST: AdminController/Delete/5
+
+        } 
     }
 }

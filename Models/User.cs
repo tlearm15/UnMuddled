@@ -43,9 +43,6 @@ public class User : IdentityUser, IValidatableObject
     [Display(Name = "User Role")]
     public UserRole UserRole { get; set; } = UserRole.Member;
 
-    
-
-
     [Display(Name = "2FA Enabled")]
     public bool Is2FAEnabled { get; set; }
 

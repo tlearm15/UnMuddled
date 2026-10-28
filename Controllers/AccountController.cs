@@ -235,7 +235,7 @@ namespace GroupProject.Controllers
             {
                 return NotFound("User not found");
             }
-            // Check if the provided password is correct before deleting the account
+            // Check if the provided password is correct before deleting the account -Rw
             var passwordValid = await userManager.CheckPasswordAsync(user, model.Password);
             if(!passwordValid)
             {
@@ -243,7 +243,7 @@ namespace GroupProject.Controllers
                 return View(model);
             }
 
-            // Delete the user account     
+            // Delete the user account -RW     
             var result = await userManager.DeleteAsync(user);
 
             if (result.Succeeded)
