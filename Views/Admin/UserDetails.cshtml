@@ -1,0 +1,44 @@
+﻿@model User
+
+<h2>User Details</h2>
+
+<p><strong>First Name:</strong> @Model.FirstName</p>
+<p><strong>Last Name:</strong> @Model.LastName</p>
+<p><strong>Email:</strong> @Model.Email</p>
+
+<h3>Address</h3>
+
+<p><strong>Address Line 1:</strong> @Model.AddressLine1</p>
+<p><strong>Address Line 2:</strong> @Model.AddressLine2</p>
+<p><strong>City:</strong> @Model.City</p>
+<p><strong>Postcode:</strong> @Model.PostCode</p>
+
+<h3>Account Information</h3>
+
+<p><strong>User ID:</strong> @Model.Id</p>
+<p><strong>Role:</strong> @Model.UserRole</p>
+<p><strong>Email Confirmed:</strong> @Model.EmailConfirmed</p>
+
+<hr />
+
+<a asp-controller="Admin"
+   asp-action="ChangeUserRole"
+   asp-route-id="@Model.Id">
+    Change Role
+</a>
+
+<br />
+
+<a asp-controller="Admin"
+   asp-action="DeleteUser"
+   asp-route-id="@Model.Id">
+    Delete User
+</a>
+
+<br />
+
+<a asp-controller="Admin"
+   asp-action="UserList">
+    Back to User List
+</a>
+

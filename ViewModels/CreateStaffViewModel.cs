@@ -47,7 +47,7 @@ namespace GroupProject.ViewModels
         public string PostCode { get; set; } = string.Empty;
 
         [Display(Name = "User Role")]
-        public UserRole UserRole { get; set; } = UserRole.Member;
+        public UserRole UserRole { get; set; } 
 
         [Display(Name = "Date joined")]
         [DataType(DataType.DateTime)]

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using GroupProject.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace GroupProject.ViewModels
 {
@@ -35,14 +36,8 @@ namespace GroupProject.ViewModels
         )]
         [Display(Name = "Post Code")]
         public string? PostCode { get; set; } = string.Empty;
-        //Ensures that the user provides full address info during Registration and Editing-RW
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (string.IsNullOrWhiteSpace(AddressLine1) || string.IsNullOrWhiteSpace(AddressLine2) || string.IsNullOrWhiteSpace(City))
-            {
-                yield return new ValidationResult("Please provide your full address", new[] { nameof(AddressLine1), nameof(AddressLine2), nameof(City) });
-            }
-        }
+
+        UserRole UserRole { get; set; } = UserRole.Member;
 
         [Display(Name = "Date joined")]
         [DataType((DataType.DateTime))]
