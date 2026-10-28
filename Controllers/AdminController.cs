@@ -83,6 +83,11 @@ namespace GroupProject.Controllers
                 UserRole = selectedRole,
             };
 
+            if(!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             var result = await userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -97,6 +102,11 @@ namespace GroupProject.Controllers
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
+            }
+
+            foreach(var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
             }
             return View(model);
         }

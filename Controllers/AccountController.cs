@@ -63,7 +63,7 @@ namespace GroupProject.Controllers
             {
                 return View(model);
             }
-            var user = new User
+            var member = new User
             {
                 UserName = model.Email,
                 NormalizedUserName = model.Email.ToUpper(),
@@ -75,15 +75,16 @@ namespace GroupProject.Controllers
                 AddressLine2 = model.AddressLine2,
                 City = model.City,
                 PostCode = model.PostCode,
+                UserRole = UserRole.Member,
                 JoinedOn = DateTime.UtcNow
             };
-            var result = await userManager.CreateAsync(user, model.Password);
+            var result = await userManager.CreateAsync(member, model.Password);
             if (result.Succeeded)
             {
                 // Assign the default role to the user -RW
-                await userManager.AddToRoleAsync(user, "User");
+                await userManager.AddToRoleAsync(member, "Member");
                 //await signInManager.SignInAsync(user, isPersistent: false);
-                await SendAccountConfirm(user); // Send account confirmation email -RW
+                await SendAccountConfirm(member); // Send account confirmation email -RW
                 return RedirectToAction("Login", "Account");
             }
             else
