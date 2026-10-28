@@ -83,6 +83,34 @@ namespace GroupProject.Controllers
             return View("Index", nearbyLocations);
         }//end of action result
 
-     
+
+        /// <summary>
+        /// DMQ - allows the user to view the location details
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public IActionResult LocationDetails(int? id)
+        {
+
+            //checks if the id cannot be found
+            if(id == null)
+            {
+                return NotFound();
+            }
+
+            //finds the location by id
+            var disposalLocation = _dbContext.DisposalLocations.FirstOrDefault(dl => dl.DisposalID == id);
+
+            //checks if the location was found
+            if(disposalLocation == null)
+            {
+                return NotFound();
+            }
+
+            //retruns location details to view
+            return View(disposalLocation);
+        }
+
+
     }//end of controller
 }//end of namespace
