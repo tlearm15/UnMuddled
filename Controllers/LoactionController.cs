@@ -66,9 +66,6 @@ namespace GroupProject.Controllers
             //retrieves the users postcode
             var postcode = user.PostCode;
 
-            //gets the disposal locations
-            var allLocations = await _dbContext.DisposalLocations.ToListAsync();
-
             //get the beggining of the users postcode
             string userOutcode = user.PostCode.Split(' ')[0].Trim().ToUpper();
 
@@ -147,6 +144,58 @@ namespace GroupProject.Controllers
             //if the model state was NOT valid - return to view
             return View(disposalLocation);
         }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize(Roles ="Staff")]
+        public async Task<IActionResult> DeleteLocation(int? id)
+        {
+            if(id ==null)
+            {
+                return NotFound();
+            }
+
+            var location = await _dbContext.DisposalLocations.FindAsync(id);
+
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+            return View(location);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteLocationConfirmed(int? id)
+        {
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var location = await _dbContext.DisposalLocations.FindAsync(id);
+
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+            _dbContext.DisposalLocations.Remove(location);
+
+            await _dbContext.SaveChangesAsync();
+
+
+            return RedirectToAction("Index");
+        }
+
 
     }//end of controller
 }//end of namespace
