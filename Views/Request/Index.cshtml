@@ -3,38 +3,42 @@
 @{
     ViewData["Title"] = "Request a new item";
 }
+@* jm: added styling sheet for components *@
+<link rel="stylesheet" href="~/css/j_stylesheet.css" />
 
-<h1>Request a new item</h1>
-<p>Can't find an item? Tell us about it and we'll review it.</p>
+<main class="layout">
+    <h1>Request a new item</h1>
+    <p>Can't find an item? Tell us about it and we'll review it.</p>
 
-<form asp-action="Index" method="post" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <form asp-action="Index" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="mb-3">
-        <label asp-for="ItemName" class="form-label"></label>
-        <input asp-for="ItemName" class="form-control" />
-        <span asp-validation-for="ItemName" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="ItemName" class="form-label"></label>
+            <input asp-for="ItemName" class="form-control" />
+            <span asp-validation-for="ItemName" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="CategoryID" class="form-label"></label>
-        <select asp-for="CategoryID" class="form-select" asp-items="ViewBag.Categories">
-            <option value="">-- Select a category --</option>
-        </select>
-        <span asp-validation-for="CategoryID" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="CategoryID" class="form-label"></label>
+            <select asp-for="CategoryID" class="form-select" asp-items="ViewBag.Categories">
+                <option value="">-- Select a category --</option>
+            </select>
+            <span asp-validation-for="CategoryID" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label asp-for="RecyclingLocations" class="form-label"></label>
-        <textarea asp-for="RecyclingLocations" class="form-control" rows="3"
-                  placeholder="e.g. Tesco recycling point, High Street"></textarea>
-        <span asp-validation-for="RecyclingLocations" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label asp-for="RecyclingLocations" class="form-label"></label>
+            <textarea asp-for="RecyclingLocations" class="form-control" rows="3"
+                      placeholder="e.g. Tesco recycling point, High Street"></textarea>
+            <span asp-validation-for="RecyclingLocations" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label for="Image" class="form-label">Image (optional)</label>
-        <input type="file" name="Image" id="Image" class="form-control" accept="image/*" />
-    </div>
+        <div class="mb-3">
+            <label for="Image" class="form-label">Image (optional)</label>
+            <input type="file" name="Image" id="Image" class="form-control" accept="image/*" />
+        </div>
 
-    <button type="submit" class="btn btn-primary">Submit request</button>
-</form>
+        <button type="submit" class="btn btn-primary">Submit request</button>
+    </form>
+</main>
