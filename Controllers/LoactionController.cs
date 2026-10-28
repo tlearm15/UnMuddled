@@ -148,25 +148,29 @@ namespace GroupProject.Controllers
 
 
         /// <summary>
-        /// 
+        /// DMQ - Deletes the location from the database
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [Authorize(Roles ="Staff")]
         public async Task<IActionResult> DeleteLocation(int? id)
         {
+            //if the id is null - then return user to not found form
             if(id ==null)
             {
                 return NotFound();
             }
 
+            //finds the loctation through the database
             var location = await _dbContext.DisposalLocations.FindAsync(id);
 
+            //if the location is null - then return user to not found form
             if (location == null)
             {
                 return NotFound();
             }
 
+            //sends the location to the view
             return View(location);
         }
 
@@ -176,6 +180,7 @@ namespace GroupProject.Controllers
         public async Task<IActionResult> DeleteLocationConfirmed(int? id)
         {
 
+            //if the id is null - then return user to not found form
             if (id == null)
             {
                 return NotFound();
@@ -183,16 +188,17 @@ namespace GroupProject.Controllers
 
             var location = await _dbContext.DisposalLocations.FindAsync(id);
 
+            //if the location is null - then return user to not found form
             if (location == null)
             {
                 return NotFound();
             }
 
+            //removes the location from the database & saves the change
             _dbContext.DisposalLocations.Remove(location);
-
             await _dbContext.SaveChangesAsync();
 
-
+            //redirects the user to the view
             return RedirectToAction("Index");
         }
 
