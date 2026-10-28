@@ -10,10 +10,6 @@ namespace GroupProject.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "DateLogged",
-                table: "ProductHistories",
-                newName: "DateDisposed");
 
             migrationBuilder.AlterColumn<string>(
                 name: "PostCode",
@@ -79,10 +75,6 @@ namespace GroupProject.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "DateDisposed",
-                table: "ProductHistories",
-                newName: "DateLogged");
 
             migrationBuilder.AlterColumn<string>(
                 name: "PostCode",
