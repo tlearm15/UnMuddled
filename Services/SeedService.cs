@@ -174,8 +174,6 @@ namespace GroupProject.Services
 
                     var catElectronics = context.Categories.First(c => c.CategoryName == "Small Electronics");
                     var catMobile = context.Categories.First(c => c.CategoryName == "Mobile Devices");
-                    //var catLaptop = context.Categories.First(c => c.CategoryName == "Laptops");
-                    //var catComputer = context.Categories.First(c => c.CategoryName == "Computers");
                     var locCentral = context.DisposalLocations.First(l => l.LocationName == "Glasgow Central Recycling");
 
                     var item1 = new Item
@@ -267,12 +265,66 @@ namespace GroupProject.Services
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-1)
                     };
-                    context.Items.AddRange(item1, item2, item3, item4, item5, item6, item7, item8);
+
+                    var item9 = new Item
+                    {
+                        ItemName = "DvD Player",
+                        Description = "Power cable exposing wires, diskdrive doesn't open",
+                        IsRecyclable = true,
+                        CategoryID = catElectronics.CategoryID,
+                        RoomTag = RoomTag.LivingRoom,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow
+                    };
+
+                    var item10 = new Item
+                    {
+                        ItemName = "TV Remote",
+                        Description = "Buttons falling off, battery pack door missing",
+                        IsRecyclable = true,
+                        CategoryID = catElectronics.CategoryID,
+                        RoomTag = RoomTag.LivingRoom,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow.AddDays(-5)
+                    };
+
+                    var item11 = new Item
+                    {
+                        ItemName = "PS3",
+                        Description = "Overheating, loud, disk drive doesn't work",
+                        IsRecyclable = true,
+                        CategoryID = catElectronics.CategoryID,
+                        RoomTag = RoomTag.LivingRoom,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow.AddDays(-7)
+                    };
+
+                    var item12 = new Item
+                    {
+                        ItemName = "Air Conditioning Unit",
+                        Description = "Electronics burned out, fire damaged",
+                        IsRecyclable = false,
+                        CategoryID = catElectronics.CategoryID,
+                        RoomTag = RoomTag.Other,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow.AddDays(-11)
+                    };
+                    context.Items.AddRange(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11, item12);
                     await context.SaveChangesAsync();
 
                     context.ItemDisposals.AddRange(
                         new ItemDisposal { ItemID = item1.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item2.ItemID, DisposalID = locCentral.DisposalID }
+                        new ItemDisposal { ItemID = item2.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item3.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item4.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item5.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item6.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item7.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item8.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item9.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item10.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item11.ItemID, DisposalID = locCentral.DisposalID },
+                        new ItemDisposal { ItemID = item12.ItemID, DisposalID = locCentral.DisposalID}
                     );
                     await context.SaveChangesAsync();
                 }
