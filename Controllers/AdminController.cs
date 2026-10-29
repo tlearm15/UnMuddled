@@ -135,6 +135,11 @@ namespace GroupProject.Controllers
             {
                 return NotFound("User not found");
             }
+            
+            if(id == userManager.GetUserId(User))
+            {
+                return RedirectToAction("UserList","Admin");
+            }
             //Builds the model -RW
             var model = new ChangeRoleViewModel
             {
@@ -163,6 +168,7 @@ namespace GroupProject.Controllers
             {
                 return NotFound("User not found");
             }
+
             //Stores the selected enum val for use -RW
             UserRole selectedRole = model.userRole;
             //Parses the enum val as a string to be used in Identity -Rw
