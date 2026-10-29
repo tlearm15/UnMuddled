@@ -129,7 +129,7 @@ namespace GroupProject.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateLocationConfirmed(
+        public async Task<IActionResult> CreateLocation(
             [Bind("DisposalID,LocationName,AddressLine1,AddressLine2,Town,Postcode,Latitude,Longitude")] DisposalLocation disposalLocation)
         {
             //if the model state is valid - then save the bound variables to the database
@@ -146,6 +146,75 @@ namespace GroupProject.Controllers
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize(Roles = "Staff")]
+        public async Task<IActionResult> EditLocation(int? id)
+        {
+            //if the id is null - then return user to not found form
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            //locatews the location details from the database
+            var location = await _dbContext.DisposalLocations.FindAsync(id);
+
+            //if the location is null - then return user to not found form
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+            //returns the location details to the view
+            return View(location);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditLocation(int? id, [Bind("DisposalID,LocationName,AddressLine1,AddressLine2,Town,Postcode,Latitude,Longitude")] DisposalLocation location)
+        {
+            //if the model state is valid - execute code
+            if(ModelState.IsValid)
+            {
+                //if the id is null - then return user to not found form
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                //locatews the old location details from the database
+                var oldDetails = await _dbContext.DisposalLocations.FindAsync(id);
+
+                //if the location is null - then return user to not found form
+                if (oldDetails == null)
+                {
+                    return NotFound();
+                }
+
+                //sets the new details
+                oldDetails.LocationName = location.LocationName;
+                oldDetails.AddressLine1 = location.AddressLine1;
+                oldDetails.AddressLine2 = location.AddressLine2;
+                oldDetails.Town = location.Town;
+                oldDetails.Postcode = location.Postcode;
+                oldDetails.Latitude = location.Latitude;
+                oldDetails.Longitude = location.Longitude;
+
+                //save the changes to the database
+                await _dbContext.SaveChangesAsync();
+
+                //redirects the user to view upon sucess
+                return RedirectToAction("Index");
+            }
+
+            //if the model is not valid - return to edit page
+            return View(location);
+        }
 
         /// <summary>
         /// DMQ - Deletes the location from the database
