@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -50,16 +49,22 @@ public class EncryptionService : IEncryptionService
 
         return Encoding.UTF8.GetString(plainBytes);
     }
-    /// <summary>
-    /// TQ- unit test, but I don't know how to wire this up
-    /// </summary>
-    public void Test()
+    
+    public bool Test()
     {
-        const string test = "This is a test";
-        var key = RandomNumberGenerator.GetBytes( 1 << 8 ); // 256-bit key
-        var secret = Encrypt( test, key );
-        Console.WriteLine( "Encrypted text: ${0}", secret );
-        Debug.Assert( test == Decrypt( secret, key ) );
+        const string message = "This is a test";
+        var key = RandomNumberGenerator.GetBytes( 32 ); // 256-bit key
+        var secret = Encrypt(message, key);
+        Console.WriteLine($"Encrypted text: {secret}");
+
+        if( Decrypt(secret, key) != message ) 
+            return false;
+        
+        var bytes = Convert.FromBase64String( secret );
+        bytes[^1] ^= 0xFF;// flip last byte
+        
+        try { Decrypt(Convert.ToBase64String(bytes), key); return false; }
+        catch (CryptographicException) { return true; }             // tamper must throw
     }
 }
 

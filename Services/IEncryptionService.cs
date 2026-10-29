@@ -16,4 +16,9 @@ public interface IEncryptionService
     /// <param name="key">The key used to encrypt it</param>
     /// <returns>The original text before it was encrypted</returns>
     public string Decrypt(string cipherText, byte[] key);
+    /// <summary>
+    /// TQ- Quick self-check of the encryption round-trip + tamper detection.
+    /// Returns true if everything behaves as expected.
+    /// </summary>
+    public bool Test();
 }

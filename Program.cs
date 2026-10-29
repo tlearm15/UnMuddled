@@ -62,11 +62,21 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
     options.SignIn.RequireConfirmedPhoneNumber = false;
 }).AddEntityFrameworkStores<UnMuddledDbContext>()
     .AddDefaultTokenProviders();
-// TQ- register EncryptionKeyProvider to services 
-builder.Services.AddSingleton<IEncryptionKeyProvider, EncryptionKeyProvider>();
+// TQ- register EncryptionKeyProvider and EncryptionService to services 
+builder.Services
+    .AddSingleton<IEncryptionKeyProvider, EncryptionKeyProvider>()
+    .AddSingleton<IEncryptionService, EncryptionService>();
+
 var app = builder.Build();
 
 await SeedService.SeedDatabase(app.Services);
+// TQ- self-check encryption in dev env
+if( app.Environment.IsDevelopment() && !app.Services
+        .GetRequiredService<IEncryptionService>()
+        .Test())
+{
+    Console.WriteLine( "Encryption self-check FAILED" );
+}
 
 if (!app.Environment.IsDevelopment())
 {
