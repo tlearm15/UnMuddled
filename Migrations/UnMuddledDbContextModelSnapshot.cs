@@ -174,7 +174,7 @@ namespace GroupProject.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HistoryID"));
 
-                    b.Property<DateTime>("DateLogged")
+                    b.Property<DateTime>("DateDisposed")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserID")
@@ -246,17 +246,14 @@ namespace GroupProject.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("AddressLine1")
-                        .IsRequired()
                         .HasMaxLength(75)
                         .HasColumnType("character varying(75)");
 
                     b.Property<string>("AddressLine2")
-                        .IsRequired()
                         .HasMaxLength(75)
                         .HasColumnType("character varying(75)");
 
                     b.Property<string>("City")
-                        .IsRequired()
                         .HasMaxLength(75)
                         .HasColumnType("character varying(75)");
 
@@ -272,7 +269,6 @@ namespace GroupProject.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("character varying(55)");
 
@@ -286,7 +282,6 @@ namespace GroupProject.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasMaxLength(95)
                         .HasColumnType("character varying(95)");
 
@@ -314,7 +309,6 @@ namespace GroupProject.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("PostCode")
-                        .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("character varying(25)");
 

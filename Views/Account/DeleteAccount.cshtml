@@ -1,0 +1,41 @@
+﻿@using GroupProject.ViewModels
+@model DeleteAccountViewModel
+
+<h2>Delete Account</h2>
+
+<p>
+    Are you sure you want to permanently delete your account?
+</p>
+
+<p>
+    This action cannot be undone.
+</p>
+
+<form asp-controller="Account"
+      asp-action="DeleteAccount"
+      method="post">
+
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div>
+        <label asp-for="Password"></label>
+        <input asp-for="Password" />
+        <span asp-validation-for="Password"
+              class="text-danger"></span>
+    </div>
+
+    <br />
+
+    <button type="submit">
+        Permanently Delete Account
+    </button>
+
+    <a asp-controller="Home"
+       asp-action="Index">
+        Cancel
+    </a>
+
+</form>
+
