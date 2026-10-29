@@ -2,7 +2,7 @@
 
 namespace GroupProject.ViewModels
 {
-    public class LogInViewModel
+    public class LogInViewModel//ViewModel for logging in -RW
     {
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]

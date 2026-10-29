@@ -28,7 +28,7 @@ namespace GroupProject.Services
                 await context.Database.EnsureCreatedAsync();
 
                 logger.LogInformation("Seeding roles.");
-                List<string> roles = new List<string> { "Admin", "Staff", "User" };//Customer references User with accounts. Change if ill-suited -RW
+                List<string> roles = new List<string> { "Admin", "Staff", "Member", "SuspendedMember" };
 
                 //Creates the roles -RW
                 foreach (var role in roles)
@@ -59,6 +59,7 @@ namespace GroupProject.Services
                         Email = adminEmail,
                         NormalizedEmail = adminEmail.ToUpper(),
                         EmailConfirmed = true,
+                        UserRole = UserRole.Admin,
                         SecurityStamp = Guid.NewGuid().ToString(),
                         FirstName = "John",
                         LastName = "Doe",
@@ -87,6 +88,7 @@ namespace GroupProject.Services
                         Email = "staff@unmuddled.com",
                         NormalizedEmail = "staff@unmuddled.com".ToUpper(),
                         EmailConfirmed = true,
+                        UserRole = UserRole.Staff,
                         SecurityStamp = Guid.NewGuid().ToString(),
                         FirstName = "Jane",
                         LastName = "Doe",
@@ -96,7 +98,7 @@ namespace GroupProject.Services
                         PostCode = "ST1 2BC"
                     };
                     var staffResult = await userManager.CreateAsync(staff, "Staff1234!");
-                    if (result.Succeeded)
+                    if (staffResult.Succeeded)
                     {
                         await userManager.AddToRoleAsync(staff, "Staff");
                         logger.LogInformation("Staff user created and assigned to Staff role.");
@@ -108,13 +110,14 @@ namespace GroupProject.Services
                         throw new InvalidOperationException($"Error creating staff user: {errors}");
                     }
 
-                    var user = new User
+                    var member = new User
                     {
-                        UserName = "user@gmail.com",
-                        NormalizedUserName = "user@gmail.com".ToUpper(),
-                        Email = "user@gmail.com",
-                        NormalizedEmail = "user@gmail.com".ToUpper(),
+                        UserName = "member@gmail.com",
+                        NormalizedUserName = "member@gmail.com".ToUpper(),
+                        Email = "member@gmail.com",
+                        NormalizedEmail = "member@gmail.com".ToUpper(),
                         EmailConfirmed = true,
+                        UserRole = UserRole.Member,
                         SecurityStamp = Guid.NewGuid().ToString(),
                         FirstName = "James",
                         LastName = "Doe",
@@ -123,17 +126,17 @@ namespace GroupProject.Services
                         City = "User City",
                         PostCode = "US1 2BC"
                     };
-                    var customerResult = await userManager.CreateAsync(staff, "User1234!");
-                    if (result.Succeeded)
+                    var memberResult = await userManager.CreateAsync(member, "Member1234!");
+                    if (memberResult.Succeeded)
                     {
-                        await userManager.AddToRoleAsync(user, "User");
-                        logger.LogInformation("User user created and assigned to User role.");
+                        await userManager.AddToRoleAsync(member, "Member");
+                        logger.LogInformation("Member user created and assigned to Member role.");
                     }
                     else
                     {
                         var errors = string.Join("; ", result.Errors.Select(e => e.Description));
                         logger.LogError($"Error creating user user: {errors}");
-                        throw new InvalidOperationException($"Error creating 'User' user: {errors}");
+                        throw new InvalidOperationException($"Error creating 'Member' user: {errors}");
                     }
                 }
                 logger.LogInformation("Seeding e-waste categories, locations, and history.");
