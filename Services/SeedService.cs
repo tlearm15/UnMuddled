@@ -162,7 +162,7 @@ namespace GroupProject.Services
 
                 //WM - temporarily seeding some products for user to show a history of disposed items for testing.
                 //WM - specifically async to avoid any blockages
-                var normalUser = await userManager.FindByEmailAsync("user@gmail.com");
+                var normalUser = await userManager.FindByEmailAsync("user@gmail.com");//May need to change to 'member' to reflect new account. Member not seeded due to admin still present tho -RW
                 if (normalUser != null && !await context.ProductHistories.AnyAsync(ph => ph.UserID == normalUser.Id))
                 {
                     var userHistory = new ProductHistory
@@ -174,6 +174,8 @@ namespace GroupProject.Services
 
                     var catElectronics = context.Categories.First(c => c.CategoryName == "Small Electronics");
                     var catMobile = context.Categories.First(c => c.CategoryName == "Mobile Devices");
+                    //var catLaptop = context.Categories.First(c => c.CategoryName == "Laptops");
+                    //var catComputer = context.Categories.First(c => c.CategoryName == "Computers");
                     var locCentral = context.DisposalLocations.First(l => l.LocationName == "Glasgow Central Recycling");
 
                     var item1 = new Item
@@ -198,7 +200,74 @@ namespace GroupProject.Services
                         DateAdded = DateTime.UtcNow.AddDays(-5)
                     };
 
-                    context.Items.AddRange(item1, item2);
+                    var item3 = new Item
+                    {
+                        ItemName = "HP Laptop",
+                        Description = "Slowing down, Short battery life.",
+                        IsRecyclable = true,
+                        CategoryID = catElectronics.CategoryID,
+                        RoomTag = RoomTag.Office,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded= DateTime.UtcNow.AddDays(-6)
+
+                    };
+
+                    var item4 = new Item
+                    {
+                        ItemName = "Dell Computer",
+                        Description = "Overheating, clogged fans & long start up",
+                        IsRecyclable = true,
+                        CategoryID = catElectronics.CategoryID,
+                        RoomTag = RoomTag.Office,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow
+
+                    };
+
+                    var item5 = new Item
+                    {
+                        ItemName = "IPhone Duo",
+                        Description = "Broken in 2 at the hinge",
+                        IsRecyclable = true,
+                        CategoryID = catMobile.CategoryID,
+                        RoomTag = RoomTag.Bedroom,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow
+                    };
+
+                    var item6 = new Item
+                    {
+                        ItemName = "Samsung Smart Fridge",
+                        Description = "Large crack in cooling unit",
+                        IsRecyclable = false,
+                        CategoryID = catElectronics.CategoryID,
+                        RoomTag = RoomTag.Kitchen,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow.AddDays(-10)
+                    };
+
+                    var item7 = new Item
+                    {
+                        ItemName = "Smoke Detector",
+                        Description = "Water damaged from flooding",
+                        IsRecyclable = false,
+                        CategoryID = catElectronics.CategoryID,
+                        RoomTag = RoomTag.Other,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow.AddDays(-2)
+                    };
+
+                    var item8 = new Item
+                    {
+                        ItemName = "LCD Television",
+                        Description = "Spider web cracking from middle out",
+                        IsRecyclable = false,
+                        CategoryID = catElectronics.CategoryID,
+                        RoomTag = RoomTag.LivingRoom,
+                        HistoryID = userHistory.HistoryID,
+                        DateAdded = DateTime.UtcNow.AddDays(-1)
+                    };
+                    context.Items.AddRange(item1, item2, item3, item4, item5, item6, item7, item8);
                     await context.SaveChangesAsync();
 
                     context.ItemDisposals.AddRange(
