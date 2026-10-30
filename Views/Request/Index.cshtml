@@ -6,40 +6,52 @@
 @* jm: added styling sheet for components *@
 <link rel="stylesheet" href="~/css/j_stylesheet.css" />
 
-<main class="layout">
+<main class="layout align-items-center align-content-center">
     <div class="text-center">
         <h1 class="titlepurple-var">Request a new item</h1>
         <p class="subtitlepurple">Can't find an item? Tell us about it and we'll review it.</p>
     </div>
-    <div class="cardpurple">
+    <div class="cardpurple d-flex justify-content-center align-items-center">
         <form asp-action="Index" method="post" enctype="multipart/form-data"
-              class="row gx-2 gy-2  align-items-center">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+              class="row gx-2 gy-2 col-8">
+            <div asp-validation-summary="ModelOnly" class="fw-bold smalltextgreen text"></div>
 
-            <div class="mb-3">
+            <div class="col-12">
                 <label asp-for="ItemName" class="form-label"></label>
                 <input asp-for="ItemName" class="form-control"/>
-                <span asp-validation-for="ItemName" class="text-danger"></span>
+                <span asp-validation-for="ItemName" class="fw-bold smalltextgreen text"></span>
             </div>
 
-            <div class="mb-3">
+            <div class="col-12">
                 <label asp-for="CategoryID" class="form-label"></label>
                 <select asp-for="CategoryID" class="form-select" asp-items="ViewBag.Categories">
                     <option value="">-- Select a category --</option>
                 </select>
-                <span asp-validation-for="CategoryID" class="text-danger"></span>
+                <span asp-validation-for="CategoryID" class="fw-bold smalltextgreen text"></span>
             </div>
 
-            <div class="mb-3">
+            <div class="col-12-3">
                 <label asp-for="RecyclingLocations" class="form-label"></label>
                 <textarea asp-for="RecyclingLocations" class="form-control" rows="3"
                           placeholder="e.g. Tesco recycling point, High Street"></textarea>
-                <span asp-validation-for="RecyclingLocations" class="text-danger"></span>
+                <span asp-validation-for="RecyclingLocations" class="fw-bold smalltextgreen text"></span>
             </div>
 
-            <div class="mb-3">
-                <label for="Image" class="form-label">Image (optional)</label>
-                <input type="file" name="Image" id="Image" class="form-control" accept="image/*"/>
+            <div class="col-12-3">
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('Image').click()"
+                     ondragover="event.preventDefault();this.classList.add('dragover')"
+                     ondragleave="this.classList.remove('dragover')"
+                     ondrop="event.preventDefault();this.classList.remove('dragover')">
+                    
+                    
+                    <label for="Image" class="form-label">Upload a photo of your item here (optional)</label>
+                    <input type="file" name="Image" id="Image" class="form-control" accept="image/*"/>
+                    <h6 class="fw-bold mb-1">Drop Image here or click to upload</h6>
+                    <button type="button" class="btn btnpurple px-4 text-white"
+                            onclick="event.stopPropagation();document.getElementById('Image').click()">
+                        Upload Photo
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="btn btnpurple-long w-100 text-white">Submit request</button>

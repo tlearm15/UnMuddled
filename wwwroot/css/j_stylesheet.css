@@ -345,6 +345,7 @@ img {
     height: auto;
 }
 
+/*m marquee styling and animation*/
 .marquee {
     background-color: #C7D0CB;
     overflow: hidden;
@@ -363,7 +364,7 @@ img {
 
 }
 
-
+/*m marquee styling and animation*/
 @keyframes marquee {
     0% {
         transform: translateX(0);
@@ -376,6 +377,7 @@ img {
 .marquee-container:hover .marquee-content {
     animation-play-state: paused;
 }
+
 
 /* Custom Flexbox Layout for Login */
 .login-register-wrapper {
@@ -412,8 +414,30 @@ img {
     }
 }
 
-.form-control:focus {
+.form-select option:hover,
+.form-control:focus,
+.form-select option:checked {
     border-color: #5A465C !important;
     outline: none;
     box-shadow: 0 0 0 0.25rem rgba(90, 70, 92, 0.25);
+}
+
+
+.upload-zone {
+    border: 2px dashed #5A465C;
+    border-radius: 5px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    background-color: white;
+    transition: border-color 0.2s, background-color 0.2s
+}
+
+.upload-zone:hover, .upload-zone.dragover {
+    border-color: #5A465C !important;
+    background-color: whitesmoke !important;
+}
+
+.upload-zone input[type="file"]{
+    display: none;
 }
