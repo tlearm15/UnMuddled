@@ -225,7 +225,7 @@ public class UserController(UserManager<User> userManager) : Controller
     /// <returns></returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize]
+    [Authorize(Roles ="Staff")]
     public async Task<IActionResult> DeleteAccout(string id)
     {
         //if the id is null - then return a bad request
