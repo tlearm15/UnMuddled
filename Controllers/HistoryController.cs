@@ -44,10 +44,12 @@ public class HistoryController : Controller
             return Forbid();
         }
 
-        // WM - getting the user's product history with items categories and disposal locs
+        // WM - getting the user's product history with items categories, images, and disposal locs
         var userHistory = await _context.ProductHistories
             .Include(ph => ph.Items)
                 .ThenInclude(i => i.Category)
+            .Include(ph => ph.Items)
+                .ThenInclude(i => i.Images)
             .Include(ph => ph.Items)
                 .ThenInclude(i => i.ItemDisposals)
                     .ThenInclude(id => id.DisposalLocation)
