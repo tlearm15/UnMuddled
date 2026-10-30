@@ -22,14 +22,36 @@
                 <span asp-validation-for="ItemName" class="fw-bold smalltextgreen text"></span>
             </div>
 
-            <div class="col-12">
+            <div class="col-6">
                 <label asp-for="CategoryID" class="form-label"></label>
                 <select asp-for="CategoryID" class="form-select" asp-items="ViewBag.Categories">
                     <option value="">-- Select a category --</option>
                 </select>
                 <span asp-validation-for="CategoryID" class="fw-bold smalltextgreen text"></span>
             </div>
-
+            
+            @*jm- temp until form is fixed by BE *@
+            <div class="col-6">
+                <label class="form-label">Room Tag</label>
+                <select class="form-select">
+                    <option value="">-- Select a Room --</option>
+                    <option value=""> Living Room </option>
+                    <option value=""> Kitchen </option>
+                    <option value=""> Bedroom </option>
+                    <option value=""> Office </option>
+                    <option value=""> Other </option>
+                </select>
+                <span class="fw-bold smalltextgreen text"></span>
+            </div>
+            
+            @* <div class="col-6"> *@
+            @*     <label asp-for="RoomTag" class="form-label"></label> *@
+            @*     <select asp-for="RoomTag" class="form-select" asp-items="ViewBag.Categories"> *@
+            @*         <option value="">-- Select a Room --</option> *@
+            @*     </select> *@
+            @*     <span asp-validation-for="RoomTag" class="fw-bold smalltextgreen text"></span> *@
+            @* </div> *@
+            
             <div class="col-12-3">
                 <label asp-for="RecyclingLocations" class="form-label"></label>
                 <textarea asp-for="RecyclingLocations" class="form-control" rows="3"
