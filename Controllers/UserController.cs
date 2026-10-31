@@ -1,11 +1,15 @@
+using GroupProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Runtime.ConstrainedExecution;
 
 namespace GroupProject.Models;
 
 public class UserController(UserManager<User> userManager) : Controller
 {
+
     /// <summary>
     /// GET
     /// TQ- Stub for viewing profile
@@ -144,44 +148,115 @@ public class UserController(UserManager<User> userManager) : Controller
         //TQ- todo: there should be a redirect to the user's page showing their role
         return View();
     }
-    /// <summary>
-    /// GET
-    /// TQ- Terminates a User's account
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    [Authorize(Roles = "Admin")]
-    public IActionResult Ban(string id)
-    {
-        var user = userManager.FindByIdAsync(id).Result;
-        if (user is null)
-            return NotFound();
 
-        return View(user);
-    }
+
     /// <summary>
-    /// POST
-    /// TQ- Terminates a User's account
+    /// DMQ - edits the users details
     /// </summary>
-    /// <param name="id"></param>
     /// <returns></returns>
-    [Authorize(Roles = "Admin")]
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> EditAccount()
+    {
+        var user = await userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var model = new ChangeDetailsViewModel
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            AddressLine1 = user.AddressLine1,
+            AddressLine2 = user.AddressLine2,
+            City = user.City,
+            PostCode = user.PostCode
+        };
+
+        return View(model);
+    }
+
+
     [HttpPost]
-    [ActionName("Ban")]
-    public IActionResult BanConfirmed(string id)
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditAccountConfirmed(ChangeDetailsViewModel model)
     {
-        var user = userManager.FindByIdAsync(id).Result;
-        if (user is null)
+        //if the model state is invalid, then return to bad request form
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(model);
+        }
+        //gets the user
+        var user = await userManager.GetUserAsync(User);
+
+        //if the user is null - then return to not found form
+        if (user == null)
+        {
             return NotFound();
+        }
 
-        var adminUsers = userManager.GetUsersInRoleAsync("Admin").Result;
-        if (adminUsers.Count <= 1 && adminUsers.Any(u => u.Id == id))
-            //TQ- todo: there should be a redirect to the user's page showing their role
-            return View();
+        //sets the new user details
+        user.Email = model.FirstName;
+        user.UserName = model.LastName; 
+        user.AddressLine1 = model.AddressLine1;
+        user.AddressLine2 = model.AddressLine2;
+        user.City = model.City;
+        user.PostCode = model.PostCode;
 
-        userManager.DeleteAsync(user).Wait();
-        
-        //TQ- todo: there should be a redirect to the user's page showing their role
-        return View();
+        //if the editing was unsucsessful, then return the user to view
+        var result = await userManager.UpdateAsync(user);
+        if (result.Succeeded)
+        { 
+            return RedirectToAction("Index");
+        }
+
+        //if the action fails to update - return to view
+        return View(model);
     }
+
+
+    /// <summary>
+    /// DMQ - Deletes the Users/Staff account from the database
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles ="Staff")]
+    public async Task<IActionResult> DeleteAccout(string id)
+    {
+        //if the id is null - then return a bad request
+        if(id  == null)
+        {
+            return BadRequest();
+        }
+
+        //finds the user by their id
+        var currentUser = await userManager.GetUserAsync(User);
+
+        //if the current user is not 
+        if (currentUser == null)
+        {
+            return NotFound();
+        }
+
+        //staff and admins cannot delete their own accounts
+        if(User.IsInRole("Admin") || User.IsInRole("Staff"))
+        {
+            return View("Index");
+        }
+
+
+        //delete the user
+        await userManager.DeleteAsync(currentUser);
+
+        //retruns the user home
+        return RedirectToAction("Home", "Index");
+    }
+
+
+
 }
