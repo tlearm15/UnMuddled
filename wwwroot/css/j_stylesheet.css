@@ -414,6 +414,8 @@ img {
     }
 }
 
+/* jm: changes hover state of dropdown options, input fields & selected dropdown options
+    to dark purple*/
 .form-select option:hover,
 .form-control:focus,
 .form-select option:checked {
@@ -422,7 +424,7 @@ img {
     box-shadow: 0 0 0 0.25rem rgba(90, 70, 92, 0.25);
 }
 
-
+/* jm: custom upload zone component with dashed border, spacing, cursor*/
 .upload-zone {
     border: 2px dashed #5A465C;
     border-radius: 5px;
@@ -433,11 +435,12 @@ img {
     transition: border-color 0.2s, background-color 0.2s
 }
 
+/*jm: colour changes when hovered or dragging file to zone */
 .upload-zone:hover, .upload-zone.dragover {
     border-color: #5A465C !important;
     background-color: whitesmoke !important;
 }
-
+/*jm: .upload-zone triggers hidden input via js, hides html file input */
 .upload-zone input[type="file"]{
     display: none;
 }
@@ -453,7 +456,7 @@ img {
     }
 }
 
-/* jm: custom purple select menu component*/
+/* jm: custom purple select menu component, purple background when option is selected or hovered over  */
 .purple-select select {
     display: flex;
     justify-content: space-between;
