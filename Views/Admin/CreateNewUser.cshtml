@@ -1,81 +1,90 @@
 ﻿@using GroupProject.ViewModels
 @model CreateStaffViewModel
 
-<h2>Create New User</h2>
+@* jm: added styling sheet for components *@
+<link rel="stylesheet" href="~/css/j_stylesheet.css" />
 
-<form asp-controller="Admin" asp-action="CreateNewUser" method="post">
 
-    @Html.AntiForgeryToken()
-
-    <div asp-validation-summary="All" class="text-danger"></div>
-
-    <div>
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" />
-        <span asp-validation-for="FirstName"></span>
+<main class="layout align-items-center align-content-center">
+    <div class="text-center">
+        <h2>Create New User</h2>
     </div>
+    <div class="carddustygreen d-flex justify-content-center align-items-center w-100">
 
-    <div>
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" />
-        <span asp-validation-for="LastName"></span>
+        <form asp-controller="Admin" asp-action="CreateNewUser" method="post" class="row gx-2 gy-2 col-8">
+
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="fw-bold smalltextpurple text"></div>
+
+            <div>
+                <label asp-for="FirstName" class="form-label"></label>
+                <input asp-for="FirstName" class="form-control"/>
+                <span asp-validation-for="FirstName" class="fw-bold smalltextpurple text"></span>
+            </div>
+
+            <div>
+                <label asp-for="LastName" class="form-label"></label>
+                <input asp-for="LastName" class="form-control"/>
+                <span asp-validation-for="LastName" class="fw-bold smalltextpurple text"></span>
+            </div>
+
+            <div>
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control"/>
+                <span asp-validation-for="Email" class="fw-bold smalltextpurple text"></span>
+            </div>
+
+            <div>
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control"/>
+                <span asp-validation-for="Password" class="fw-bold smalltextpurple text"></span>
+            </div>
+
+            <h3>Address</h3>
+
+            <div>
+                <label asp-for="AddressLine1" class="form-label"></label>
+                <input asp-for="AddressLine1" class="form-control"/>
+                <span asp-validation-for="AddressLine1" class="fw-bold smalltextpurple text"></span>
+            </div>
+
+            <div>
+                <label asp-for="AddressLine2" class="form-label"></label>
+                <input asp-for="AddressLine2" class="form-control"/>
+                @* <span asp-validation-for="AddressLine2"></span> *@
+            </div>
+
+            <div>
+                <label asp-for="City" class="form-label"></label>
+                <input asp-for="City" class="form-control"/>
+                <span asp-validation-for="City" class="fw-bold smalltextpurple text"></span>
+            </div>
+
+            <div>
+                <label asp-for="PostCode" class="form-label"></label>
+                <input asp-for="PostCode" class="form-control"/>
+                <span asp-validation-for="PostCode" class="fw-bold smalltextpurple text"></span>
+            </div>
+
+            <h3>Account Details</h3>
+
+            <div>
+                <label asp-for="UserRole" class="form-label"></label>
+                <select class="form-select" asp-for="UserRole"
+                        asp-items="Html.GetEnumSelectList<UserRole>()">
+                </select>
+                <span asp-validation-for="UserRole" class="fw-bold smalltextpurple text"></span>
+            </div>
+
+            <br />
+
+            <div class="button-group ">
+                <a asp-controller="Admin" asp-action="UserList" class="btn">
+                    Cancel
+                </a>
+                <button type="submit" class="btnpurple-long">Create User</button>
+            </div>
+        </form>
     </div>
-
-    <div>
-        <label asp-for="Email"></label>
-        <input asp-for="Email" />
-        <span asp-validation-for="Email"></span>
-    </div>
-
-    <div>
-        <label asp-for="Password"></label>
-        <input asp-for="Password" />
-        <span asp-validation-for="Password"></span>
-    </div>
-
-    <h3>Address</h3>
-
-    <div>
-        <label asp-for="AddressLine1"></label>
-        <input asp-for="AddressLine1" />
-        <span asp-validation-for="AddressLine1"></span>
-    </div>
-
-    <div>
-        <label asp-for="AddressLine2"></label>
-        <input asp-for="AddressLine2" />
-        <span asp-validation-for="AddressLine2"></span>
-    </div>
-
-    <div>
-        <label asp-for="City"></label>
-        <input asp-for="City" />
-        <span asp-validation-for="City"></span>
-    </div>
-
-    <div>
-        <label asp-for="PostCode"></label>
-        <input asp-for="PostCode" />
-        <span asp-validation-for="PostCode"></span>
-    </div>
-
-    <h3>Account Details</h3>
-
-    <div>
-        <label asp-for="UserRole"></label>
-        <select asp-for="UserRole"
-                asp-items="Html.GetEnumSelectList<UserRole>()">
-        </select>
-        <span asp-validation-for="UserRole"></span>
-    </div>
-
-    <br />
-
-    <button type="submit">Create User</button>
-
-    <a asp-controller="Admin" asp-action="UserList">
-        Cancel
-    </a>
-
-</form>
-
+</main>
