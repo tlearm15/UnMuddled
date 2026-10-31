@@ -27,7 +27,7 @@ public class Item
     [Display(Name = "Date Added")]
     [DataType(DataType.DateTime)]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
-    public DateTime DateAdded { get; set; } = DateTime.Now;
+    public DateTime DateAdded { get; set; } = DateTime.UtcNow;
 
     [Display(Name = "Room Tag")]
     //Sets RoomTag from the enum, defaulting to Other if none selected - TL
