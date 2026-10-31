@@ -11,30 +11,31 @@
         <h1 class="titlepurple-var">Request a new item</h1>
         <p class="subtitlepurple">Can't find an item? Tell us about it and we'll review it.</p>
     </div>
-    <div class="cardpurple d-flex justify-content-center align-items-center">
+    <div class="cardpurple d-flex justify-content-center align-items-center w-100">
         <form asp-action="Index" method="post" enctype="multipart/form-data"
               class="row gx-2 gy-2 col-8">
             <div asp-validation-summary="ModelOnly" class="fw-bold smalltextgreen text"></div>
 
-            <div class="col-12">
+            
+            <div class="col-12 purple-select">
                 <label asp-for="ItemName" class="form-label"></label>
                 <input asp-for="ItemName" class="form-control"/>
                 <span asp-validation-for="ItemName" class="fw-bold smalltextgreen text"></span>
             </div>
 
-            <div class="col-6">
+            <div class="col-md-6 purple-select">
                 <label asp-for="CategoryID" class="form-label"></label>
                 <select asp-for="CategoryID" class="form-select" asp-items="ViewBag.Categories">
-                    <option value="">-- Select a category --</option>
+                    <option value=""> Select a category </option>
                 </select>
                 <span asp-validation-for="CategoryID" class="fw-bold smalltextgreen text"></span>
             </div>
             
             @*jm- temp until form is fixed by BE *@
-            <div class="col-6">
+            <div class="col-md-6 purple-select">
                 <label class="form-label">Room Tag</label>
                 <select class="form-select">
-                    <option value="">-- Select a Room --</option>
+                    <option value=""> Select a Room </option>
                     <option value=""> Living Room </option>
                     <option value=""> Kitchen </option>
                     <option value=""> Bedroom </option>
