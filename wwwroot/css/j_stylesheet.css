@@ -257,6 +257,52 @@ h2 {
     background-color: #443445;
 }
 
+/*jm white button*/
+.btnwhite {
+    display: inline-block;
+    background-color: #E9EAF0;
+    border: solid 2px;
+    border-color: #5F695D;
+    border-radius: 0.625rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    padding-inline: 0.625rem;
+    color: #3A4338;
+    text-decoration: none;
+    text-align: center;
+    height: auto;
+    width: auto;
+}
+
+/*jm white button long*/
+.btnwhite-long {
+    display: inline-block;
+    background-color: #E9EAF0;
+    border: solid 2px;
+    border-color: #382B38;
+    border-radius: 0.625rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 30px;
+    width: 350px;
+    padding-inline: 0.625rem;
+    color: #3A4338;
+    text-decoration: none;
+    text-align: center;
+    height: auto;
+    width: 150px;
+}
+/*jm white button hover affect*/
+.btnwhite:hover, .btnwhite-long:hover {
+    display: inline-block;
+    transform: scale(1.02);
+    background-color: #D5D7E0;
+}
+
 .linegreen {
     height: 3px;
     background: #93A3A2;
