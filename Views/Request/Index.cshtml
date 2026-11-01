@@ -3,38 +3,84 @@
 @{
     ViewData["Title"] = "Request a new item";
 }
+@* jm: added styling sheet for components *@
+<link rel="stylesheet" href="~/css/j_stylesheet.css" />
 
-<h1>Request a new item</h1>
-<p>Can't find an item? Tell us about it and we'll review it.</p>
-
-<form asp-action="Index" method="post" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="mb-3">
-        <label asp-for="ItemName" class="form-label"></label>
-        <input asp-for="ItemName" class="form-control" />
-        <span asp-validation-for="ItemName" class="text-danger"></span>
+<main class="layout align-items-center align-content-center">
+    <div class="text-center">
+        <h1 class="titlepurple-var">Request a new item</h1>
+        <p class="subtitlepurple">Can't find an item? Tell us about it and we'll review it.</p>
     </div>
+    <div class="cardpurple d-flex justify-content-center align-items-center w-100">
+        <form asp-action="Index" method="post" enctype="multipart/form-data"
+              class="row gx-2 gy-2 col-8">
+            <div asp-validation-summary="ModelOnly" class="fw-bold smalltextgreen text"></div>
 
-    <div class="mb-3">
-        <label asp-for="CategoryID" class="form-label"></label>
-        <select asp-for="CategoryID" class="form-select" asp-items="ViewBag.Categories">
-            <option value="">-- Select a category --</option>
-        </select>
-        <span asp-validation-for="CategoryID" class="text-danger"></span>
+            @* jm: Item Name text input *@
+            <div class="col-12 purple-select">
+                <label asp-for="ItemName" class="form-label"></label>
+                <input asp-for="ItemName" class="form-control"/>
+                <span asp-validation-for="ItemName" class="fw-bold smalltextgreen text"></span>
+            </div>
+            @* jm: Category drop down list, user can select category for requested item *@
+            <div class="col-md-6 purple-select">
+                <label asp-for="CategoryID" class="form-label"></label>
+                <select asp-for="CategoryID" class="form-select" asp-items="ViewBag.Categories">
+                    <option value=""> Select a category </option>
+                </select>
+                <span asp-validation-for="CategoryID" class="fw-bold smalltextgreen text"></span>
+            </div>
+            
+            @* jm: Room tag drop down list, user can select room tag for requested item *@
+            @*jm- temp until form is fixed by BE *@
+            <div class="col-md-6 purple-select">
+                <label class="form-label">Room Tag</label>
+                <select class="form-select">
+                    <option value=""> Select a Room </option>
+                    <option value=""> Living Room </option>
+                    <option value=""> Kitchen </option>
+                    <option value=""> Bedroom </option>
+                    <option value=""> Office </option>
+                    <option value=""> Other </option>
+                </select>
+                <span class="fw-bold smalltextgreen text"></span>
+            </div>
+            
+            @* <div class="col-6"> *@
+            @*     <label asp-for="RoomTag" class="form-label"></label> *@
+            @*     <select asp-for="RoomTag" class="form-select" asp-items="ViewBag.Categories"> *@
+            @*         <option value="">-- Select a Room --</option> *@
+            @*     </select> *@
+            @*     <span asp-validation-for="RoomTag" class="fw-bold smalltextgreen text"></span> *@
+            @* </div> *@
+            
+            
+            <div class="col-12-3">
+                <label asp-for="RecyclingLocations" class="form-label"></label>
+                <textarea asp-for="RecyclingLocations" class="form-control" rows="3"
+                          placeholder="e.g. Tesco recycling point, High Street"></textarea>
+                <span asp-validation-for="RecyclingLocations" class="fw-bold smalltextgreen text"></span>
+            </div>
+
+            @* jm: image upload, optional. Through drag & drop or pressing upload button. *@
+            <div class="col-12-3">
+                <div class="upload-zone" id="uploadZone" onclick="document.getElementById('Image').click()"
+                     ondragover="event.preventDefault();this.classList.add('dragover')"
+                     ondragleave="this.classList.remove('dragover')"
+                     ondrop="event.preventDefault();this.classList.remove('dragover')">
+                    
+                    <label for="Image" class="form-label">Upload a photo of your item here (optional)</label>
+                    <input type="file" name="Image" id="Image" class="form-control" accept="image/*"/>
+                    <h6 class="fw-bold mb-1">Drop Image here or click to upload</h6>
+                    <button type="button" class="btn btnpurple px-4 text-white"
+                            onclick="event.stopPropagation();document.getElementById('Image').click()">
+                        Upload Photo
+                    </button>
+                </div>
+            </div>
+
+            @* jm: Submits request item form *@
+            <button type="submit" class="btn btnpurple-long w-100 text-white">Submit request</button>
+        </form>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="RecyclingLocations" class="form-label"></label>
-        <textarea asp-for="RecyclingLocations" class="form-control" rows="3"
-                  placeholder="e.g. Tesco recycling point, High Street"></textarea>
-        <span asp-validation-for="RecyclingLocations" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label for="Image" class="form-label">Image (optional)</label>
-        <input type="file" name="Image" id="Image" class="form-control" accept="image/*" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Submit request</button>
-</form>
+</main>
