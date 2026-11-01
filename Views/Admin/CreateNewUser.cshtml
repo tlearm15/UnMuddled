@@ -9,33 +9,36 @@
     <div class="text-center">
         <h2>Create a New User</h2>
     </div>
+    @* jm: card starts *@
     <div class="carddustygreen d-flex justify-content-center align-items-center w-100">
+        @* jm: form starts, using Bootstrap form grid with gutters to control width*@
         <form asp-controller="Admin" asp-action="CreateNewUser" method="post" class="row mb-1 gx-2 gy-2 col-8">
-
             @Html.AntiForgeryToken()
-
             <div asp-validation-summary="ModelOnly" class="fw-bold smalltextpurple text"></div>
-            
+
             <h3 class="py-2">Account Details</h3>
-            
+            @* jm: text input for first name *@
             <div class="col-md-6">
                 <label asp-for="FirstName" class="form-label"></label>
                 <input asp-for="FirstName" class="form-control"/>
                 <span asp-validation-for="FirstName" class="fw-bold smalltextpurple text"></span>
             </div>
-
+            
+            @* jm: text input for last name *@
             <div class="col-md-6">
                 <label asp-for="LastName" class="form-label"></label>
                 <input asp-for="LastName" class="form-control"/>
                 <span asp-validation-for="LastName" class="fw-bold smalltextpurple text"></span>
             </div>
-
+            
+            @* jm: text input for email *@
             <div class="col-md-12">
                 <label asp-for="Email" class="form-label"></label>
                 <input asp-for="Email" class="form-control"/>
                 <span asp-validation-for="Email" class="fw-bold smalltextpurple text"></span>
             </div>
 
+            @* jm: text input for password. JS script used to toggle password visibility by clicking eye icon *@
             <div class="col-md-12">
                 <label asp-for="Password" class="form-label"></label>
                 <div class="password-field">
@@ -49,7 +52,8 @@
                 </div>
                 <span asp-validation-for="Password" class="fw-bold smalltextpurple text"></span>
             </div>
-            
+
+            @* jm: selection for the user's role *@
             <div class="purple-select">
                 <label asp-for="UserRole" class="form-label"></label>
                 <select class="form-select" asp-for="UserRole"
@@ -57,35 +61,42 @@
                 </select>
                 <span asp-validation-for="UserRole" class="fw-bold smalltextpurple text"></span>
             </div>
-            
+
             <h3>Address</h3>
 
+            @* jm: text input for address *@
             <div class="col-md-6">
                 <label asp-for="AddressLine1" class="form-label"></label>
                 <input asp-for="AddressLine1" class="form-control"/>
                 <span asp-validation-for="AddressLine1" class="fw-bold smalltextpurple text"></span>
             </div>
 
+            @* jm: text input for address - optional *@
             <div class="col-md-6">
                 <label asp-for="AddressLine2" class="form-label"></label>
                 <input asp-for="AddressLine2" class="form-control"/>
                 @* <span asp-validation-for="AddressLine2"></span> *@
             </div>
-
+            
+            @* jm: text input for post code *@
             <div class="col-md-4">
                 <label asp-for="PostCode" class="form-label"></label>
                 <input asp-for="PostCode" class="form-control"/>
                 <span asp-validation-for="PostCode" class="fw-bold smalltextpurple text"></span>
             </div>
-            
+
+            @* jm: text input for city *@
             <div class="col-md-8">
                 <label asp-for="City" class="form-label"></label>
                 <input asp-for="City" class="form-control"/>
                 <span asp-validation-for="City" class="fw-bold smalltextpurple text"></span>
             </div>
-            
-            <br />
 
+            <br/>
+            
+            @* jm: Create user and cancel button display next to each other on right side,
+                different colours and sizes to highlight different option (cancel or create user).
+            *@
             <div class="button-group d-inline-flex justify-content-end">
                 <a asp-controller="Admin" asp-action="UserList" class="btn btnwhite">
                     Cancel
@@ -93,7 +104,10 @@
                 <button type="submit" class="btnpurple-long">Create User</button>
             </div>
         </form>
+        @* jm: form starts *@
     </div>
+    @* jm: card ends *@
 </main>
 
+@* jm: javascript toggle password visibility script, lets user hide or see their password *@
 <script src="~/js/togglePassword.js"></script>
