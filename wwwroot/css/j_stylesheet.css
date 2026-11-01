@@ -581,15 +581,18 @@ img {
     }
 }
 
+/* jm: wraps input and button, position: relative keeps button inside box */
 .password-field {
     position: relative;
     width: 100%;
 }
 
+/* jm:  password input field, prevents long passwords don't display under eye icon */
 #passInput {
     padding-right: 40px;
 }
 
+/* jm: clickable button containing eye icon centered on the right, used to toggle button */
 .toggleBtn {
     position: absolute;
     right: 10px;
@@ -604,6 +607,8 @@ img {
     padding: 0;
     z-index: 10;
 }
+
+/* jm: changes colour of eye icon when hovered over */
 .toggleBtn:hover {
     color: #443445;
 }
