@@ -581,3 +581,30 @@ img {
     }
 }
 
+.password-field {
+    position: relative;
+    width: 100%;
+}
+
+#passInput {
+    padding-right: 40px;
+}
+
+.toggleBtn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #5A465C;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    z-index: 10;
+}
+.toggleBtn:hover {
+    color: #443445;
+}
+
