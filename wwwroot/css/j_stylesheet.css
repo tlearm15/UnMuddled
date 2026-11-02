@@ -155,6 +155,14 @@ h2 {
     color: #242926;
 }
 
+/*jm card used at bottom of forms (e.g. create user) using card dusty green */
+.carddustygreen-footer-opacity {
+    background-color: #738382;
+    border-top: 1px solid rgba(113, 126, 126, 0.4);
+    border-radius: 0 0 0.625rem 0.625rem;
+    padding: 0.85rem 1rem;
+}
+
 .cardpurple {
     background-color: #CBC2D0;
     border-radius: 0.625rem;
@@ -611,5 +619,32 @@ img {
 /* jm: changes colour of eye icon when hovered over */
 .toggleBtn:hover {
     color: #443445;
+}
+
+
+/* jm: individual sections for larger forms, provides vertical section  */
+.section { margin-bottom: 40px; }
+
+/* jm: header row, flex. aligns section tag and section(divider) line */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+/* jm: the heading of the section */
+.section-tag {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #382B38;
+}
+
+/* jm: horizontal line, fills remaining space of the header */
+.section-line {
+    flex: 1;
+    height: 1px;
+    background: #382B38;
 }
 
