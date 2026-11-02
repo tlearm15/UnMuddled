@@ -56,7 +56,24 @@
                                     </svg>
                                 </button>
                             </div>
-                            <span asp-validation-for="Password" class="fw-bold smalltextpurple text"></span>
+                            @* jm: checks if there's multiple errors for password field and lists them all *@
+                            @* jm: Loop through and display all server-side errors for the Password field *@
+                            @if (ViewData.ModelState.TryGetValue("Password", out var pwdState) && pwdState.Errors.Count > 0)
+                            {
+                                <div class="fw-bold smalltextpurple text mt-1">
+                                    <ul class="mb-0 ps-4">
+                                        @foreach (var error in pwdState.Errors)
+                                        {
+                                            <li>@error.ErrorMessage</li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                            else
+                            {
+                                @* jm: Fallback for client-side validation before the form is submitted *@
+                                <span asp-validation-for="Password" class="fw-bold smalltextpurple text"></span>
+                            }
                         </div>
                         @* jm: selection for the user's role *@
                         <div class="purple-select">
