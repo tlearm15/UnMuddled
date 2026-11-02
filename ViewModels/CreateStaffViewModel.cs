@@ -11,6 +11,9 @@ namespace GroupProject.ViewModels
 
         
         [Required(ErrorMessage =("Please provide a valid password."))] //jm: changed error message
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Passwords must be at least 8 characters.")]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).+$", 
+            ErrorMessage = "Passwords must have at least one uppercase ('A'-'Z') and at least one non-alphanumeric character.")]
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
         
