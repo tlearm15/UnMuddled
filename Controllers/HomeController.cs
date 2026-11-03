@@ -44,7 +44,6 @@ public class HomeController : Controller
     // m creating about page for the site
     public IActionResult About()
     {
-        ViewData["Title"] = "About";
         return View();
     }
     
