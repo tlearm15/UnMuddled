@@ -2,8 +2,6 @@
 
 @{
     ViewData["Title"] = Model?.ItemName ?? "Item Details";
-
-    var firstImage = Model?.Images?.FirstOrDefault();
 }
 
 <link rel="stylesheet" href="~/css/M_StyleSheet.css" />
@@ -16,7 +14,7 @@
 
             <div class="col-md-5 mb-4 mb-md-0 text-center">
                 <div class="item-card-img-box d-flex align-items-center justify-content-center" style="height: 320px">
-                    @if (firstImage != null)
+                    @if (Model.Images != null && Model.Images.Any())
                     //m if the items first image isnt null then display
                     {
                         
