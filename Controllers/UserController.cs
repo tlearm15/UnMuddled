@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using GroupProject.Models;
 
 namespace GroupProject.Models;
 
-public class UserController(UserManager<User> userManager) : Controller
+public class UserController(UserManager<User> userManager, UnMuddledDbContext _context) : Controller
 {
     /// <summary>
     /// GET
@@ -16,7 +18,15 @@ public class UserController(UserManager<User> userManager) : Controller
     {
         //m getting the currently logged in user from identity manager
         var user = await userManager.GetUserAsync(User);
+        //m if user is null yhen return not found
         if (user is null) return NotFound();
+
+        var userHistory = await _context.ProductHistories
+            .Include(ph => ph.Items).ThenInclude(i => i.Category).Include(ph => ph.Items)
+            .ThenInclude(i => i.Images).FirstOrDefaultAsync(ph => ph.UserID == user.Id);
+
+        //m getting recycled items
+        var recycledItems = userHistory?.Items?.OrderByDescending(i => i.DateAdded).ToList()?? new List<Item>();
 
         return View(user);
     }
