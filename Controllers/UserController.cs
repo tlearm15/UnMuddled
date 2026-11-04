@@ -12,10 +12,16 @@ public class UserController(UserManager<User> userManager) : Controller
     /// </summary>
     /// <returns></returns>
     [Authorize(Roles = "User, Staff, Admin")]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        //m getting the currently logged in user from identity manager
+        var user = await userManager.GetUserAsync(User);
+        if (user is null) return NotFound();
+
+        return View(user);
     }
+
+
     /// <summary>
     /// GET
     /// TQ - user manager for admins
