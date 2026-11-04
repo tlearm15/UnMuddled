@@ -4,6 +4,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@* TL - Display TempData from Register in a popup with purple styling *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert cardpurple alert-dismissible fade show shadow-sm" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 
 @* jm: added styling sheet for components *@
 <link rel="stylesheet" href="~/css/j_stylesheet.css" />
