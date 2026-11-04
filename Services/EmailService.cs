@@ -50,12 +50,11 @@ public class EmailService(ILogger<EmailService> logger) : IEmailSender<User>
         {
             ApiKey = apiKey
         };
-        options.SetDataResidency("eu");
 
         var client = new SendGridClient(options);
         var email = new SendGridMessage()
         {
-            From = new EmailAddress("bigvisiongames0@gmail.com", "UnMuddled"),
+            From = new EmailAddress("unmuddled1156@gmail.com", "UnMuddled"),
             Subject = subject,
             PlainTextContent = message,
             HtmlContent = message
