@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/GroupProject.styles.css" asp-append-version="true"/>
 </head>
-<body>
+
+<body class="d-flex flex-column min-vh-100">
     @*m top announcement marquee bar with border class removed to eliminate the white line gap*@
     <div class="marquee">
         <div class="marquee-container">
@@ -42,7 +43,7 @@
 @*                     M these all do not link to the right place as there no pages for these yet
  *@
                     <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">How to Recycle</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Item" asp-action="Index">How to Recycle</a>
                     </li>
                     <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Where to Recycle</a>
@@ -72,14 +73,15 @@
         </div>
     </nav>
 </header>
-<div class="container">
+@*m flex-grow-1 forces this main content container to fill available viewport space *@
+<div class="container flex-grow-1">
     <main role="main" class="pb-3">
         @RenderBody()
     </main>
 </div>
 
 @*m footer below, shows logo and the four links *@ 
-<footer class="footer">
+<footer class="footer mt-auto">
     <div class="container d-flex flex-column flex-md-row align-items-center justify-content-center py-1 gap-4">
         
         <div class="text-center">

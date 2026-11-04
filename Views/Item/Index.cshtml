@@ -1,0 +1,32 @@
+﻿@model IEnumerable<GroupProject.Models.Item>
+
+@{
+    ViewData["Title"] = "E-Waste Items Catalogue";
+}
+
+<link rel="stylesheet" href="~/css/M_StyleSheet.css" asp-append-version="true" />
+
+@*m top anocument card using bootstrap *@
+<div class="cardpurple">
+    <div class="row align-items-center">
+
+        @*m mascot column *@
+        <div class="col-md-3 text-center mb-3 mb-md-0">
+            <img src="~/images/snail.png" class="mascot img-fluid" alt="Toaster Snail Mascot" style="max-height: 150px; width: auto; margin:30px;" />
+        </div>
+
+        @*m text column *@
+        <div class="col-md-6 text-center text-md-start">
+            <h2 class="subtitlepurple">How To Recycle E-Waste Items</h2>
+            <p class="fw-semibold mb-1">Mudd the Toaster Snail wants to help you deal with your E-Waste.</p>
+            <p class="small text-muted mb-0">Use the filters on the left or search below to find specific items and recycling points.</p>
+        </div>
+
+        @*m locator action button column *@
+        <div class="col-md-3 text-center text-md-end mt-md-0 p-5">
+@*             unsure where this will be linked, needs ammending 
+ *@            <a asp-controller="Item" asp-action="Locator" class="btnpurple-long-big"> Where to Recycle</a>
+        </div>
+
+    </div>
+</div>
