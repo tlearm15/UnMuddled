@@ -37,7 +37,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.DisposalLocation", b =>
@@ -81,7 +81,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("DisposalID");
 
-                    b.ToTable("DisposalLocations");
+                    b.ToTable("DisposalLocations", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.Image", b =>
@@ -106,7 +106,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.Item", b =>
@@ -148,7 +148,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("HistoryID");
 
-                    b.ToTable("Items");
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.ItemDisposal", b =>
@@ -163,7 +163,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("ItemDisposals");
+                    b.ToTable("ItemDisposals", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
@@ -174,7 +174,7 @@ namespace GroupProject.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HistoryID"));
 
-                    b.Property<DateTime>("DateLogged")
+                    b.Property<DateTime>("DateDisposed")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UserID")
@@ -186,7 +186,7 @@ namespace GroupProject.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("ProductHistories");
+                    b.ToTable("ProductHistories", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.Request", b =>
@@ -234,7 +234,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Requests");
+                    b.ToTable("Requests", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.User", b =>
@@ -246,19 +246,16 @@ namespace GroupProject.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("AddressLine1")
-                        .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("character varying(75)");
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<string>("AddressLine2")
-                        .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("character varying(75)");
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("character varying(75)");
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -272,7 +269,6 @@ namespace GroupProject.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("character varying(55)");
 
@@ -286,7 +282,6 @@ namespace GroupProject.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasMaxLength(95)
                         .HasColumnType("character varying(95)");
 
@@ -314,9 +309,8 @@ namespace GroupProject.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("PostCode")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)");
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");

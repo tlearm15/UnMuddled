@@ -1,0 +1,36 @@
+@model List<GroupProject.Models.Request>
+@{
+    ViewData["Title"] = "Requests";
+}
+
+<h2>Requests</h2>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>@Html.DisplayNameFor(m => m[0].RequestID)</th>
+        <th>@Html.DisplayNameFor(m => m[0].User)</th>
+        <th>@Html.DisplayNameFor(m => m[0].ItemName)</th>
+        <th>@Html.DisplayNameFor(m => m[0].Category)</th>
+        <th>@Html.DisplayNameFor(m => m[0].Status)</th>
+        <th>@Html.DisplayNameFor(m => m[0].SubmittedOn)</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var request in Model)
+    {
+        <tr>
+            <td>@request.RequestID</td>
+            <td>@request.User?.Email</td>
+            <td>@request.ItemName</td>
+            <td>@request.Category?.CategoryName</td>
+            <td>@request.Status</td>
+            <td>@request.SubmittedOn.ToShortDateString()</td>
+            <td>
+                <a asp-action="ViewRequest" asp-route-id="@request.RequestID">View</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

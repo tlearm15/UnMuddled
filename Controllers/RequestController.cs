@@ -3,6 +3,7 @@ using GroupProject.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers;
 
@@ -27,10 +28,7 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
     /// todo: might reuse this exact view but have frontend validation for Staff/Admin to see prefilled form
     /// </summary>
     /// <returns></returns>
-    public IActionResult Index()
-    {
-        return View();
-    }
+    public IActionResult Index() => View();
     /// <summary>
     /// POST
     /// TQ- Item submission form data coming back to us
@@ -46,6 +44,7 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
             PopulateCategories( request.CategoryID );
             return View( request );
         }
+        
         request.UserID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
         request.Status = RequestStatus.Pending;
         request.SubmittedOn = DateTime.UtcNow;
@@ -58,23 +57,78 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
     }
     /// <summary>
     /// GET
-    /// TQ- todo: show some page to view all the requests made that only Staff/Admins can see
+    /// TQ- show all the requests made, only Staff/Admins can see
     /// </summary>
     /// <returns></returns>
     [Authorize(Roles = "Staff, Admin")]
     public IActionResult ListRequests()
     {
-        return View();
+        var requests = dbCtx.Requests
+            .Include( r => r.User )
+            .Include( r => r.Category )
+            .OrderBy( r => r.Status )
+            .ThenByDescending( r => r.SubmittedOn )
+            .ToList();
+        
+        return View( "List", requests );
     }
     /// <summary>
     /// GET
-    /// TQ- stub
+    /// TQ- details of a single request with buttons to accept/reject
     /// </summary>
+    /// <param name="id"></param>
     /// <returns></returns>
     [Authorize(Roles = "Staff, Admin")]
-    public IActionResult ViewRequest()
+    public IActionResult ViewRequest(int id)
     {
-        //todo: prefill submission form with what was already requested - view will show the buttons to accept/reject
-        return RedirectToAction( nameof( Index ) );
+        var request = dbCtx.Requests
+            .Include( r => r.User )
+            .Include( r => r.Category )
+            .FirstOrDefault( r => r.RequestID == id );
+        
+        if( request is null )
+            return NotFound();
+        
+        return View( "Details", request );
+    }
+    /// <summary>
+    /// POST
+    /// TQ- Staff/Admin marks a request as Approved
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Staff, Admin")]
+    public IActionResult Approve(int id)
+    {
+        var request = dbCtx.Requests.Find( id );
+        if( request is null )
+            return NotFound();
+
+        request.Status = RequestStatus.Approved;
+        dbCtx.SaveChanges();
+        
+        return RedirectToAction( nameof( ViewRequest ), new { id } );
+    }
+    /// <summary>
+    /// POST
+    /// TQ- Staff/Admin marks a request as Rejected
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Staff, Admin")]
+    public IActionResult Reject(int id)
+    {
+        var request = dbCtx.Requests.Find( id );
+        if( request is null )
+            return NotFound();
+        
+        request.Status = RequestStatus.Rejected;
+        dbCtx.SaveChanges();
+        
+        return RedirectToAction( nameof( ViewRequest ), new { id } );
     }
 }

@@ -1,0 +1,36 @@
+﻿@using GroupProject.ViewModels
+@model ChangeRoleViewModel
+
+<h2>Edit User Role</h2>
+
+<form asp-controller="Admin"
+      asp-action="EditUserRole"
+      method="post">
+
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <input asp-for="Id" type="hidden" />
+
+    <div>
+        <label asp-for="userRole">Select New Role</label>
+
+        <select asp-for="userRole"
+                asp-items="Html.GetEnumSelectList<UserRole>()">
+        </select>
+
+        <span asp-validation-for="userRole" class="text-danger"></span>
+    </div>
+
+    <br />
+
+    <button type="submit">Save Changes</button>
+
+    <a asp-controller="Admin"
+       asp-action="UserList">
+        Cancel
+    </a>
+
+</form>
+
