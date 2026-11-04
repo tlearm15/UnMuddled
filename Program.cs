@@ -66,14 +66,13 @@ builder.Services.AddTransient<ISendGridClient>(provider =>
         ApiKey = apiKey 
     };
     
-    //TL - Sets data residency as required by docs
-    options.SetDataResidency("eu");
-    
     return new SendGridClient(options);
 });
 
 //TL - Adds email sender service
-builder.Services.AddTransient<IEmailSender<User>, SendGridEmailSender>();
+builder.Services.AddTransient<EmailService>();
+builder.Services.AddTransient<IEmailSender<User>, EmailService>();
+
 
 // Add Identity services with custom password and user options-RW
 builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -123,5 +122,6 @@ app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 
 app.Run();
