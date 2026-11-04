@@ -40,4 +40,12 @@ public class HomeController : Controller
         // m returtning items to view
         return View(items);
     }
+
+    // m creating about page for the site
+    public IActionResult About()
+    {
+        return View();
+    }
+    
+
 }

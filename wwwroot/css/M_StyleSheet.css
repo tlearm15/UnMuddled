@@ -92,6 +92,13 @@ p {
     font-weight: bold;
     padding-top: 5px;
 }
+.subtitledarkgreen {
+    color: #3A4338;
+    font-size: 30px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    padding-top: 5px;
+}
 .subtitlepurple {
     color: #5A465C;
     font-size: 30px;
@@ -325,6 +332,13 @@ p {
 
 .mascot {
     height: 350px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.mascotmid {
+    height: 200px;
     width: auto;
     display: block;
     object-fit: contain;
