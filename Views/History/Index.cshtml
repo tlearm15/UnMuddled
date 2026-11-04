@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "My Recycling History";
 }
+@* m adding my (mollys) style sheet
+ *@<link rel="stylesheet" href="~/css/M_StyleSheet.css" />
+
 
 <h1>My Recycling History</h1>
 <p>Below is a list of every item you have logged as recycled</p>
@@ -76,8 +79,9 @@ else
                     </div>
 
                     <div class="text-end mt-2">
-                        <span class="border p-1 mx-1">@item.RoomTag.ToString()</span>
-                        <span class="border p-1 mx-1">@(item.Category?.CategoryName ?? "Uncategorized")</span>
+@*                         m upating item tag badges to match css
+ *@                        <span class="item-tag border p-1 mx-1">@item.RoomTag.ToString()</span>
+                        <span class="item-tag border p-1 mx-1">@(item.Category?.CategoryName ?? "Uncategorized")</span>
                     </div>
 
                 </div>
