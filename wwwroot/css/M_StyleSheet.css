@@ -444,4 +444,21 @@ p {
     margin: 20px auto 0 auto;
 }
 
+/*m mobile and text wrapping fixes */
+@media (max-width: 768px) {
+    .cardlightgreen, .cardpurple {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+
+    .btnpurple-long-big {
+        width: 100% !important;
+    }
+}
+
+/*m preventing text from overflowing */
+h1, h2, h3, h4, p, a, span {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
 
