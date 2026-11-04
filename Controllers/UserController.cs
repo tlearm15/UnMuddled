@@ -28,6 +28,9 @@ public class UserController(UserManager<User> userManager, UnMuddledDbContext _c
         //m getting recycled items
         var recycledItems = userHistory?.Items?.OrderByDescending(i => i.DateAdded).ToList()?? new List<Item>();
 
+        //m passing the recycled items to the view
+        ViewData["RecycledItems"] = recycledItems;
+
         return View(user);
     }
 
