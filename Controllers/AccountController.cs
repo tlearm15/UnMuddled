@@ -298,19 +298,29 @@ namespace GroupProject.Controllers
             {
                 return NotFound("User not found");
             }
+            
+            //TL - Decodes the token for use in this method
+            var decodedTokenBytes = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlDecode(token);
+            var normalToken = System.Text.Encoding.UTF8.GetString(decodedTokenBytes);
+            
             // Confirm the user's email using the provided token -RW
-            var result = await userManager.ConfirmEmailAsync(user, token);
+            var result = await userManager.ConfirmEmailAsync(user, normalToken);
 
             if(result.Succeeded)
             {
-                return View("ConfirmEmail"); //Or whatever view you want to show after successful confirmation -RW
+                //TL - Redirects the user to the login page with a popup message
+                TempData["SuccessMessage"] = "Email successfully confirmed! You can now log in.";
+                return RedirectToAction("Login", "Account");
+                
             }
 
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-            return View("Error"); //Or whatever view you want to show in case of an error -RW
-        }
+            
+            //TL - Redirects the user to the login page with a popup message
+            TempData["SuccessMessage"] = "Email confirmation failed.";
+            return RedirectToAction("Login", "Account");        }
     }
 }
