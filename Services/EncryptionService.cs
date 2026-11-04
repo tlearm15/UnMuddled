@@ -12,8 +12,14 @@ namespace GroupProject.Services;
 /// </summary>
 public class EncryptionService : IEncryptionService
 {
-
-    public string Encrypt(string plainText, byte[] key)
+    /// <summary>
+    /// TQ- Encrypts text with a given key
+    /// </summary>
+    /// <param name="plainText">The text you want to encrypt</param>
+    /// <param name="key">the key used to encrypt it (the same key needs to be used to decrypt)</param>
+    /// <returns>The text in encrypted form (secret)</returns>
+    /// <summary>
+    private static string Encrypt(string plainText, byte[] key)
     {
         var plainBytes = Encoding.UTF8.GetBytes(plainText);
         // A 12-byte nonce is the recommended size for AES-GCM.
@@ -32,8 +38,13 @@ public class EncryptionService : IEncryptionService
 
         return Convert.ToBase64String(result);
     }
-
-    public string Decrypt(string cipherText, byte[] key)
+    /// TQ- Decrypts the given encrypted text using the same key that was used to encrypt it
+    /// </summary>
+    /// <param name="cipherText">The encrypted text</param>
+    /// <param name="key">The key used to encrypt it</param>
+    /// <returns>The original text before it was encrypted</returns>
+    /// <summary>
+    private static string Decrypt(string cipherText, byte[] key)
     {
         var data = Convert.FromBase64String(cipherText);
         var nonceSize = AesGcm.NonceByteSizes.MaxSize;
@@ -48,6 +59,54 @@ public class EncryptionService : IEncryptionService
         aes.Decrypt(nonce, cipherBytes, tag, plainBytes);
 
         return Encoding.UTF8.GetString(plainBytes);
+    }
+
+    public string EncryptOnce(string value, byte[] key)
+    {
+        if( string.IsNullOrEmpty( value ) )
+            return value;
+        
+        try
+        {   // TQ- SAFETY NET: Check for whether `value` is already cipher text to prevent multiple encryption
+            // If `value` truly is cipher text, try decryption and it should succeed.
+            // If so return just the cipher text as is.
+            Decrypt( value, key );
+            return value;
+        }
+        catch( Exception ex ) when (
+            ex is FormatException          // not base64 at all -> plaintext
+              or CryptographicException    // base64 but bad tag / bad length -> plaintext
+              or ArgumentException         // wrong carve sizes etc -> plaintext
+              or ArgumentOutOfRangeException )
+        {
+            return Encrypt( value, key );
+        }
+    }
+    
+    public string DecryptOrPassthrough(string value, byte[] key)
+    {
+        if( string.IsNullOrEmpty( value ) )
+            return value;
+        // TQ- SAFETY NET: To make sure the cipher text is fully decrypted, do the decryption recursively
+        // Chosen 8 cycles
+        var current = value;
+        for( var i = 0; i < 8; i++ )
+        {
+            try
+            {
+                current = Decrypt( current, key );
+            }
+            catch ( Exception ex ) when (
+                ex is FormatException
+                    or CryptographicException
+                    or ArgumentException
+                    or ArgumentOutOfRangeException )
+            {
+                return current;// not ciphertext -> plaintext (or peel complete)
+            }
+        }
+        
+        return current;// cap reached; return best-effort result
     }
     
     public bool Test()
