@@ -21,11 +21,14 @@ public class UnMuddledDbContext(
     /// TQ- Automagically makes it so the address can be encrypted/decrypted when
     /// saved to/fetched from Db - it should require no changes to Models and stuff
     /// but a new migration is likely.
+    /// TQ(#83)- EncryptOnce makes sure no double-encryption happens when a
+    /// already-encrypted row is saved back
+    /// DecryptOrPassthrough keeps the old plaintext rows (registered before this feature) readable
     /// </summary>
     /// <returns></returns>
     private ValueConverter<string, string> EncryptedField() =>
-        new( v => encryption.Encrypt( v, _key ),
-            v =>  string.IsNullOrEmpty( v ) ? v : encryption.Decrypt( v, _key ) );
+        new( v =>  string.IsNullOrEmpty( v ) ? v : encryption.EncryptOnce( v, _key ),
+            v =>  string.IsNullOrEmpty( v ) ? v : encryption.DecryptOrPassthrough( v, _key ) );
 
     public DbSet<Item> Items => Set<Item>();
     public DbSet<Category> Categories => Set<Category>();
