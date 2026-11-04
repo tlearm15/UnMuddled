@@ -49,6 +49,12 @@ namespace GroupProject.Controllers
             }
         }
 
+        //jm: forget password view
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
 
         [HttpGet]
         public IActionResult Register()
