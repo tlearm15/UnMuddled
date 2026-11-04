@@ -26,10 +26,10 @@ namespace GroupProject.ViewModels
         public string? AddressLine1 { get; set; } = string.Empty;
         [Display(Name = "Address Line 2")]
         public string? AddressLine2 { get; set; } = string.Empty;
-        [Required(ErrorMessage = "Please provide your City")]
+        //TL - Commented out as addresses are no longer mandatory [Required(ErrorMessage = "Please provide your City")]
         [Display(Name = "City")]
         public string? City { get; set; } = string.Empty;
-        [Required(ErrorMessage = "Please provide your Post Code")]
+        //TL - Commented out as addresses are no longer mandatory [Required(ErrorMessage = "Please provide your Post Code")]
         [RegularExpression(
             @"^(GIR\s?0AA|(?:[A-Z]{1,2}[0-9][A-Z0-9]?\s?[0-9][ABD-HJLNP-UW-Z]{2}))$",
             ErrorMessage = "Please enter a valid UK postcode"
