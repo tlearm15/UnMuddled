@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using GroupProject.Services;
 
 namespace GroupProject.Controllers;
 
@@ -14,13 +15,22 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
     /// TQ- Fills
     /// </summary>
     /// <param name="selected"></param>
-    private void PopulateCategories(int? selected = null)
+    private void PopulateCategories(int? selected = null, RoomTag? selectedRoom = null) //added RoomTag parameter
     {
         ViewBag.Categories = new SelectList(
             dbCtx.Categories.OrderBy(c => c.CategoryName).ToList(),
             nameof(Category.CategoryID),
             nameof(Category.CategoryName),
             selected);
+        
+        //TL - Gets RoomTags from enum
+        ViewBag.RoomTags = Enum.GetValues<RoomTag>()
+            .Select(r => new SelectListItem
+            {
+                Value = r.ToString(),
+                Text = r.ToString(),
+                Selected = selectedRoom.HasValue && r == selectedRoom.Value
+            }).ToList();
     }
     /// <summary>
     /// GET
