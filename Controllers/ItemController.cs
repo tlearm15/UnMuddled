@@ -1,5 +1,6 @@
 ﻿using GroupProject.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,12 @@ namespace GroupProject.Controllers;
 public class ItemController : Controller
 {
     private readonly UnMuddledDbContext _context;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
-    public ItemController(UnMuddledDbContext context)
+    public ItemController(UnMuddledDbContext context, IWebHostEnvironment webHostEnvironment)
     {
         _context = context;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     //JL - GETS THE ITEMS AND FILTERS THEM BASED ON THE SEARCH TERM, CATEGORY, ROOM TAG, AND RECYCLABLE STATUS 
@@ -197,5 +200,76 @@ public class ItemController : Controller
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
+    }
+
+
+
+    [HttpGet]
+    public async Task<IActionResult> AddImage(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        //
+        var item = await _context.Items.FindAsync(id);
+
+        if (item is null)
+        {
+            return NotFound();
+        }
+
+        return View(item);
+    }
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddImage(int id, IFormFile imageFile, bool isPrimary)
+    {
+
+        var item = await _context.Items.FindAsync(id);
+
+        if (item is null)
+        {
+            return NotFound();
+        }
+
+        if (imageFile == null || imageFile.Length == 0)
+        {
+            ModelState.AddModelError($"imageFile", "Please select an image file.");
+            ViewBag.ItemID = id;
+            ViewBag.ItemName = item.ItemName;
+            return View(item);
+        }
+
+        // Process the file upload
+        string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
+        string extension = Path.GetExtension(imageFile.FileName);
+        fileName = fileName + "_" + Guid.NewGuid().ToString() + extension;
+
+
+        string folder = Path.Combine(_webHostEnvironment.WebRootPath, "~/Images/Items/");
+        Directory.CreateDirectory(folder);
+
+        string fullPath = Path.Combine(folder, fileName);
+
+        using (var stream = new FileStream(fullPath, FileMode.Create))
+        {
+            await imageFile.CopyToAsync(stream);
+        }
+
+        Image newImage = new Image
+        {
+            ItemID = id,
+            ImageURL = fileName,
+            IsPrimary = isPrimary
+        };
+
+        _context.Images.Add(newImage);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction("Index");
     }
 }
