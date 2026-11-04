@@ -13,7 +13,7 @@ public class UserController(UserManager<User> userManager, UnMuddledDbContext _c
     /// TQ- Stub for viewing profile
     /// </summary>
     /// <returns></returns>
-    [Authorize(Roles = "User, Staff, Admin")]
+    [Authorize(Roles = "Member, Staff, Admin")]
     public async Task<IActionResult> Index()
     {
         //m getting the currently logged in user from identity manager
