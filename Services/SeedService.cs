@@ -163,171 +163,244 @@ namespace GroupProject.Services
                 //WM - temporarily seeding some products for user to show a history of disposed items for testing.
                 //WM - specifically async to avoid any blockages
                 var normalUser = await userManager.FindByEmailAsync("user@gmail.com");//May need to change to 'member' to reflect new account. Member not seeded due to admin still present tho -RW
-                if (normalUser != null && !await context.ProductHistories.AnyAsync(ph => ph.UserID == normalUser.Id))
+
+                if(normalUser == null)
+                {//Ensures the User Exists before attempting to seed Histroy - RW
+                    throw new InvalidOperationException("Normal user not found. Ensure the user is seeded before seeding product history.");
+                }
+
+                //Checks if the user has a history already, if not creates one. - RW
+                var userHistory = await context.ProductHistories.FirstOrDefaultAsync(ph => ph.UserID == normalUser.Id);
+
+                if(userHistory == null)
                 {
-                    var userHistory = new ProductHistory
+                    userHistory = new ProductHistory
                     {
                         UserID = normalUser.Id
                     };
                     context.ProductHistories.Add(userHistory);
                     await context.SaveChangesAsync();
+                }
+                
 
-                    var catElectronics = context.Categories.First(c => c.CategoryName == "Small Electronics");
-                    var catMobile = context.Categories.First(c => c.CategoryName == "Mobile Devices");
-                    var locCentral = context.DisposalLocations.First(l => l.LocationName == "Glasgow Central Recycling");
 
+                //**Start of Item Seeding** - RW
+                //Seeding note - Most Household Electricals are recyclable. Some items listed are not, this is for testing prior to being overly specific
+                //as certain items if Fire Damaged can no longer be recycled. - RW
+                var catElectronics = context.Categories.First(c => c.CategoryName == "Small Electronics");
+                var catAppliances = context.Categories.First(c => c.CategoryName == "Large Appliances");
+                var catMobile = context.Categories.First(c => c.CategoryName == "Mobile Devices");
+                var locCentral = context.DisposalLocations.First(l => l.LocationName == "Glasgow Central Recycling");
+
+                //Checks if the item exists before adding to avoid duplicates
+                //This boolean is repeated for each item to ensure that the seeding process does not create duplicates if run multiple times. - RW
+                bool toasterExists =  await context.Items.AnyAsync(i => i.ItemName == "Broken Toaster" && i.HistoryID == userHistory.HistoryID);
+                if(!toasterExists)
+                {
                     var item1 = new Item
                     {
                         ItemName = "Broken Toaster",
-                        Description = "2-slice toaster, heating element burned out.",
+                        Description = "Ensure Appliance is Cool. Damaged Heating Element will not prevent Recycling. Take to nearest Recycling centre",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Kitchen,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-2)
                     };
-
+                    context.Items.Add(item1);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item1, DisposalID = locCentral.DisposalID });
+                }
+               
+                bool smartphoneExists = await context.Items.AnyAsync(i => i.ItemName == "Old Smartphone" && i.HistoryID == userHistory.HistoryID);
+                if (!smartphoneExists)
+                {
                     var item2 = new Item
                     {
                         ItemName = "Old Smartphone",
-                        Description = "Screen cracked, battery swollen. Responsibly disposed.",
+                        Description = "If there is any obvious battery damage, do not attempt to power on or plug device in. Contact recycling centre and disclose any damage and follow advice.",
                         IsRecyclable = true,
                         CategoryID = catMobile.CategoryID,
                         RoomTag = RoomTag.Bedroom,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-5)
                     };
-
+                    context.Items.Add(item2);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item2, DisposalID = locCentral.DisposalID });
+                }
+                
+                bool laptopExists = await context.Items.AnyAsync(i => i.ItemName == "HP Laptop" && i.HistoryID == userHistory.HistoryID);
+                if(!laptopExists)
+                {
                     var item3 = new Item
                     {
                         ItemName = "HP Laptop",
-                        Description = "Slowing down, Short battery life.",
+                        Description = "If battery can be removed safely, please do so. Then take to Recycling Centre of WEEE Collection point to be recycled",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Office,
                         HistoryID = userHistory.HistoryID,
-                        DateAdded= DateTime.UtcNow.AddDays(-6)
-
+                        DateAdded = DateTime.UtcNow.AddDays(-6)
                     };
-
+                    context.Items.Add(item3);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item3, DisposalID = locCentral.DisposalID });
+                }
+                
+                bool dellComputerExists = await context.Items.AnyAsync(i => i.ItemName == "Dell Computer" && i.HistoryID == userHistory.HistoryID);
+                if(!dellComputerExists)
+                {
                     var item4 = new Item
                     {
                         ItemName = "Dell Computer",
-                        Description = "Overheating, clogged fans & long start up",
+                        Description = "Do not dispose in house bins. Take to Electronics Recycling Centre or WEEE Collection Point ",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Office,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow
-
                     };
-
+                    context.Items.Add(item4);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item4, DisposalID = locCentral.DisposalID });
+                }
+               
+                bool iphoneExists = await context.Items.AnyAsync(i => i.ItemName == "IPhone Duo" && i.HistoryID == userHistory.HistoryID);
+                if(!iphoneExists)
+                {
                     var item5 = new Item
                     {
                         ItemName = "IPhone Duo",
-                        Description = "Broken in 2 at the hinge",
+                        Description = "If any battery damage, do not power on or attempt to plug device in. Contact Recycling Centre and report any Battery Damage and follow advice for recycling.",
                         IsRecyclable = true,
                         CategoryID = catMobile.CategoryID,
                         RoomTag = RoomTag.Bedroom,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow
                     };
-
+                    context.Items.Add(item5);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item5, DisposalID = locCentral.DisposalID });
+                }
+                
+                bool fridgeExists =  await context.Items.AnyAsync(i => i.ItemName == "Samsung Smart Fridge" && i.HistoryID == userHistory.HistoryID);
+                if (!fridgeExists)
+                {
                     var item6 = new Item
                     {
                         ItemName = "Samsung Smart Fridge",
-                        Description = "Large crack in cooling unit",
+                        Description = "Only to be Recycled at Authorized Centres, Retailers or Take-back services. Check with Manufacturer or Local Recycling centres for adivce.",
                         IsRecyclable = false,
-                        CategoryID = catElectronics.CategoryID,
+                        CategoryID = catAppliances.CategoryID,
                         RoomTag = RoomTag.Kitchen,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-10)
                     };
-
+                    context.Items.Add(item6);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item6, DisposalID = locCentral.DisposalID });
+                }
+                
+                bool smokeDetectorExists =  await context.Items.AnyAsync(i => i.ItemName == "Smoke Detector" && i.HistoryID == userHistory.HistoryID);
+                if (!smokeDetectorExists)
+                {
                     var item7 = new Item
                     {
                         ItemName = "Smoke Detector",
-                        Description = "Water damaged from flooding",
+                        Description = "CAUTION:Some Smoke Detectors contain small amounts of Radioactive material.\nIf safe to do so, remove battery. DO NOT, needlessly dismantle. Take to Recycling Centre that accepts Smoke Alarms to ensure proper, safe disposal.",
                         IsRecyclable = false,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Other,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-2)
                     };
-
+                    context.Items.Add(item7);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item7, DisposalID = locCentral.DisposalID });
+                }
+                
+                bool lcdTvExists =  await context.Items.AnyAsync(i => i.ItemName == "LCD Television" && i.HistoryID == userHistory.HistoryID);
+                if(!lcdTvExists)
+                {
                     var item8 = new Item
                     {
                         ItemName = "LCD Television",
-                        Description = "Spider web cracking from middle out",
+                        Description = "Do not place in general Electronics Collections. Take to Recycling Centre that accepts these Screen Types to ensure safe disposal",
                         IsRecyclable = false,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-1)
                     };
-
+                    context.Items.Add(item8);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item8, DisposalID = locCentral.DisposalID });
+                }
+                
+                bool dvdPlayerExists =  await context.Items.AnyAsync(i => i.ItemName == "DvD Player" && i.HistoryID == userHistory.HistoryID);
+                if(!dvdPlayerExists)
+                {
                     var item9 = new Item
                     {
                         ItemName = "DvD Player",
-                        Description = "Power cable exposing wires, diskdrive doesn't open",
+                        Description = "If safe to do so, remove any disk from player. DO NOT Dismantle player. Take to Recycling Centre for Recycling.",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow
                     };
-
+                    context.Items.Add(item9);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item9, DisposalID = locCentral.DisposalID });
+                }
+                
+                bool tvRemoteExists = await context.Items.AnyAsync(i => i.ItemName == "TV Remote" && i.HistoryID == userHistory.HistoryID);
+                if(!tvRemoteExists)
+                {
                     var item10 = new Item
                     {
                         ItemName = "TV Remote",
-                        Description = "Buttons falling off, battery pack door missing",
+                        Description = "Remove Batteries and Dispose in Battery collection points. Take Remote to small electricals facility",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-5)
                     };
-
+                    context.Items.Add(item10);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item10, DisposalID = locCentral.DisposalID });
+                }
+                
+                bool ps3Exists =  await context.Items.AnyAsync(i => i.ItemName == "PS3" && i.HistoryID == userHistory.HistoryID);
+                if(!ps3Exists)
+                {
                     var item11 = new Item
                     {
                         ItemName = "PS3",
-                        Description = "Overheating, loud, disk drive doesn't work",
+                        Description = "If safe to do so, remove any Disk inside console. DO NOT Dismantle. Take to Electrical Recycling Centre.",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-7)
                     };
+                    context.Items.Add(item11);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item11, DisposalID = locCentral.DisposalID });
+                }
 
+                bool acUnitExists =  await context.Items.AnyAsync(i => i.ItemName == "Air Conditioning Unit" && i.HistoryID == userHistory.HistoryID);
+                if(!acUnitExists)
+                {
                     var item12 = new Item
                     {
                         ItemName = "Air Conditioning Unit",
-                        Description = "Electronics burned out, fire damaged",
+                        Description = "Contact Recycling Centre that accepts these units and follow advice given.\nCAUTION: Do not attempt to move due to Toxi Refrigerants. DO NOT Cut Pipes or Dismantle any part of Unit.",
                         IsRecyclable = false,
-                        CategoryID = catElectronics.CategoryID,
+                        CategoryID = catAppliances.CategoryID,
                         RoomTag = RoomTag.Other,
                         HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-11)
                     };
-                    context.Items.AddRange(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11, item12);
-                    await context.SaveChangesAsync();
-
-                    context.ItemDisposals.AddRange(
-                        new ItemDisposal { ItemID = item1.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item2.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item3.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item4.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item5.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item6.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item7.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item8.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item9.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item10.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item11.ItemID, DisposalID = locCentral.DisposalID },
-                        new ItemDisposal { ItemID = item12.ItemID, DisposalID = locCentral.DisposalID}
-                    );
-                    await context.SaveChangesAsync();
+                    context.Items.Add(item12);
+                    context.ItemDisposals.Add(new ItemDisposal { Item = item12, DisposalID = locCentral.DisposalID });
                 }
+
+                await context.SaveChangesAsync();
+
+                
             }
             catch (Exception ex)
             {
