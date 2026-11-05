@@ -244,7 +244,7 @@ public class UserController(UserManager<User> userManager) : Controller
         }
 
         //staff and admins cannot delete their own accounts
-        if(User.IsInRole("Admin") || User.IsInRole("Staff"))
+        if(User.IsInRole("Admin"))
         {
             return View("Index");
         }
