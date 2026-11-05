@@ -46,6 +46,15 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
         }
         
         request.UserID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        // TQ- check daily limit for requests was reached first
+        // Gives a warning to come back tomorrow if they reach the limit.
+        if( DailyLimitReached( request.UserID ) )
+        {
+            TempData["ErrorMessage"] = $"You have reached the maximum of {DailyRequestLimit} item requests per day. Please try again tomorrow.";
+            PopulateCategories( request.CategoryID );
+            
+            return View( request );
+        }
         request.Status = RequestStatus.Pending;
         request.SubmittedOn = DateTime.UtcNow;
         request.ItemID = null;
@@ -130,5 +139,28 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
         dbCtx.SaveChanges();
         
         return RedirectToAction( nameof( ViewRequest ), new { id } );
+    }
+    
+    private const int DailyRequestLimit = 3;
+    /// <summary>
+    /// TQ- method for check if a user has reached their daily item request submission limit
+    /// </summary>
+    /// <param name="userId"> User's id as string</param>
+    /// <returns>True if the limit was reached, false if they are good to make the request</returns>
+    private bool DailyLimitReached(string userId)
+    {
+        var today = DateTime.SpecifyKind( 
+            new DateTime( DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day), DateTimeKind.Utc );
+        // TQ- Check for:
+        // - Not yet approved
+        // - made today
+        // - how many requests made matching above criteria
+        return dbCtx.Requests.Any( r => 
+            r.UserID == userId && 
+            r.Status == RequestStatus.Pending &&
+            r.SubmittedOn >= today ) && dbCtx.Requests.Count( r =>
+                r.UserID == userId &&
+                r.Status == RequestStatus.Pending && 
+                r.SubmittedOn >= today ) >= DailyRequestLimit;
     }
 }
