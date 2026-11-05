@@ -46,6 +46,14 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
         }
         
         request.UserID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        // TQ- check if the requested item had already been requested previously
+        if( DuplicateRequestExists( request.UserID, request.ItemName ) )
+        {
+            TempData["ErrorMessage"] = "You have already requested this item and it's waiting for review.";
+            PopulateCategories( request.CategoryID );
+            
+            return View( request );
+        }
         // TQ- check daily limit for requests was reached first
         // Gives a warning to come back tomorrow if they reach the limit.
         if( DailyLimitReached( request.UserID ) )
@@ -149,18 +157,25 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
     /// <returns>True if the limit was reached, false if they are good to make the request</returns>
     private bool DailyLimitReached(string userId)
     {
-        var today = DateTime.SpecifyKind( 
-            new DateTime( DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day), DateTimeKind.Utc );
-        // TQ- Check for:
-        // - Not yet approved
-        // - made today
-        // - how many requests made matching above criteria
-        return dbCtx.Requests.Any( r => 
-            r.UserID == userId && 
-            r.Status == RequestStatus.Pending &&
-            r.SubmittedOn >= today ) && dbCtx.Requests.Count( r =>
-                r.UserID == userId &&
-                r.Status == RequestStatus.Pending && 
-                r.SubmittedOn >= today ) >= DailyRequestLimit;
+        var today = DateTime.SpecifyKind(
+            new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day), DateTimeKind.Utc);
+        // Count pending AND rejected requests made today so rejections don't reset the limit
+        return dbCtx.Requests.Count( r =>
+            r.UserID == userId &&
+            ( r.Status == RequestStatus.Pending || r.Status == RequestStatus.Rejected ) &&
+            r.SubmittedOn >= today ) >= DailyRequestLimit;
+    }
+    /// <summary>
+    /// TQ- check if the user already has a pending request for the same item name
+    /// </summary>
+    /// <param name="userId">User's id as string</param>
+    /// <param name="itemName">Item name the user is trying to request</param>
+    /// <returns>True if a matching pending request exists</returns>
+    private bool DuplicateRequestExists(string userId, string itemName)
+    {
+        return dbCtx.Requests.Any( r =>
+            r.UserID == userId &&
+            r.ItemName == itemName &&
+            r.Status == RequestStatus.Pending );
     }
 }
