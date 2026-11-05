@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers;
 
-[Authorize(Roles = "Admin, Staff")]
+[Authorize(Roles = "Admin, Staff, User")]
 public class ItemController : Controller
 {
     private readonly UnMuddledDbContext _context;
@@ -94,8 +94,10 @@ public class ItemController : Controller
     //JL -  CREATES A NEW ITEM AND SAVES IT TO THE DATABASE IF THE MODEL STATE IS VALID, OTHERWISE RETURNS THE VIEW WITH THE CATEGORY DROPDOWN LIST POPULATED
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Item item)
+    public async Task<IActionResult> Create(Item item, IFormFile imageFile)
     {
+
+
         if (!ModelState.IsValid)
         {
             ViewBag.Categories = new SelectList(
@@ -107,8 +109,39 @@ public class ItemController : Controller
             return View(item);
         }
 
-        _context.Add(item);
+        
+
+            _context.Add(item);
         await _context.SaveChangesAsync();
+
+        //DMQ- if the image file is not null, then execute
+        if (imageFile != null && imageFile.Length > 0)
+        {
+            //constructing the file path towards the images folder
+            string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
+            string extension = Path.GetExtension(imageFile.FileName);
+            fileName = fileName + "_" + Guid.NewGuid().ToString() + extension;
+
+            //combines to create the root path to the folder
+            string folder = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Items");
+            Directory.CreateDirectory(folder);
+            string fullPath = Path.Combine(folder, fileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream);
+            }
+
+            Image newImage = new Image
+            {
+                ItemID = item.ItemID,
+                ImageURL = fileName,
+                IsPrimary = true
+            };
+
+            _context.Images.Add(newImage);
+            await _context.SaveChangesAsync();
+        }
 
         return RedirectToAction(nameof(Index));
     }
@@ -200,76 +233,5 @@ public class ItemController : Controller
         await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
-    }
-
-
-
-    [HttpGet]
-    public async Task<IActionResult> AddImage(int? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        //
-        var item = await _context.Items.FindAsync(id);
-
-        if (item is null)
-        {
-            return NotFound();
-        }
-
-        return View(item);
-    }
-
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddImage(int id, IFormFile imageFile, bool isPrimary)
-    {
-
-        var item = await _context.Items.FindAsync(id);
-
-        if (item is null)
-        {
-            return NotFound();
-        }
-
-        if (imageFile == null || imageFile.Length == 0)
-        {
-            ModelState.AddModelError($"imageFile", "Please select an image file.");
-            ViewBag.ItemID = id;
-            ViewBag.ItemName = item.ItemName;
-            return View(item);
-        }
-
-        // Process the file upload
-        string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
-        string extension = Path.GetExtension(imageFile.FileName);
-        fileName = fileName + "_" + Guid.NewGuid().ToString() + extension;
-
-
-        string folder = Path.Combine(_webHostEnvironment.WebRootPath, "~/Images/Items/");
-        Directory.CreateDirectory(folder);
-
-        string fullPath = Path.Combine(folder, fileName);
-
-        using (var stream = new FileStream(fullPath, FileMode.Create))
-        {
-            await imageFile.CopyToAsync(stream);
-        }
-
-        Image newImage = new Image
-        {
-            ItemID = id,
-            ImageURL = fileName,
-            IsPrimary = isPrimary
-        };
-
-        _context.Images.Add(newImage);
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction("Index");
     }
 }
