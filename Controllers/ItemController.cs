@@ -167,7 +167,7 @@ public class ItemController : Controller
     // JL - UPDATES A SPECIFIC ITEM BASED ON ITS ID AND THE PROVIDED ITEM OBJECT, SAVES CHANGES TO THE DATABASE IF THE MODEL STATE IS VALID, OTHERWISE RETURNS THE VIEW WITH THE CATEGORY DROPDOWN LIST POPULATED 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Item item)
+    public async Task<IActionResult> Edit(int id, Item item, IFormFile imageFile)
     {
         if (id != item.ItemID)
         {
@@ -189,6 +189,59 @@ public class ItemController : Controller
         {
             _context.Update(item);
             await _context.SaveChangesAsync();
+
+            //DMQ- if the image file is not null, then execute
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                //locate the old image
+                var existingImage = await _context.Images
+                .FirstOrDefaultAsync(i => i.ItemID == item.ItemID && i.IsPrimary);
+
+                //constructing the file path towards the images folder
+                string fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
+                string extension = Path.GetExtension(imageFile.FileName);
+                fileName = fileName + "_" + Guid.NewGuid().ToString() + extension;
+
+                //combines to create the root path to the folder
+                string folder = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Items");
+                Directory.CreateDirectory(folder);
+                string fullPath = Path.Combine(folder, fileName);
+
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                //if the photo has been changed - then execute code
+                if (existingImage != null)
+                {
+                    // Delete the old physical file from the server if it exists
+                    string oldFullPath = Path.Combine(folder, existingImage.ImageURL);
+                    if (System.IO.File.Exists(oldFullPath))
+                    {
+                        System.IO.File.Delete(oldFullPath);
+                    }
+
+                    //update the existing record's URL instead of creating a duplicate row
+                    existingImage.ImageURL = fileName;
+                    _context.Images.Update(existingImage);
+                }
+                else
+                {
+                    Image newImage = new Image
+                    {
+                        ItemID = item.ItemID,
+                        ImageURL = fileName,
+                        IsPrimary = true
+                    };
+
+                    _context.Images.Add(newImage);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+
         }
         catch (DbUpdateConcurrencyException)
         {
