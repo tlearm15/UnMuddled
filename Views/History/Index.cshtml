@@ -1,4 +1,4 @@
-﻿@model IEnumerable<GroupProject.Models.Item>
+﻿@model IEnumerable<GroupProject.Models.UserHistoryItem>
 
 @{
     ViewData["Title"] = "My Recycling History";
@@ -21,8 +21,8 @@ else
         <!-- WM - using a loop for the items in the model to display those items and their details-->
         @foreach (var item in Model)
         {
-            var disposal = item.ItemDisposals?.FirstOrDefault()?.DisposalLocation;
-            var itemImage = item.Images?.FirstOrDefault(img => img.IsPrimary) ?? item.Images?.FirstOrDefault();
+            var disposal = item.Item?.ItemDisposals?.FirstOrDefault()?.DisposalLocation;
+            var itemImage = item.Item?.Images?.FirstOrDefault(img => img.IsPrimary) ?? item.Item?.Images?.FirstOrDefault();
 
             <div class="d-flex border p-2 mb-3">
 
@@ -30,7 +30,7 @@ else
                 <div style="width: 120px; height: 120px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
                     @if (itemImage != null)
                     {
-                        <img src="@itemImage.ImageURL" alt="@item.ItemName" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                        <img src="@itemImage.ImageURL" alt="@item.Item?.ItemName" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
                     }
                     else
                     {
@@ -42,8 +42,8 @@ else
 
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h5 class="m-0"><strong>@item.ItemName</strong></h5>
-                            <small class="text-muted">@item.Description</small>
+                            <h5 class="m-0"><strong>@item.Item?.ItemName</strong></h5>
+                            <small class="text-muted">@item.Item?.Description</small>
                             <br />
 
                             <!--WM - displaying the disposal location if it's there otherwise say it's not specified-->
@@ -65,19 +65,19 @@ else
                             <br />
 
                             <!--WM - displaying the date added for the item-->
-                            <small class="text-muted"><strong>Disposed:</strong> @item.DateAdded.ToString("d")</small>
+                            <small class="text-muted"><strong>Disposed:</strong> @item.DateDisposed.ToString("d")</small>
                         </div>
 
                         <!-- WM - delete button to remove the item from the user's history, optional implementation for frontend -->
                         <form asp-controller="History" asp-action="RemoveFromHistory" method="post" onsubmit="return confirm('do you really want to remove this item from your recycling history?');">
-                            <input type="hidden" name="itemId" value="@item.ItemID" />
+                            <input type="hidden" name="itemId" value="@item.ItemId" />
                             <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                         </form>
                     </div>
 
                     <div class="text-end mt-2">
-                        <span class="border p-1 mx-1">@item.RoomTag.ToString()</span>
-                        <span class="border p-1 mx-1">@(item.Category?.CategoryName ?? "Uncategorized")</span>
+                        <span class="border p-1 mx-1">@item.Item?.RoomTag.ToString()</span>
+                        <span class="border p-1 mx-1">@(item.Item?.Category?.CategoryName ?? "Uncategorized")</span>
                     </div>
 
                 </div>

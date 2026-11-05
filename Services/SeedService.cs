@@ -163,13 +163,13 @@ namespace GroupProject.Services
                 //WM - temporarily seeding some products for user to show a history of disposed items for testing.
                 //WM - specifically async to avoid any blockages
                 var normalUser = await userManager.FindByEmailAsync("user@gmail.com");//May need to change to 'member' to reflect new account. Member not seeded due to admin still present tho -RW
-                if (normalUser != null && !await context.ProductHistories.AnyAsync(ph => ph.UserID == normalUser.Id))
+                if (normalUser != null && !await context.UserHistories.AnyAsync(uh => uh.UserId == normalUser.Id))
                 {
-                    var userHistory = new ProductHistory
+                    var userHistory = new UserHistory
                     {
-                        UserID = normalUser.Id
+                        UserId = normalUser.Id
                     };
-                    context.ProductHistories.Add(userHistory);
+                    context.UserHistories.Add(userHistory);
                     await context.SaveChangesAsync();
 
                     var catElectronics = context.Categories.First(c => c.CategoryName == "Small Electronics");
@@ -183,7 +183,6 @@ namespace GroupProject.Services
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Kitchen,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-2)
                     };
 
@@ -194,7 +193,6 @@ namespace GroupProject.Services
                         IsRecyclable = true,
                         CategoryID = catMobile.CategoryID,
                         RoomTag = RoomTag.Bedroom,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-5)
                     };
 
@@ -205,9 +203,7 @@ namespace GroupProject.Services
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Office,
-                        HistoryID = userHistory.HistoryID,
-                        DateAdded= DateTime.UtcNow.AddDays(-6)
-
+                        DateAdded = DateTime.UtcNow.AddDays(-6)
                     };
 
                     var item4 = new Item
@@ -217,9 +213,7 @@ namespace GroupProject.Services
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Office,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow
-
                     };
 
                     var item5 = new Item
@@ -229,7 +223,6 @@ namespace GroupProject.Services
                         IsRecyclable = true,
                         CategoryID = catMobile.CategoryID,
                         RoomTag = RoomTag.Bedroom,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow
                     };
 
@@ -240,7 +233,6 @@ namespace GroupProject.Services
                         IsRecyclable = false,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Kitchen,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-10)
                     };
 
@@ -251,7 +243,6 @@ namespace GroupProject.Services
                         IsRecyclable = false,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Other,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-2)
                     };
 
@@ -262,7 +253,6 @@ namespace GroupProject.Services
                         IsRecyclable = false,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-1)
                     };
 
@@ -273,7 +263,6 @@ namespace GroupProject.Services
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow
                     };
 
@@ -284,7 +273,6 @@ namespace GroupProject.Services
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-5)
                     };
 
@@ -295,7 +283,6 @@ namespace GroupProject.Services
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-7)
                     };
 
@@ -306,10 +293,26 @@ namespace GroupProject.Services
                         IsRecyclable = false,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Other,
-                        HistoryID = userHistory.HistoryID,
                         DateAdded = DateTime.UtcNow.AddDays(-11)
                     };
                     context.Items.AddRange(item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11, item12);
+                    await context.SaveChangesAsync();
+
+                    // WM - creating the junction table so i can link items to the user's history and disposal locs
+                    context.UserHistoryItems.AddRange(
+                        new UserHistoryItem { ItemId = item1.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item1.DateAdded },
+                        new UserHistoryItem { ItemId = item2.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item2.DateAdded },
+                        new UserHistoryItem { ItemId = item3.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item3.DateAdded },
+                        new UserHistoryItem { ItemId = item4.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item4.DateAdded },
+                        new UserHistoryItem { ItemId = item5.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item5.DateAdded },
+                        new UserHistoryItem { ItemId = item6.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item6.DateAdded },
+                        new UserHistoryItem { ItemId = item7.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item7.DateAdded },
+                        new UserHistoryItem { ItemId = item8.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item8.DateAdded },
+                        new UserHistoryItem { ItemId = item9.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item9.DateAdded },
+                        new UserHistoryItem { ItemId = item10.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item10.DateAdded },
+                        new UserHistoryItem { ItemId = item11.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item11.DateAdded },
+                        new UserHistoryItem { ItemId = item12.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item12.DateAdded }
+                    );
                     await context.SaveChangesAsync();
 
                     context.ItemDisposals.AddRange(
@@ -332,7 +335,6 @@ namespace GroupProject.Services
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occurred while seeding the database.");
-
             }
         }
     }

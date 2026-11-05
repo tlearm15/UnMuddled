@@ -32,7 +32,8 @@ public class UnMuddledDbContext(
     public DbSet<Image> Images => Set<Image>();
     public DbSet<DisposalLocation> DisposalLocations => Set<DisposalLocation>();
     public DbSet<ItemDisposal> ItemDisposals => Set<ItemDisposal>();
-    public DbSet<ProductHistory> ProductHistories => Set<ProductHistory>();
+    public DbSet<UserHistory> UserHistories => Set<UserHistory>();
+    public DbSet<UserHistoryItem> UserHistoryItems => Set<UserHistoryItem>();
     public DbSet<Request> Requests => Set<Request>();
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -54,17 +55,21 @@ public class UnMuddledDbContext(
 
         // One to one relatioinship - User -> ProductHistory - TL
         builder.Entity<User>()
-            .HasOne(u => u.ProductHistory)
-            .WithOne(ph => ph.User)
-            .HasForeignKey<ProductHistory>(ph => ph.UserID);
+            .HasOne(u => u.UserHistory)
+            .WithOne(uh => uh.User)
+            .HasForeignKey<UserHistory>(uh => uh.UserId);
 
-        //One to many -  ProductHistory -> Items - TL
-        builder.Entity<ProductHistory>()
-            .HasMany(ph => ph.Items)
-            .WithOne(i => i.ProductHistory)
-            .HasForeignKey(i => i.HistoryID)
-            .IsRequired(false);
-        
+        // WM - adding in the junction table for many to many between userhistory and items
+        builder.Entity<UserHistoryItem>()
+            .HasOne(uhi => uhi.UserHistory)
+            .WithMany(uh => uh.UserHistoryItems)
+            .HasForeignKey(uhi => uhi.UserHistoryId);
+
+        builder.Entity<UserHistoryItem>()
+            .HasOne(uhi => uhi.Item)
+            .WithMany(i => i.UserHistoryItems)
+            .HasForeignKey(uhi => uhi.ItemId);
+
         // TQ- User location fields for encryption/decryption
         builder.Entity<User>(user =>
         {   // HasMaxLength <- excessive size for address lines, but there needs to be room for the ciphertext when it goes up on the DB.
