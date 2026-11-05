@@ -7,84 +7,104 @@
 @* jm: styling sheet for components *@
 <link rel="stylesheet" href="~/css/j_stylesheet.css" />
 
-<h1>My Recycling History</h1>
-<p>Below is a list of every item you have logged as recycled</p>
-<hr />
-
-<!-- WM - display a message if there's no recycling history to work with-->
-@if (!Model.Any())
-{
-    <div class="alert alert-info">
-        You haven't recycled any items yet
+@* jm: main body for page *@
+<main class="layout p-2">
+    @* jm: card displaying title and subtitle (history page)*@
+    <div class="cardpurple row align-items-center">
+        <div class="col-md-3 text-center mb-3">
+            <img src="~/images/snail.png" class="mascot img-fluid" alt="Toaster Snail Mascot" style="max-height: 150px; width: auto; margin:30px;"/>
+        </div>
+        <div class="col-md-8 text-center text-md-center">
+            <h1 class="titlepurple-var">My Recycling History</h1>
+            <p>Below is a list of every item you have logged as recycled</p>
+        </div>
     </div>
-}
-else
-{
-    <div>
-        <!-- WM - using a loop for the items in the model to display those items and their details-->
-        @foreach (var item in Model)
+
+    <div class="">
+        <!-- WM - display a message if there's no recycling history to work with-->
+        @if (!Model.Any())
         {
-            var disposal = item.Item?.ItemDisposals?.FirstOrDefault()?.DisposalLocation;
-            var itemImage = item.Item?.Images?.FirstOrDefault(img => img.IsPrimary) ?? item.Item?.Images?.FirstOrDefault();
-
-            <div class="d-flex border p-2 mb-3">
-
-                <!--WM displaying image for each product-->
-                <div style="width: 120px; height: 120px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
-                    @if (itemImage != null)
-                    {
-                        <img src="@itemImage.ImageURL" alt="@item.Item?.ItemName" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
-                    }
-                    else
-                    {
-                        <span class="text-muted">No Image</span>
-                    }
-                </div>
-
-                <div class="ms-3 d-flex flex-column justify-content-between flex-grow-1">
-
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h5 class="m-0"><strong>@item.Item?.ItemName</strong></h5>
-                            <small class="text-muted">@item.Item?.Description</small>
-                            <br />
-
-                            <!--WM - displaying the disposal location if it's there otherwise say it's not specified-->
-                            <small class="text-muted">
-                                <strong>Location:</strong>
-                                @if (disposal != null)
-                                {
-                                    @disposal.LocationName
-                                    <span> - </span>
-                                    @disposal.Town
-                                    <span>, </span>
-                                    @disposal.Postcode
-                                }
-                                else
-                                {
-                                    <span>Not specified</span>
-                                }
-                            </small>
-                            <br />
-
-                            <!--WM - displaying the date added for the item-->
-                            <small class="text-muted"><strong>Disposed:</strong> @item.DateDisposed.ToString("d")</small>
-                        </div>
-
-                        <!-- WM - delete button to remove the item from the user's history, optional implementation for frontend -->
-                        <form asp-controller="History" asp-action="RemoveFromHistory" method="post" onsubmit="return confirm('do you really want to remove this item from your recycling history?');">
-                            <input type="hidden" name="itemId" value="@item.ItemId" />
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
+            @* jm: card displaying there's no recycling history aad button to take to how to reycle page*@
+            <div class="cardlightgreen align-items-center mb-2">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <p> You haven't recycled any items yet!</p>
                     </div>
-
-                    <div class="text-end mt-2">
-                        <span class="border p-1 mx-1">@item.Item?.RoomTag.ToString()</span>
-                        <span class="border p-1 mx-1">@(item.Item?.Category?.CategoryName ?? "Uncategorized")</span>
+                    <div class="col-12 text-center">
+                        <a asp-controller="Item" asp-action="Index" class="btn btnpurple-long text-white"> How to Recycle </a>
                     </div>
-
                 </div>
             </div>
         }
+        else
+        {
+            <div>
+                <!-- WM - using a loop for the items in the model to display those items and their details-->
+                @foreach (var item in Model)
+                {
+                    var disposal = item.Item?.ItemDisposals?.FirstOrDefault()?.DisposalLocation;
+                    var itemImage = item.Item?.Images?.FirstOrDefault(img => img.IsPrimary) ?? item.Item?.Images?.FirstOrDefault();
+
+                    <div class="d-flex border p-2 mb-3">
+
+                        <!--WM displaying image for each product-->
+                        <div style="width: 120px; height: 120px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center;">
+                            @if (itemImage != null)
+                            {
+                                <img src="@itemImage.ImageURL" alt="@item.Item?.ItemName" style="max-width: 100%; max-height: 100%; object-fit: contain;"/>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No Image</span>
+                            }
+                        </div>
+
+                        <div class="ms-3 d-flex flex-column justify-content-between flex-grow-1">
+
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5 class="m-0"><strong>@item.Item?.ItemName</strong></h5>
+                                    <small class="text-muted">@item.Item?.Description</small>
+                                    <br/>
+
+                                    <!--WM - displaying the disposal location if it's there otherwise say it's not specified-->
+                                    <small class="text-muted">
+                                        <strong>Location:</strong>
+                                        @if (disposal != null)
+                                        {
+                                            @disposal.LocationName
+                                            <span> - </span>
+                                            @disposal.Town
+                                            <span>, </span>
+                                            @disposal.Postcode
+                                        }
+                                        else
+                                        {
+                                            <span>Not specified</span>
+                                        }
+                                    </small>
+                                    <br/>
+
+                                    <!--WM - displaying the date added for the item-->
+                                    <small class="text-muted"><strong>Disposed:</strong> @item.DateDisposed.ToString("d")</small>
+                                </div>
+
+                                <!-- WM - delete button to remove the item from the user's history, optional implementation for frontend -->
+                                <form asp-controller="History" asp-action="RemoveFromHistory" method="post" onsubmit="return confirm('do you really want to remove this item from your recycling history?');">
+                                    <input type="hidden" name="itemId" value="@item.ItemId"/>
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </div>
+
+                            <div class="text-end mt-2">
+                                <span class="border p-1 mx-1">@item.Item?.RoomTag.ToString()</span>
+                                <span class="border p-1 mx-1">@(item.Item?.Category?.CategoryName ?? "Uncategorized")</span>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+        }
     </div>
-}
+</main>
