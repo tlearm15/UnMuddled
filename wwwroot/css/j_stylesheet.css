@@ -1,26 +1,33 @@
 ﻿/*jm setting the navbar style for the site, including the colour of the nav bar, text spacing and font colour*/
 
+/*m */
 .navbar {
     background-color: #242926 !important;
     z-index: 9999 !important;
-}
 
-.navbar .nav-link, .navbar .navbar-brand, .navbar .navbar-text, .navbar span {
+}
+.navbar .nav-link,.navbar .navbar-brand,.navbar .navbar-text,.navbar span {
     color: #E9EAF0 !important;
-    letter-spacing: 0.1875rem;
-}
+    letter-spacing: 3px;
 
+}
 .navbar-toggler-icon, .navbar-toggler {
     background-color: #5F695D !important;
 }
+.nav-link {
+    margin: 0px 10px 0px 10px;
+    font-weight: 500;
+}
 
+/*m */
 .footer {
     background-color: #242926 !important;
-    position: relative;
-    margin-top: auto;
+    position: relative !important;
+    margin-top: 60px !important;
     margin-bottom: 0;
-    margin-top: auto;
+    padding: 15px 0;
     color: #E9EAF0 !important;
+    clear: both !important;
 }
 
 /*jm consistent responsive layout, adjusts to screen size and device, with a gap between each section of the site*/
@@ -38,11 +45,11 @@
     gap: 0.5rem;
 }
 
-/*jm setting the bg colour as well as the fotn colour for the whole body of the site*/
+/*m */
 body {
     background-color: #E9EAF0;
     color: #3A4338;
-    line-height: 1.5;
+    margin-bottom: 0 !important;
 }
 
 /*jm ensuring the paragraphs have no margin, as this was causing issues within styles*/
@@ -648,3 +655,37 @@ img {
     background: #382B38;
 }
 
+/*m item card image box container styling*/
+.item-card-img-box {
+    background: #E9EAF0;
+    height: 150px;
+    border: 1px dashed #717E7E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    border-radius: 8px;
+}
+
+.item-card-img {
+    max-height: 95px;
+    max-width: 100%;
+    object-fit: contain;
+    overflow: hidden;
+}
+
+.item-tags-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.item-tag {
+    background-color: #93A3A2;
+    color: #242926;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: solid 1px #717E7E;
+    font-weight: 600;
+}
