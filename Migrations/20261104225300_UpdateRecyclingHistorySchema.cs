@@ -12,32 +12,35 @@ namespace GroupProject.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Items_ProductHistories_HistoryID",
-                table: "Items");
-
-            migrationBuilder.DropTable(
-                name: "ProductHistories");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Items_HistoryID",
-                table: "Items");
-
-            migrationBuilder.DropColumn(
-                name: "HistoryID",
-                table: "Items");
-
-            migrationBuilder.DropColumn(
-                name: "HistoryID",
-                table: "AspNetUsers");
+            // Temporarily commented out because these columns/constraints were already removed from the live DB:
+            /*
+             *           migrationBuilder.DropForeignKey(
+             *               name: "FK_Items_ProductHistories_HistoryID",
+             *               table: "Items");
+             *
+             *           migrationBuilder.DropTable(
+             *               name: "ProductHistories");
+             *
+             *           migrationBuilder.DropIndex(
+             *               name: "IX_Items_HistoryID",
+             *               table: "Items");
+             *
+             *           migrationBuilder.DropColumn(
+             *               name: "HistoryID",
+             *               table: "Items");
+             *
+             *           migrationBuilder.DropColumn(
+             *               name: "HistoryID",
+             *               table: "AspNetUsers");
+             */
 
             migrationBuilder.CreateTable(
                 name: "UserHistories",
                 columns: table => new
                 {
                     UserHistoryId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                                         UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,10 +58,10 @@ namespace GroupProject.Migrations
                 columns: table => new
                 {
                     UserHistoryItemId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    DateDisposed = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ItemId = table.Column<int>(type: "integer", nullable: false),
-                    UserHistoryId = table.Column<int>(type: "integer", nullable: false)
+                    .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                                         DateDisposed = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                                         ItemId = table.Column<int>(type: "integer", nullable: false),
+                                         UserHistoryId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -120,9 +123,9 @@ namespace GroupProject.Migrations
                 columns: table => new
                 {
                     HistoryID = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserID = table.Column<string>(type: "text", nullable: false),
-                    DateDisposed = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                                         UserID = table.Column<string>(type: "text", nullable: false),
+                                         DateDisposed = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
