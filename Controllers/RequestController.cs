@@ -49,20 +49,20 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
         // TQ- check if the requested item had already been requested previously
         if( DuplicateRequestExists( request.UserID, request.ItemName ) )
         {
-            TempData["ErrorMessage"] = "You have already requested this item and it's waiting for review.";
+            ModelState.AddModelError( string.Empty, "You have already requested this item and it's waiting for review." );
             PopulateCategories( request.CategoryID );
-            
             return View( request );
         }
         // TQ- check daily limit for requests was reached first
         // Gives a warning to come back tomorrow if they reach the limit.
         if( DailyLimitReached( request.UserID ) )
         {
-            TempData["ErrorMessage"] = $"You have reached the maximum of {DailyRequestLimit} item requests per day. Please try again tomorrow.";
+            ModelState.AddModelError( string.Empty, $"You have reached the maximum of {DailyRequestLimit} item requests per day. Please try again tomorrow." );
             PopulateCategories( request.CategoryID );
             
             return View( request );
         }
+        
         request.Status = RequestStatus.Pending;
         request.SubmittedOn = DateTime.UtcNow;
         request.ItemID = null;
