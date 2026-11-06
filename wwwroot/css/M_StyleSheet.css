@@ -21,17 +21,19 @@
 
 .footer {
     background-color: #242926 !important;
-    position: relative;
-    margin-top: auto;
+    position: relative !important;
+    margin-top: 60px !important;
     margin-bottom: 0;
-    margin-top: auto;
+    padding: 15px 0;
     color: #E9EAF0 !important;
+    clear: both !important;
 }
 
 /*m setting the bg colour as well as the fotn colour for the whole body of the site*/
 body {
     background-color: #E9EAF0;
     color: #3A4338;
+    margin-bottom: 0 !important;
 }
 
 /*m ensuring the paragraphs have no margin, as this was causing issues within styles*/
@@ -87,6 +89,13 @@ p {
 
 .subtitlegreen {
     color: #5F695D;
+    font-size: 30px;
+    letter-spacing: 3px;
+    font-weight: bold;
+    padding-top: 5px;
+}
+.subtitledarkgreen {
+    color: #3A4338;
     font-size: 30px;
     letter-spacing: 3px;
     font-weight: bold;
@@ -325,6 +334,13 @@ p {
 
 .mascot {
     height: 350px;
+    width: auto;
+    display: block;
+    object-fit: contain;
+    margin: 50px 0px 50px 0px;
+}
+.mascotmid {
+    height: 200px;
     width: auto;
     display: block;
     object-fit: contain;

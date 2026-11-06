@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers;
 
-[Authorize(Roles = "Admin, Staff, User")]
+[Authorize(Roles = "Admin, Staff, Member")]
 public class ItemController : Controller
 {
     private readonly UnMuddledDbContext _context;
@@ -96,8 +96,6 @@ public class ItemController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(Item item, IFormFile imageFile)
     {
-
-
         if (!ModelState.IsValid)
         {
             ViewBag.Categories = new SelectList(
@@ -109,9 +107,7 @@ public class ItemController : Controller
             return View(item);
         }
 
-        
-
-            _context.Add(item);
+        _context.Add(item);
         await _context.SaveChangesAsync();
 
         //DMQ- if the image file is not null, then execute

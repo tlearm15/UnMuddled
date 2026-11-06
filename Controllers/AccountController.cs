@@ -12,12 +12,14 @@ namespace GroupProject.Controllers
         private readonly SignInManager<User> signInManager;
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IEmailSender<User> emailSender;
 
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IEmailSender<User> emailSender)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.emailSender = emailSender;
         }
 
         [HttpGet]
@@ -86,6 +88,9 @@ namespace GroupProject.Controllers
                 await userManager.AddToRoleAsync(member, "Member");
                 //await signInManager.SignInAsync(user, isPersistent: false);
                 await SendAccountConfirm(member); // Send account confirmation email -RW
+                
+                //TL - Sets success popup message for the login page view
+                TempData["SuccessMessage"] = "Email Sent! Please check inbox for confirmation";
                 return RedirectToAction("Login", "Account");
             }
             else
@@ -267,12 +272,15 @@ namespace GroupProject.Controllers
 
             //Create Token for Confirmation -RW
             var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            
+            //TL - Encodes token for safe usage in URL
+            var encodedToken = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlEncode(System.Text.Encoding.UTF8.GetBytes(token));
             //Url for the confirmation link, which will be sent to the user's email. -RW
             var confirmationLink = Url.Action("ConfirmEmail", "Account",
-                new { userId = user.Id, token = token }, Request.Scheme);
+                new { userId = user.Id, token = encodedToken }, Request.Scheme);
 
-            // Here you would send the email using your email service. -RW
-            //await emailService.SendVerificationEmailAsync(user.Email, confirmationLink);
+            //TL - Sends confirmation email
+            await emailSender.SendConfirmationLinkAsync(user, user.Email ?? string.Empty, confirmationLink ?? string.Empty);
         }
 
         [HttpGet]
@@ -290,19 +298,29 @@ namespace GroupProject.Controllers
             {
                 return NotFound("User not found");
             }
+            
+            //TL - Decodes the token for use in this method
+            var decodedTokenBytes = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlDecode(token);
+            var normalToken = System.Text.Encoding.UTF8.GetString(decodedTokenBytes);
+            
             // Confirm the user's email using the provided token -RW
-            var result = await userManager.ConfirmEmailAsync(user, token);
+            var result = await userManager.ConfirmEmailAsync(user, normalToken);
 
             if(result.Succeeded)
             {
-                return View("ConfirmEmail"); //Or whatever view you want to show after successful confirmation -RW
+                //TL - Redirects the user to the login page with a popup message
+                TempData["SuccessMessage"] = "Email successfully confirmed! You can now log in.";
+                return RedirectToAction("Login", "Account");
+                
             }
 
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-            return View("Error"); //Or whatever view you want to show in case of an error -RW
-        }
+            
+            //TL - Redirects the user to the login page with a popup message
+            TempData["SuccessMessage"] = "Email confirmation failed.";
+            return RedirectToAction("Login", "Account");        }
     }
 }

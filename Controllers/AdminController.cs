@@ -109,7 +109,9 @@ namespace GroupProject.Controllers
                 var roleResult = await userManager.AddToRoleAsync(user, selectedRole.ToString());
                 if (roleResult.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    // jm: Redirect to UserList, logically admin should be directed to UserList after successfully creating user.
+                    return RedirectToAction("UserList","Admin");
+                    //return RedirectToAction("Index", "Home");
                 }
 
                 foreach (var error in roleResult.Errors)
@@ -134,6 +136,11 @@ namespace GroupProject.Controllers
             if(user == null)
             {
                 return NotFound("User not found");
+            }
+            
+            if(id == userManager.GetUserId(User))
+            {
+                return RedirectToAction("UserList","Admin");
             }
             //Builds the model -RW
             var model = new ChangeRoleViewModel
@@ -163,6 +170,7 @@ namespace GroupProject.Controllers
             {
                 return NotFound("User not found");
             }
+
             //Stores the selected enum val for use -RW
             UserRole selectedRole = model.userRole;
             //Parses the enum val as a string to be used in Identity -Rw
