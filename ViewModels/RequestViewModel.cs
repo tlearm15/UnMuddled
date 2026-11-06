@@ -6,6 +6,7 @@ namespace GroupProject.ViewModels
     public class RequestViewModel// Request view Model for request creation - DMQ
     {
         public int RequestID { get; set; }
+        public int? ItemID { get; set; }
 
         [Required(ErrorMessage = "Please provide the Item Name")]
         [Display(Name = "Item Name")]
@@ -20,12 +21,15 @@ namespace GroupProject.ViewModels
         [StringLength(1000, ErrorMessage = "Locations cannot exceed 1000 characters")]
         public string RecyclingLocations { get; set; } = string.Empty;
 
+        [Display(Name = "Status")]
+        public RequestStatus Status;
+
         [Display(Name = "Room Tag")]
         public RoomTag RoomTag { get; set; } = RoomTag.Other;
 
         [Display(Name = "Upload Image")]
-        public IFormFile? ImageFile { get; set; }
-
-        public string? ExistingImageUrl { get; set; }
+        public IFormFile? ImageUrl { get; set; }
+        public DateTime SubmittedOn { get; internal set; }
+        public string UserID { get; internal set; } = string.Empty;
     }
 }

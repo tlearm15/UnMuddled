@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using GroupProject.Models;
+using GroupProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,6 +23,9 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
             nameof(Category.CategoryName),
             selected);
     }
+
+
+
     /// <summary>
     /// GET
     /// TQ- This will be the item submission form
@@ -37,20 +41,30 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
     /// <returns></returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Index(Request request)
+    public IActionResult Index(RequestViewModel requestViewmodel)
     {
         if( !ModelState.IsValid )
         {
-            PopulateCategories( request.CategoryID );
-            return View( request );
+            PopulateCategories(requestViewmodel.CategoryID );
+            return View(requestViewmodel);
         }
-        
-        request.UserID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        request.Status = RequestStatus.Pending;
-        request.SubmittedOn = DateTime.UtcNow;
-        request.ItemID = null;
+
+        //DMQ - creates an object to save the details
+        var requstentity = new Request
+        {
+            CategoryID = requestViewmodel.CategoryID,
+            UserID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty,
+            Status = RequestStatus.Pending,
+            SubmittedOn = DateTime.UtcNow,
+            ItemID = null,
+            RoomTag = RoomTag.Other,
+            RecyclingLocations = "",
+            ItemName = "",
+            ImageUrl = null
+        };
+
         // shove this into the DB so a Staff can check it later
-        dbCtx.Requests.Add( request );
+        dbCtx.Requests.Add(requstentity);
         dbCtx.SaveChanges();
         // Return to this view
         return RedirectToAction( nameof(Index) );
@@ -85,10 +99,12 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
             .Include( r => r.User )
             .Include( r => r.Category )
             .FirstOrDefault( r => r.RequestID == id );
-        
-        if( request is null )
+
+        if (request is null)
+        {
             return NotFound();
-        
+        }
+
         return View( "Details", request );
     }
     /// <summary>
@@ -103,8 +119,10 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
     public IActionResult Approve(int id)
     {
         var request = dbCtx.Requests.Find( id );
-        if( request is null )
+        if (request is null)
+        {
             return NotFound();
+        }
 
         request.Status = RequestStatus.Approved;
         dbCtx.SaveChanges();
