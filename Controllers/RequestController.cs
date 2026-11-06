@@ -1,15 +1,16 @@
-using System.Security.Claims;
 using GroupProject.Models;
 using GroupProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace GroupProject.Controllers;
 
 [Authorize]
-public class RequestController(UnMuddledDbContext dbCtx) : Controller
+public class RequestController(UnMuddledDbContext dbCtx, IWebHostEnvironment _webHostEnvironment) : Controller
 {
     /// <summary>
     /// TQ- Fills
@@ -41,12 +42,32 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
     /// <returns></returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Member")]
     public IActionResult Index(RequestViewModel requestViewmodel)
     {
         if( !ModelState.IsValid )
         {
             PopulateCategories(requestViewmodel.CategoryID );
             return View(requestViewmodel);
+        }
+
+        string? uniqueFileName = null;
+
+        if (requestViewmodel.ImageUrl != null && requestViewmodel.ImageUrl.Length > 0)
+        {
+            string fileName = Path.GetFileNameWithoutExtension(requestViewmodel.ImageUrl.FileName);
+            string extension = Path.GetExtension(requestViewmodel.ImageUrl.FileName);
+             uniqueFileName = fileName + "_" + Guid.NewGuid().ToString() + extension;
+
+            // Combines to create the root path to the folder
+            string folder = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Items");
+            Directory.CreateDirectory(folder);
+            string fullPath = Path.Combine(folder, uniqueFileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                requestViewmodel.ImageUrl.CopyToAsync(stream);
+            }
         }
 
         //DMQ - creates an object to save the details
@@ -60,12 +81,13 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
             RoomTag = RoomTag.Other,
             RecyclingLocations = "",
             ItemName = "",
-            ImageUrl = null
+            ImageUrl = uniqueFileName
         };
 
         // shove this into the DB so a Staff can check it later
         dbCtx.Requests.Add(requstentity);
         dbCtx.SaveChanges();
+
         // Return to this view
         return RedirectToAction( nameof(Index) );
     }
