@@ -655,6 +655,28 @@ img {
     background: #382B38;
 }
 
+/*m styling item cards*/
+/*m item card container styling*/
+.item-card {
+    background-color: #C7D0CB;
+    border: solid 2px #717E7E;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: left;
+    color: #242926;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/*m item card title styling*/
+.item-card-title {
+    color: #242926;
+    margin-top: 0;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /*m item card image box container styling*/
 .item-card-img-box {
     background: #E9EAF0;
