@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Security.Cryptography.X509Certificates;
+using SendGrid;
+
+
+
 
 //loads the env file in the project root - TL
 // added saftey check to make sure site build does not fail if env is missing - TL
@@ -48,6 +52,27 @@ var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddDbContext<UnMuddledDbContext>(options =>
     options.UseNpgsql(dataSource));
+
+
+//adds sendrid to builder services -TL
+builder.Services.AddTransient<ISendGridClient>(provider =>
+{
+    //TL - Gets api key from env
+    var apiKey = Environment.GetEnvironmentVariable("SENDGRID_API_KEY");
+    
+    //TL - Sets API key from env to the variable required by sendgrid
+    var options = new SendGridClientOptions 
+    { 
+        ApiKey = apiKey 
+    };
+    
+    return new SendGridClient(options);
+});
+
+//TL - Adds email sender service
+builder.Services.AddTransient<EmailService>();
+builder.Services.AddTransient<IEmailSender<User>, EmailService>();
+
 
 // Add Identity services with custom password and user options-RW
 builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -97,5 +122,6 @@ app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 
 app.Run();
