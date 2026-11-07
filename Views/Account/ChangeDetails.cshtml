@@ -44,6 +44,18 @@
                 <span asp-validation-for="PostCode" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-primary">Confirm Changes</button>
+
+            @* - 2FA toggle, codes are emailed to the address shown below when enabled *@
+            <div class="form-group">
+                <div class="form-check">
+                    <label asp-for="Is2FAEnabled" class="form-check-label">
+                        <input asp-for="Is2FAEnabled" class="form-check-input" />
+                        @Html.DisplayNameFor(a => a.Is2FAEnabled)
+                    </label>
+                    <span asp-validation-for="Is2FAEnabled" class="text-danger"></span>
+                </div>
+                <small class="text-muted">Verification codes will be emailed to @ViewBag.MaskedEmail</small>
+            </div>
         </form>
     </div>
 </div>
