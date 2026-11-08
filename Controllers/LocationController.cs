@@ -17,7 +17,7 @@ namespace GroupProject.Controllers
     {
 
         //DMQ - making the dbcontext a read-only property
-        private UnMuddledDbContext _dbContext;
+        private readonly UnMuddledDbContext _dbContext;
 
 
         //DMQ - Dependency Injection for the database context
