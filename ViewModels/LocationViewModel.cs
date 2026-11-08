@@ -8,7 +8,7 @@ namespace GroupProject.ViewModels;
 public class LocationViewModel
 {
     // --- jm: Inputs ---
-    public int SelectedItemId { get; set; }
+    public int? SelectedItemId { get; set; }
     public string? LocationSearch { get; set; }
     public bool UseSavedAddress { get; set; } 
     
@@ -18,7 +18,7 @@ public class LocationViewModel
     public decimal? Longitude { get; set; }
 
     // --- jm: Dropdowns & Results ---
-    public IEnumerable<SelectList>? Items { get; set; } // jm: dropdown list of items user can select
-    public List<DisposalLocation> NearbyLocations { get; set; } = []; // jm: results of nearby locations found by the search
+    public IEnumerable<SelectListItem> Items { get; set; } = new List<SelectListItem>(); // jm: dropdown list of items user can select
+    public List<DisposalLocation> Locations { get; set; } = []; // jm: results of nearby locations found by the search
     public string? ItemName { get; set; }
 }
