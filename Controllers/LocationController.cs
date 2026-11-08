@@ -13,7 +13,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace GroupProject.Controllers
 {
-    public class LoactionController : Controller
+    public class LocationController : Controller
     {
 
         //DMQ - making the dbcontext a read-only property
@@ -21,7 +21,7 @@ namespace GroupProject.Controllers
 
 
         //DMQ - Dependency Injection for the database context
-        public LoactionController(UnMuddledDbContext dbContext)
+        public LocationController(UnMuddledDbContext dbContext)
         {
             _dbContext = dbContext;
         }
