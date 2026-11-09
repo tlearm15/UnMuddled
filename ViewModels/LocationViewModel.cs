@@ -11,6 +11,7 @@ public class LocationViewModel
     public int? SelectedItemId { get; set; }
     public string? LocationSearch { get; set; }
     public bool UseSavedAddress { get; set; } 
+    public bool HasSavedAddress { get; set; }
     
     // --- jm: Geolocation ---
     // jm: coordinates for Geolocation
