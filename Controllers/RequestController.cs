@@ -42,7 +42,6 @@ public class RequestController(UnMuddledDbContext dbCtx, IWebHostEnvironment _we
     /// <returns></returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Member")]
     public IActionResult Index(RequestViewModel requestViewmodel)
     {
         if( !ModelState.IsValid )
@@ -66,7 +65,7 @@ public class RequestController(UnMuddledDbContext dbCtx, IWebHostEnvironment _we
 
             using (var stream = new FileStream(fullPath, FileMode.Create))
             {
-                requestViewmodel.ImageUrl.CopyToAsync(stream);
+                requestViewmodel.ImageUrl.CopyTo(stream);
             }
         }
 
