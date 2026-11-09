@@ -1,4 +1,4 @@
-﻿@* @model GroupProject.ViewModels.LocationViewModel *@
+﻿@model GroupProject.ViewModels.LocationViewModel 
 
 
 @* jm: added styling sheet for components *@
@@ -14,24 +14,72 @@
 
 <main class="layout">
     <div class="text-center mb-2">
-        <h1 class="titlepurple-var">Where to Recycle?</h1>
+        <h1 class="titlepurple-var">Where to Recycle</h1>
+        <p> Not sure where to recycle your item? Use our recycling locator </p>
     </div>
-    @* jm: search form *@
-    <div class="row">
-        <div class="col-md-4">
+    <div class="container-fluid">
+        <div class="row g-2">
+            <div class="col-md-4 mb-4">
+                <div class="carddustygreen p-4">
+                    <h5>Search</h5>
 
-        </div>
+                    <form asp-action="Index" method="post" id="searchForm">
+                        @* jm: item selection *@
+                        <div class="purple-select mb-2">
+                            <label asp-for="SelectedItemId" class="form-label">Select the Item you'd like to Recycle </label>
+                            <select asp-for="SelectedItemId" asp-items="Model.Items" class="form-select">
+                                <option value=""> Select an Item </option>
+                            </select>
+                        </div>
+                        @* jm: location search via user input *@
+                        <div class="mb-2">
+                            <label asp-for="LocationSearch" class="form-label">Enter town or postcode</label>
+                            <input asp-for="LocationSearch" class="form-control"/>
+                        </div>
+                        
+                        @* jm: location search via user's saved address using check box 
+                           TODO: Logic to only show this if user is logged in and has address *@
+                        <div class="form-check mb-4">
+                            <input asp-for="UseSavedAddress" class="form-check-input" type="checkbox" id="useSavedAddress" role="switch"/>
+                            <label class="form-check-label" for="useSavedAddress">
+                                Use my saved address
+                            </label>
+                        </div>
+                        
+                        @* jm: hidden fields for geolocation *@
+                        <input type="hidden" asp-for="Latitude" id="Latitude"/>
+                        <input type="hidden" asp-for="Longitude" id="Longitude"/>
 
-        @* jm: map *@
-        <div class="col-md-8">
-            <div id="map"> </div>
+                        @* jm: location search via user's current address using check box *@
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="useCurrentLocation" onchange="toggleCurrentLocation(this)" />
+                            <label class="form-check-label" for="useCurrentLocation">
+                                Use my current location
+                            </label>
+                        </div>
+                        
+                        @* jm: button submits form and findings locations near them *@
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btnpurple btn-lg">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
+            @* jm: map *@
+            <div class="col-md-8">
+                <div class="card">
+                    <div id="map"> </div>
+                </div>
+
+
+            </div>
         </div>
     </div>
 
 </main>
 
-
+@* JM: TODO JS LOGIC FOR leaflet *@
 <script>
     //initialise the map (defaults to Glasgow)
     var map = L.map('map').setView([55.8642, -4.2518], 12);
