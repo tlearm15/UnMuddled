@@ -50,19 +50,22 @@ public class RequestController(UnMuddledDbContext dbCtx, IWebHostEnvironment _we
             return View(requestViewmodel);
         }
 
+        //DMQ - creates a file name property
         string? uniqueFileName = null;
 
+        //DMQ - if an image has been uploaded and has content
         if (requestViewmodel.ImageUrl != null && requestViewmodel.ImageUrl.Length > 0)
         {
             string fileName = Path.GetFileNameWithoutExtension(requestViewmodel.ImageUrl.FileName);
             string extension = Path.GetExtension(requestViewmodel.ImageUrl.FileName);
              uniqueFileName = fileName + "_" + Guid.NewGuid().ToString() + extension;
 
-            // Combines to create the root path to the folder
+            //DMQ - Combines to create the root path to the folder - DMQ
             string folder = Path.Combine(_webHostEnvironment.WebRootPath, "Images", "Items");
             Directory.CreateDirectory(folder);
             string fullPath = Path.Combine(folder, uniqueFileName);
 
+            //DMQ - Open a file stream and copy the uploaded file data to the server disk
             using (var stream = new FileStream(fullPath, FileMode.Create))
             {
                 requestViewmodel.ImageUrl.CopyTo(stream);
