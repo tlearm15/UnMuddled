@@ -257,7 +257,7 @@ namespace GroupProject.Controllers
             //Checks if id is loggedin users id
             if (id == userManager.GetUserId(User))
             {
-                return RedirectToAction("UserList");
+                return RedirectToAction("Index");
             }
 
             return View(user);
@@ -298,7 +298,7 @@ namespace GroupProject.Controllers
                 return View("DeleteUser", user);
             }
             //Deletion success. Returns to User List page
-            return RedirectToAction("UserList", "Admin");
+            return RedirectToAction("Index", "Admin");
             // POST: AdminController/Delete/5
 
         } 
