@@ -4,6 +4,7 @@ using GroupProject.Models;
 using GroupProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers
 {
@@ -13,13 +14,46 @@ namespace GroupProject.Controllers
         private readonly UserManager<User> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IEmailSender<User> emailSender;
+        private readonly UnMuddledDbContext _context;
 
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IEmailSender<User> emailSender)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IEmailSender<User> emailSender, UnMuddledDbContext context)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.roleManager = roleManager;
             this.emailSender = emailSender;
+            _context = context;
+        }
+
+        /// <summary>
+        /// GET
+        /// TQ- Stub for viewing profile
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = "Member, Staff, Admin")]
+        public async Task<IActionResult> Index()
+        {
+            //m getting the currently logged in user from identity manager
+            var user = await userManager.GetUserAsync(User);
+            //m if user is null yhen return not found
+            if (user is null) return NotFound();
+
+            var userHistory = await _context.UserHistories
+                .Include(uh => uh.UserHistoryItems).ThenInclude(uhi => uhi.Item).ThenInclude(i => i.Category)
+                .Include(uh => uh.UserHistoryItems).ThenInclude(uhi => uhi.Item).ThenInclude(i => i.Images)
+                .FirstOrDefaultAsync(uh => uh.UserId == user.Id);
+
+            //m getting recycled items
+            var recycledItems = userHistory?.UserHistoryItems?
+                .Select(uhi => uhi.Item)
+                .Where(i => i != null)
+                .OrderByDescending(i => i.DateAdded)
+                .ToList() ?? new List<Item>();
+
+            //m passing the recycled items to the view
+            ViewData["RecycledItems"] = recycledItems;
+
+            return View(user);
         }
 
         [HttpGet]
