@@ -134,7 +134,7 @@ namespace GroupProject.Controllers
         /// <param name="lat2">Latitude of the second point</param>
         /// <param name="lon2">Longitude of the second point</param>
         /// <returns>Distance between two coordinates in miles</returns>
-        private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+        private static double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
             const double earthRadius = 3958.8; // JM: Earth radius in miles
             
