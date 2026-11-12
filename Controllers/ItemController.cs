@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers;
 
-[Authorize(Roles = "Admin, Staff, User")]
+[Authorize(Roles = "Admin, Staff, Member")]
 public class ItemController : Controller
 {
     private readonly UnMuddledDbContext _context;

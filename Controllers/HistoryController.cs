@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers;
 
-[Authorize] 
+[Authorize]
 public class HistoryController : Controller
 {
     private readonly UnMuddledDbContext _context;
@@ -44,26 +44,30 @@ public class HistoryController : Controller
             return Forbid();
         }
 
-        // WM - getting the user's product history with items categories, images, and disposal locs
-        var userHistory = await _context.ProductHistories
-            .Include(ph => ph.Items)
-                .ThenInclude(i => i.Category)
-            .Include(ph => ph.Items)
-                .ThenInclude(i => i.Images)
-            .Include(ph => ph.Items)
-                .ThenInclude(i => i.ItemDisposals)
-                    .ThenInclude(id => id.DisposalLocation)
-            .FirstOrDefaultAsync(ph => ph.UserID == userId);
+        // WM - getting the user's product history by doing navigation through the junction table so
+        // this grabs recycled items, categories, images, and disposal locatations
+        var userHistory = await _context.UserHistories
+            .Include(uh => uh.UserHistoryItems)
+                .ThenInclude(uhi => uhi.Item)
+                    .ThenInclude(i => i.Category)
+            .Include(uh => uh.UserHistoryItems)
+                .ThenInclude(uhi => uhi.Item)
+                    .ThenInclude(i => i.Images)
+            .Include(uh => uh.UserHistoryItems)
+                .ThenInclude(uhi => uhi.Item)
+                    .ThenInclude(i => i.ItemDisposals)
+                        .ThenInclude(id => id.DisposalLocation)
+            .FirstOrDefaultAsync(uh => uh.UserId == userId);
 
         //WM - display empty list if there's no history or items yet
-        if (userHistory == null || userHistory.Items == null)
+        if (userHistory == null || userHistory.UserHistoryItems == null)
         {
-            return View(new List<Item>());
+            return View(new List<UserHistoryItem>());
         }
 
-        // WM - getting recycled items ordered by desc
-        var recycledItems = userHistory.Items
-            .OrderByDescending(i => i.DateAdded)
+        // WM - getting recycled items ordered by desc of disposal
+        var recycledItems = userHistory.UserHistoryItems
+            .OrderByDescending(uhi => uhi.DateDisposed)
             .ToList();
 
         return View(recycledItems);
@@ -73,49 +77,46 @@ public class HistoryController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddToHistory(int itemId)
     {
-        //WM - getting the user id
+        // WM - getting the user id
         var userId = _userManager.GetUserId(User);
         if (string.IsNullOrEmpty(userId))
         {
             return RedirectToAction("Login", "Account");
         }
 
-        // WM - check if the user already has product history record if not then make one
-        var userHistory = await _context.ProductHistories
-            .FirstOrDefaultAsync(ph => ph.UserID == userId);
+        // WM - check if the user already has a UserHistory record, if not then make one
+        var userHistory = await _context.UserHistories
+            .FirstOrDefaultAsync(uh => uh.UserId == userId);
 
         if (userHistory == null)
         {
-            userHistory = new ProductHistory { UserID = userId };
-            _context.ProductHistories.Add(userHistory);
-            await _context.SaveChangesAsync(); // Save to generate the HistoryID
+            userHistory = new UserHistory { UserId = userId };
+            _context.UserHistories.Add(userHistory);
+            await _context.SaveChangesAsync(); 
         }
 
-        //WM - get the original item so i can clone it to the user's history
+        // WM - checking the item exists
         var originalItem = await _context.Items.FirstOrDefaultAsync(i => i.ItemID == itemId);
         if (originalItem == null)
         {
             return NotFound();
         }
 
-        // WM - creating a new item for the user's history that's based on the original item
-        var recycledItem = new Item
+        // WM - creating a junction table record that links users to items
+        var historyItem = new UserHistoryItem
         {
-            ItemName = originalItem.ItemName,
-            Description = originalItem.Description,
-            IsRecyclable = originalItem.IsRecyclable,
-            CategoryID = originalItem.CategoryID,
-            RoomTag = originalItem.RoomTag,
-            HistoryID = userHistory.HistoryID,
-            DateAdded = DateTime.UtcNow
+            ItemId = originalItem.ItemID,
+            UserHistoryId = userHistory.UserHistoryId,
+            DateDisposed = DateTime.UtcNow
         };
 
-        _context.Items.Add(recycledItem);
+        _context.UserHistoryItems.Add(historyItem);
         await _context.SaveChangesAsync();
 
         // WM - redirect back to the history page to show the new item
         return RedirectToAction("Index", "History");
     }
+
     //WM - method to remove an item from a user's history
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -128,27 +129,28 @@ public class HistoryController : Controller
             return RedirectToAction("Login", "Account");
         }
 
-        // WM - getting the user's recycling history and making sure it belongs to them
-        var userHistory = await _context.ProductHistories
-            .FirstOrDefaultAsync(ph => ph.UserID == userId);
+        // WM - getting the user's history
+        var userHistory = await _context.UserHistories
+            .FirstOrDefaultAsync(uh => uh.UserId == userId);
 
-        //WM - if no item then return not found
+        //WM - if no history then return not found
         if (userHistory == null)
         {
             return NotFound();
         }
 
-        // WM - getting the item to delete it and making sure its on the user's history
-        var itemToDelete = await _context.Items
-            .FirstOrDefaultAsync(i => i.ItemID == itemId && i.HistoryID == userHistory.HistoryID);
+        // WM - finding the actual junction record that is connecting this user to this item
+        var itemToDelete = await _context.UserHistoryItems
+            .FirstOrDefaultAsync(uhi => uhi.ItemId == itemId && uhi.UserHistoryId == userHistory.UserHistoryId);
 
-        //WM - if the item exists then delete it and return to the history page
+        // WM - if the junction record exists, delete it
         if (itemToDelete != null)
         {
-            _context.Items.Remove(itemToDelete);
+            _context.UserHistoryItems.Remove(itemToDelete);
             await _context.SaveChangesAsync();
         }
-        //WM - reutnr and show the updated list
+
+        //WM - return and show the updated list
         return RedirectToAction(nameof(Index));
     }
 }

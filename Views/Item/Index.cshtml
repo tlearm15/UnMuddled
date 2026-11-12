@@ -1,0 +1,93 @@
+﻿@model IEnumerable<GroupProject.Models.Item>
+
+@{
+    ViewData["Title"] = "E-Waste Items Catalogue";
+}
+
+<link rel="stylesheet" href="~/css/M_StyleSheet.css" />
+
+@*m top anocument card using bootstrap *@
+<div class="cardpurple">
+    <div class="row align-items-center">
+
+        @*m mascot column *@
+        <div class="col-md-3 text-center mb-3 mb-md-0">
+            <img src="~/images/snail.png" class="mascot img-fluid" alt="Toaster Snail Mascot" style="max-height: 150px; width: auto; margin:30px;" />
+        </div>
+
+        @*m text column *@
+        <div class="col-md-6 text-center text-md-start">
+            <h2 class="subtitlepurple">How To Recycle E-Waste Items</h2>
+            <p class="fw-semibold mb-1">Mudd the Toaster Snail wants to help you deal with your E-Waste.</p>
+            <p class="small text-muted mb-0">Use the filters on the left or search below to find specific items and recycling points.</p>
+        </div>
+
+        @*m locator action button column *@
+        <div class="col-md-3 text-center text-md-end mt-md-0 p-5">
+@*             unsure where this will be linked, needs ammending 
+ *@            <a asp-controller="Item" asp-action="Locator" class="btnpurple-long-big"> Where to Recycle</a>
+        </div>
+
+    </div>
+</div>
+
+@*m main item container displaying all items *@
+<div class="container-fluid mt-4 px-0">
+    <div class="row justify-content-center g-4" style="margin: 20px auto; width: 100%; max-width: 1200px;">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="col-12 text-center mt-5">
+                <p class="text-muted fs-5">We are sorry, we couldn't find any items.</p>
+            </div>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                var firstImage = item.Images?.FirstOrDefault();
+
+                <div class="col-lg-4 col-md-6 mb-3">
+
+                    <div class="item-card" style="width:300px;">
+
+                        <h4 class="item-card-title text-center">@item.ItemName</h4>
+
+                        <div class="item-card-img-box">
+                            @if (firstImage != null)
+                            {
+@*                                 unsure how images are being handled, left blank here, must be ammended
+ *@                            }
+                            else
+                            {
+                                <span class="tinytextgreen text-muted">Sorry, No Image Available</span>
+                            }
+                        </div>
+
+                        @*m item description *@
+@*                         <p class="card-text small text-center text-dark flex-grow-1 mb-3">
+                           @(string.IsNullOrEmpty(item.Description) ? "E-waste item registered for recycling." : item.Description)</p> *@
+
+                        @*m room tag and category pill badges using custom css containers *@
+                        <div class="item-tags-container mt-auto pt-2 mb-2 justify-content-center gap-2">
+
+                            <span class="item-tag">
+                                @item.RoomTag
+                            </span>
+
+                            <span class="item-tag">
+                                @(item.Category?.CategoryName ?? "General")
+                            </span>
+
+                        </div>
+
+                        @*m details action button *@
+                        <a asp-action="Details" asp-route-id="@item.ItemID" class="btn btnpurple btn-sm fw-bold w-100 mt-2 py-2 text-decoration-none text-center">View Details</a>
+
+                    </div>
+
+                </div>
+            }
+        }
+
+    </div>
+</div>

@@ -1,0 +1,104 @@
+﻿@model GroupProject.Models.User
+
+@{
+    ViewData["Title"] = "User Profile";
+
+    //m getting actual recycled items list passed from the controller via the view data
+    var recycledItems = ViewData["RecycledItems"] as List<GroupProject.Models.Item> ?? new List<GroupProject.Models.Item>();
+
+    // m counting the users recycled items
+    int itemTotalCount = recycledItems.Count;
+
+    //m getting users name for display
+    string displayName = !string.IsNullOrEmpty(Model.UserName) ? Model.UserName : "User Profile";
+}
+
+<link rel="stylesheet" href="~/css/M_StyleSheet.css" />
+
+<div>
+    <div class="cardpurple" style="padding: 30px;">
+
+        @*m users infomation container *@
+        <div class="cardlightgreen" style="display: flex; align-items: center; justify-content: space-between; padding: 25px; flex-wrap: wrap; gap: 20px;">
+
+            <div style="display: flex; align-items: center; gap: 20px;">
+                
+                <div style="width: 100px; height: 100px; border: 2px solid; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                
+                    <img src="~/images/snail.png" style="width: 70px; height: auto;" alt="Users Profile Picture" />
+                </div>
+
+                <div>
+                    @*m display user name *@
+                    <h3 class="titlepurple-var" style="justify-content: flex-start; margin-bottom: 5px;">
+                        @displayName
+                    </h3>
+                    @*m display total items recycled dynamically from database *@
+                    <p style="margin: 0; font-weight: 500;">@itemTotalCount Items Recently Recycled</p>
+                </div>
+            </div>
+
+            @*m profile management action butons *@
+            <div style="display: flex; flex-direction: column; gap: 10px; min-width: 200px;">
+                <a asp-controller="Account" asp-action="ChangeDetails"
+                   class="btnpurple-long-big"
+                   style="text-decoration:none; display:flex; align-items:center; justify-content:center; width: 100%;">Edit Profile Details</a>
+
+                <a asp-controller="Account" asp-action="ChangePassword"
+                   class="btnpurple-long-big"
+                   style="text-decoration:none; display:flex; align-items:center; justify-content:center; width: 100%;">Edit Password</a>
+            </div>
+
+        </div>
+
+        <hr class="linepurple" />
+
+        @*m recently recycled items *@
+        <div style="text-align: left; margin-bottom: 20px;">
+            <h3 class="titlepurple-var" style="justify-content: flex-start; margin-bottom: 5px;">Recently Recycled</h3>
+            <p class="smalltextpurple" style="margin: 0;">Below is a list of every item the user has logged as recycled</p>
+        </div>
+
+        @*m list for database recycled items *@
+        <div style="display: flex; flex-direction: column; gap: 0px;">
+            @if (recycledItems.Any())
+            {
+                foreach (var item in recycledItems)
+                {
+                    var firstImage = item.Images?.FirstOrDefault();
+                    // setting category to be general if there is no catefgory name already
+                    string categoryName = item.Category?.CategoryName ?? "General";
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #7d6b83;">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <div style="width: 80px; height: 70px; border: 2px solid; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
+                                @if (firstImage != null)
+                                {
+                                    //code here for ITEM IMAGES
+                                }
+                                else
+                                //m fallback text if no image exists in databse for this item
+                                {
+                                    <span class="tinytextgreen" style="font-size: 0.65rem;">No Image</span>
+                                }
+                            </div>
+                            <h4 class="item-card-title" style="margin: 0;">@item.ItemName</h4>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <span class="item-tag">@item.RoomTag</span>
+                            <span class="item-tag">@categoryName</span>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            //m if suer has no histyor yet
+            {
+                <p class="smalltextpurple" style="padding: 20px; font-style: italic; text-align: center;">You have not logged any recycled items yet.</p>
+            }
+        </div>
+
+    </div>
+
+</div>

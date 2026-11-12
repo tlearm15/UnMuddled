@@ -109,7 +109,9 @@ namespace GroupProject.Controllers
                 var roleResult = await userManager.AddToRoleAsync(user, selectedRole.ToString());
                 if (roleResult.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    // jm: Redirect to UserList, logically admin should be directed to UserList after successfully creating user.
+                    return RedirectToAction("UserList","Admin");
+                    //return RedirectToAction("Index", "Home");
                 }
 
                 foreach (var error in roleResult.Errors)
