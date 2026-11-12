@@ -37,7 +37,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.DisposalLocation", b =>
@@ -81,7 +81,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("DisposalID");
 
-                    b.ToTable("DisposalLocations");
+                    b.ToTable("DisposalLocations", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.Image", b =>
@@ -106,7 +106,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.Item", b =>
@@ -128,6 +128,9 @@ namespace GroupProject.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("character varying(450)");
 
+                    b.Property<int?>("HistoryID")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("IsRecyclable")
                         .HasColumnType("boolean");
 
@@ -143,7 +146,9 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("CategoryID");
 
-                    b.ToTable("Items");
+                    b.HasIndex("HistoryID");
+
+                    b.ToTable("Items", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.ItemDisposal", b =>
@@ -158,7 +163,30 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("ItemDisposals");
+                    b.ToTable("ItemDisposals", (string)null);
+                });
+
+            modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
+                {
+                    b.Property<int>("HistoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HistoryID"));
+
+                    b.Property<DateTime>("DateDisposed")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("HistoryID");
+
+                    b.HasIndex("UserID")
+                        .IsUnique();
+
+                    b.ToTable("ProductHistories", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.Request", b =>
@@ -206,7 +234,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Requests");
+                    b.ToTable("Requests", (string)null);
                 });
 
             modelBuilder.Entity("GroupProject.Models.User", b =>
@@ -218,16 +246,16 @@ namespace GroupProject.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("AddressLine1")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(75)
+                        .HasColumnType("character varying(75)");
 
                     b.Property<string>("AddressLine2")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(75)
+                        .HasColumnType("character varying(75)");
 
                     b.Property<string>("City")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(75)
+                        .HasColumnType("character varying(75)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -243,6 +271,9 @@ namespace GroupProject.Migrations
                     b.Property<string>("FirstName")
                         .HasMaxLength(55)
                         .HasColumnType("character varying(55)");
+
+                    b.Property<int?>("HistoryID")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("Is2FAEnabled")
                         .HasColumnType("boolean");
@@ -278,8 +309,8 @@ namespace GroupProject.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("PostCode")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -304,52 +335,6 @@ namespace GroupProject.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("GroupProject.Models.UserHistory", b =>
-                {
-                    b.Property<int>("UserHistoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserHistoryId"));
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("UserHistoryId");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("UserHistories");
-                });
-
-            modelBuilder.Entity("GroupProject.Models.UserHistoryItem", b =>
-                {
-                    b.Property<int>("UserHistoryItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserHistoryItemId"));
-
-                    b.Property<DateTime>("DateDisposed")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ItemId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserHistoryId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("UserHistoryItemId");
-
-                    b.HasIndex("ItemId");
-
-                    b.HasIndex("UserHistoryId");
-
-                    b.ToTable("UserHistoryItems");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -503,7 +488,13 @@ namespace GroupProject.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("GroupProject.Models.ProductHistory", "ProductHistory")
+                        .WithMany("Items")
+                        .HasForeignKey("HistoryID");
+
                     b.Navigation("Category");
+
+                    b.Navigation("ProductHistory");
                 });
 
             modelBuilder.Entity("GroupProject.Models.ItemDisposal", b =>
@@ -523,6 +514,17 @@ namespace GroupProject.Migrations
                     b.Navigation("DisposalLocation");
 
                     b.Navigation("Item");
+                });
+
+            modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
+                {
+                    b.HasOne("GroupProject.Models.User", "User")
+                        .WithOne("ProductHistory")
+                        .HasForeignKey("GroupProject.Models.ProductHistory", "UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GroupProject.Models.Request", b =>
@@ -548,36 +550,6 @@ namespace GroupProject.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("GroupProject.Models.UserHistory", b =>
-                {
-                    b.HasOne("GroupProject.Models.User", "User")
-                        .WithOne("UserHistory")
-                        .HasForeignKey("GroupProject.Models.UserHistory", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("GroupProject.Models.UserHistoryItem", b =>
-                {
-                    b.HasOne("GroupProject.Models.Item", "Item")
-                        .WithMany("UserHistoryItems")
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GroupProject.Models.UserHistory", "UserHistory")
-                        .WithMany("UserHistoryItems")
-                        .HasForeignKey("UserHistoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Item");
-
-                    b.Navigation("UserHistory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -648,20 +620,18 @@ namespace GroupProject.Migrations
                     b.Navigation("ItemDisposals");
 
                     b.Navigation("Requests");
+                });
 
-                    b.Navigation("UserHistoryItems");
+            modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("GroupProject.Models.User", b =>
                 {
+                    b.Navigation("ProductHistory");
+
                     b.Navigation("Requests");
-
-                    b.Navigation("UserHistory");
-                });
-
-            modelBuilder.Entity("GroupProject.Models.UserHistory", b =>
-                {
-                    b.Navigation("UserHistoryItems");
                 });
 #pragma warning restore 612, 618
         }
