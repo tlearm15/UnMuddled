@@ -8,14 +8,21 @@ namespace GroupProject.ViewModels;
 public class LocationViewModel
 {
     // --- jm: Inputs ---
+    [Required(ErrorMessage = "Please select an item to recycle")]
     public int? SelectedItemId { get; set; }
+    
+    [StringLength(100, ErrorMessage = "Location search must be under 100 characters")]
     public string? LocationSearch { get; set; }
-    public bool UseSavedAddress { get; set; } 
-    public bool HasSavedAddress { get; set; }
+    
+    // JM: Commented out as not in current scope to find locations based on user addresses
+    //public bool UseSavedAddress { get; set; } 
+   // public bool HasSavedAddress { get; set; }
     
     // --- jm: Geolocation ---
     // jm: coordinates for Geolocation
+    [Range(-90.0, 90.0, ErrorMessage = "Latitude must be between -90 and 90.")]
     public decimal? Latitude { get; set; }
+    [Range(-180.0, 180.0, ErrorMessage = "Longitude must be between -180 and 180.")]
     public decimal? Longitude { get; set; }
 
     // --- jm: Dropdowns & Results ---
