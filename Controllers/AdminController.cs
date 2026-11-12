@@ -26,9 +26,22 @@ namespace GroupProject.Controllers
             roleManager = rm;
         }
         // GET: AdminController
-        public ActionResult Index()
+        //m below is code for the admin dashboard
+        public async Task<IActionResult> Index()
         {
-            return View();
+            //m getting all users from the db for the user management list
+            List<User> users = await db.Users.ToListAsync();
+
+            //m getting recently recycled items from user histroy items
+            //m with item and user details
+            var recentHistory = await db.UserHistoryItems.Include(uhi => uhi.Item).Include(uhi => uhi.UserHistory).ThenInclude(uh => uh.User)
+                .OrderByDescending(uhi => uhi.DateDisposed).ToListAsync();
+
+            //m passing recent history list to the view via ViewBag
+            ViewBag.RecycledItems = recentHistory;
+
+            //m passing the sers list for the view
+            return View(users);
         }
 
         public IActionResult UserList()
