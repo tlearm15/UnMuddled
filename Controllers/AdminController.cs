@@ -276,7 +276,8 @@ namespace GroupProject.Controllers
             //Ensure it is not own id -RW
             if (id == userManager.GetUserId(User))
             {
-                return RedirectToAction("UserList");
+                // m adding in index redirect 
+                return RedirectToAction("Index", "Admin");
             }
             //Finds user attached to id -RW
             User? user = await userManager.FindByIdAsync(id);
@@ -298,6 +299,7 @@ namespace GroupProject.Controllers
                 return View("DeleteUser", user);
             }
             //Deletion success. Returns to User List page
+            // m adding in index redirect instead of UserList redirect
             return RedirectToAction("Index", "Admin");
             // POST: AdminController/Delete/5
 
