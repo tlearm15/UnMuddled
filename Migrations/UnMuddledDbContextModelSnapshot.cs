@@ -37,7 +37,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("GroupProject.Models.DisposalLocation", b =>
@@ -81,7 +81,7 @@ namespace GroupProject.Migrations
 
                     b.HasKey("DisposalID");
 
-                    b.ToTable("DisposalLocations", (string)null);
+                    b.ToTable("DisposalLocations");
                 });
 
             modelBuilder.Entity("GroupProject.Models.Image", b =>
@@ -106,7 +106,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("Images", (string)null);
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("GroupProject.Models.Item", b =>
@@ -148,7 +148,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("HistoryID");
 
-                    b.ToTable("Items", (string)null);
+                    b.ToTable("Items");
                 });
 
             modelBuilder.Entity("GroupProject.Models.ItemDisposal", b =>
@@ -163,7 +163,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("ItemID");
 
-                    b.ToTable("ItemDisposals", (string)null);
+                    b.ToTable("ItemDisposals");
                 });
 
             modelBuilder.Entity("GroupProject.Models.ProductHistory", b =>
@@ -186,7 +186,7 @@ namespace GroupProject.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("ProductHistories", (string)null);
+                    b.ToTable("ProductHistories");
                 });
 
             modelBuilder.Entity("GroupProject.Models.Request", b =>
@@ -216,6 +216,9 @@ namespace GroupProject.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
+                    b.Property<int>("RoomTag")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -234,7 +237,7 @@ namespace GroupProject.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("Requests", (string)null);
+                    b.ToTable("Requests");
                 });
 
             modelBuilder.Entity("GroupProject.Models.User", b =>
