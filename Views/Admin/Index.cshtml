@@ -23,6 +23,19 @@
     <hr class="linepurple"/>
 
     <div class="row">
+        @*m link for approve item requests needs updated when the approve item requests page is created *@
+        @*m sidebar menu for admin feutures *@
+        <div class="col-lg-3 mb-4">
+            <div class="menu-card">
+                <a asp-controller="Admin" asp-action="Index" class="menu-item menu-item-active">Dashboard</a>
+                <a asp-controller="Request" asp-action="Index" class="menu-item">Approve Item Requests</a>
+                <a asp-controller="Request" asp-action="Index" class="menu-item">Add Items</a>
+                <a asp-controller="Item" asp-action="EditAndDelete" class="menu-item">Edit &amp; Delete Items</a>
+                <a asp-controller="Admin" asp-action="CreateNewUser" class="menu-item">Create User Account</a>
+                <a asp-controller="Admin" asp-action="UserList" class="menu-item">See List of All User Accounts</a>
+            </div>
+        </div>
+
 
         <div class="col-lg-9">
             <div class="row">
