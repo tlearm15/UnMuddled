@@ -5,18 +5,65 @@ using GroupProject.Services;
 using GroupProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers;
 
-public class AccountController(
-    SignInManager<User> signInManager,
-    UserManager<User> userManager,
-    RoleManager<IdentityRole> roleManager,
-    IEmailSender<User> emailSender,
-    EmailService emailService)
-    : Controller
+public class AccountController : Controller
 {
-    private readonly RoleManager<IdentityRole> roleManager = roleManager;
+    private readonly SignInManager<User> signInManager;
+    private readonly UserManager<User> userManager;
+    private readonly RoleManager<IdentityRole> roleManager;
+    private readonly IEmailSender<User> emailSender;
+    private readonly EmailService emailService;
+    private readonly UnMuddledDbContext _context;
+
+    public AccountController(
+        SignInManager<User> signInManager,
+        UserManager<User> userManager,
+        RoleManager<IdentityRole> roleManager,
+        IEmailSender<User> emailSender,
+        EmailService emailService,
+        UnMuddledDbContext context)
+    {
+        this.signInManager = signInManager;
+        this.userManager = userManager;
+        this.roleManager = roleManager;
+        this.emailSender = emailSender;
+        this.emailService = emailService;
+        _context = context;
+    }
+
+    /// <summary>
+    /// GET
+    /// TQ- Stub for viewing profile
+    /// </summary>
+    /// <returns></returns>
+    [Authorize(Roles = "Member, Staff, Admin")]
+    public async Task<IActionResult> Index()
+    {
+        //m getting the currently logged in user from identity manager
+        var user = await userManager.GetUserAsync(User);
+        //m if user is null yhen return not found
+        if (user is null) return NotFound();
+
+        var userHistory = await _context.UserHistories
+            .Include(uh => uh.UserHistoryItems).ThenInclude(uhi => uhi.Item).ThenInclude(i => i.Category)
+            .Include(uh => uh.UserHistoryItems).ThenInclude(uhi => uhi.Item).ThenInclude(i => i.Images)
+            .FirstOrDefaultAsync(uh => uh.UserId == user.Id);
+
+        //m getting recycled items
+        var recycledItems = userHistory?.UserHistoryItems?
+            .Select(uhi => uhi.Item)
+            .Where(i => i != null)
+            .OrderByDescending(i => i.DateAdded)
+            .ToList() ?? new List<Item>();
+
+        //m passing the recycled items to the view
+        ViewData["RecycledItems"] = recycledItems;
+
+        return View(user);
+    }
 
     [HttpGet]
     public IActionResult Login() => View();
@@ -213,7 +260,7 @@ public class AccountController(
         if (result.Succeeded)
         {
             // TQ- Sync the 2FA toggle with Identity's built-in TwoFactorEnabled flag.
-            //   SetTwoFactorEnabledAsync also rotates the security stamp so it takes effect immediately
+            //    SetTwoFactorEnabledAsync also rotates the security stamp so it takes effect immediately
             if (user.TwoFactorEnabled == model.Is2FAEnabled)
                 return RedirectToAction("Index", "Home");
             var twoFactorResult = await userManager.SetTwoFactorEnabledAsync(user, model.Is2FAEnabled);
