@@ -1,14 +1,73 @@
-﻿<form asp-controller="History" asp-action="AddToHistory" method="post" class="mt-3">
-    <!--WM - getting the id for the current item-->
-    <input type="hidden" name="itemId" value="@Model.ItemID" />
+﻿@model GroupProject.Models.Item
 
-    <!--WM button to submit the item-->
-    <button type="submit" class="btn btn-secondary text-white w-100 mb-2" style="background-color: #5a4b5e; border-color: #4a3b4e;">
-        I Have Recycled This Recently!
-    </button>
-    <small class="form-text text-muted">
-        clicking this will add the item to your recently recycled profile.
-    </small>
-</form>
+@{
+    ViewData["Title"] = Model?.ItemName ?? "Item Details";
+}
 
 <link rel="stylesheet" href="~/css/M_StyleSheet.css" />
+
+<div class="container-fluid mt-4 px-4">
+
+    <div class="cardpurple p-5">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-5 mb-4 mb-md-0 text-center">
+                <div class="item-card-img-box d-flex align-items-center justify-content-center" style="height: 320px">
+                    @if (Model.Images != null && Model.Images.Any())
+                    //m if the items first image isnt null then display
+                    {
+                        
+                    }
+                    else
+                    //m if the items image is null then display text
+                    {
+                        <span class="tinytextgreen text-muted">Sorry, No Image Available</span>
+                    }
+                </div>
+            </div>
+
+            @*m product info tags and action buttons *@
+            <div class="col-md-7 ps-md-4">
+
+                <h1 class="titlepurple fw-bold mb-3">@Model.ItemName</h1>
+                <hr class="linepurple"/>
+
+                <h5 class="subtitlepurple mb-2">How to Recycle:</h5>
+                <p>
+                    @(string.IsNullOrEmpty(Model.Description) ? "No description available for this e-waste item." : Model.Description)
+                </p>
+
+                @*m room tag and category badges *@
+                <div class="d-flex gap-2 mb-4 mt-4">
+                    <span class="item-tag px-3 py-2">
+                        @Model.RoomTag
+                    </span>
+                    <span class="item-tag px-3 py-2">
+                        @(Model.Category?.CategoryName ?? "General")
+                    </span>
+                </div>
+
+                @*m boutton to locate nearby recycling options *@
+                <div class="mb-3">
+                    <a asp-controller="Item" asp-action="Locator" class="btnpurple-long text-decoration-none p-2 text-center fw-bold d-block w-100">
+                        Locate Nearby Recycling Options
+                    </a>
+                </div>
+
+                <form asp-controller="History" asp-action="AddToHistory" method="post" class="mt-3">
+                    <!--WM - getting the id for the current item-->
+                    <input type="hidden" name="itemId" value="@Model.ItemID" />
+
+                    <!--WM button to submit the item styled to match the top button exactly -->
+                    <button type="submit" class="btnpurple-long p-2 text-center fw-bold w-100 border-0">
+                        I Have Recycled This Recently
+                    </button>
+                    <p class="smalltextpurple mt-1">clicking the above button will add the item to your recently recycled profile</p>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>

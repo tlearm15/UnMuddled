@@ -246,16 +246,16 @@ namespace GroupProject.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("AddressLine1")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(75)
+                        .HasColumnType("character varying(75)");
 
                     b.Property<string>("AddressLine2")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(75)
+                        .HasColumnType("character varying(75)");
 
                     b.Property<string>("City")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(75)
+                        .HasColumnType("character varying(75)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -309,8 +309,8 @@ namespace GroupProject.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("PostCode")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");

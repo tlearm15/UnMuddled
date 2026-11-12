@@ -1,21 +1,18 @@
-using System.Security.Claims;
 using GroupProject.Models;
+using GroupProject.Services;
+using GroupProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using GroupProject.Services;
+using System.Security.Claims;
 
 namespace GroupProject.Controllers;
 
 [Authorize]
-public class RequestController(UnMuddledDbContext dbCtx) : Controller
+public class RequestController(UnMuddledDbContext dbCtx, IStorageService storageService) : Controller
 {
-    /// <summary>
-    /// TQ- Fills
-    /// </summary>
-    /// <param name="selected"></param>
-    private void PopulateCategories(int? selected = null, RoomTag? selectedRoom = null) //added RoomTag parameter
+    private void PopulateCategories(int? selected = null, RoomTag? selectedRoom = null)
     {
         ViewBag.Categories = new SelectList(
             dbCtx.Categories.OrderBy(c => c.CategoryName).ToList(),
@@ -23,7 +20,6 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
             nameof(Category.CategoryName),
             selected);
         
-        //TL - Gets RoomTags from enum
         ViewBag.RoomTags = Enum.GetValues<RoomTag>()
             .Select(r => new SelectListItem
             {
@@ -32,113 +28,149 @@ public class RequestController(UnMuddledDbContext dbCtx) : Controller
                 Selected = selectedRoom.HasValue && r == selectedRoom.Value
             }).ToList();
     }
-    /// <summary>
-    /// GET
-    /// TQ- This will be the item submission form
-    /// todo: might reuse this exact view but have frontend validation for Staff/Admin to see prefilled form
-    /// </summary>
-    /// <returns></returns>
-    public IActionResult Index() => View();
-    /// <summary>
-    /// POST
-    /// TQ- Item submission form data coming back to us
-    /// </summary>
-    /// <param name="request"></param>
-    /// <returns></returns>
+
+    [HttpGet]
+    public IActionResult Index()
+    {
+        PopulateCategories();
+        return View();
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Index(Request request)
+    public async Task<IActionResult> Index(Request request, List<IFormFile> imageFiles)
     {
-        if( !ModelState.IsValid )
+        if (!ModelState.IsValid)
         {
-            PopulateCategories( request.CategoryID );
-            return View( request );
+            PopulateCategories(request.CategoryID, request.RoomTag);
+            return View(request);
         }
-        
+
         request.UserID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
         request.Status = RequestStatus.Pending;
         request.SubmittedOn = DateTime.UtcNow;
         request.ItemID = null;
-        // shove this into the DB so a Staff can check it later
-        dbCtx.Requests.Add( request );
-        dbCtx.SaveChanges();
-        // Return to this view
-        return RedirectToAction( nameof(Index) );
+
+        // Save request first to generate RequestID in the database
+        dbCtx.Requests.Add(request);
+        await dbCtx.SaveChangesAsync();
+
+        // Handle multi-image upload to Oracle Object Storage
+        if (imageFiles != null && imageFiles.Count > 0)
+        {
+            bool isFirst = true;
+            foreach (var file in imageFiles)
+            {
+                if (file.Length > 0)
+                {
+                    string imageUrl = await storageService.UploadFileAsync(file, "requests");
+
+                    dbCtx.Images.Add(new Image
+                    {
+                        ImageURL = imageUrl,
+                        IsPrimary = isFirst, // First image is marked primary optionally
+                        RequestID = request.RequestID
+                    });
+
+                    isFirst = false;
+                }
+            }
+            await dbCtx.SaveChangesAsync();
+        }
+
+        return RedirectToAction(nameof(Index));
     }
-    /// <summary>
-    /// GET
-    /// TQ- show all the requests made, only Staff/Admins can see
-    /// </summary>
-    /// <returns></returns>
+
     [Authorize(Roles = "Staff, Admin")]
     public IActionResult ListRequests()
     {
         var requests = dbCtx.Requests
-            .Include( r => r.User )
-            .Include( r => r.Category )
-            .OrderBy( r => r.Status )
-            .ThenByDescending( r => r.SubmittedOn )
+            .Include(r => r.User)
+            .Include(r => r.Category)
+            .Include(r => r.Images)
+            .OrderBy(r => r.Status)
+            .ThenByDescending(r => r.SubmittedOn)
             .ToList();
         
-        return View( "List", requests );
+        return View("List", requests);
     }
-    /// <summary>
-    /// GET
-    /// TQ- details of a single request with buttons to accept/reject
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
+
     [Authorize(Roles = "Staff, Admin")]
     public IActionResult ViewRequest(int id)
     {
         var request = dbCtx.Requests
-            .Include( r => r.User )
-            .Include( r => r.Category )
-            .FirstOrDefault( r => r.RequestID == id );
-        
-        if( request is null )
+            .Include(r => r.User)
+            .Include(r => r.Category)
+            .Include(r => r.Images)
+            .FirstOrDefault(r => r.RequestID == id);
+
+        if (request is null)
+        {
             return NotFound();
-        
-        return View( "Details", request );
+        }
+
+        return View("Details", request);
     }
-    /// <summary>
-    /// POST
-    /// TQ- Staff/Admin marks a request as Approved
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Staff, Admin")]
-    public IActionResult Approve(int id)
+    public async Task<IActionResult> Approve(int id)
     {
-        var request = dbCtx.Requests.Find( id );
-        if( request is null )
+        var request = dbCtx.Requests
+            .Include(r => r.Images)
+            .FirstOrDefault(r => r.RequestID == id);
+
+        if (request is null)
+        {
             return NotFound();
+        }
+
+        // Convert approved request into a live Item
+        var newItem = new Item
+        {
+            ItemName = request.ItemName,
+            CategoryID = request.CategoryID,
+            Description = "Created from approved user request.",
+            RoomTag = request.RoomTag,
+            DateAdded = DateTime.UtcNow
+        };
+
+        dbCtx.Items.Add(newItem);
+        await dbCtx.SaveChangesAsync(); // Generates newItem.ItemID
+
+        // Reassign uploaded images from request over to the new item
+        if (request.Images != null && request.Images.Any())
+        {
+            foreach (var image in request.Images)
+            {
+                image.ItemID = newItem.ItemID;
+                image.RequestID = null;
+            }
+        }
 
         request.Status = RequestStatus.Approved;
-        dbCtx.SaveChanges();
+        request.ItemID = newItem.ItemID;
+
+        await dbCtx.SaveChangesAsync();
         
-        return RedirectToAction( nameof( ViewRequest ), new { id } );
+        return RedirectToAction(nameof(ViewRequest), new { id });
     }
-    /// <summary>
-    /// POST
-    /// TQ- Staff/Admin marks a request as Rejected
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Staff, Admin")]
-    public IActionResult Reject(int id)
+    public async Task<IActionResult> Reject(int id)
     {
-        var request = dbCtx.Requests.Find( id );
-        if( request is null )
+        var request = dbCtx.Requests.Find(id);
+        if (request is null)
+        {
             return NotFound();
+        }
         
         request.Status = RequestStatus.Rejected;
-        dbCtx.SaveChanges();
+        await dbCtx.SaveChangesAsync();
         
-        return RedirectToAction( nameof( ViewRequest ), new { id } );
+        return RedirectToAction(nameof(ViewRequest), new { id });
     }
 }

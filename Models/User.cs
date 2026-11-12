@@ -48,10 +48,7 @@ public class User : IdentityUser
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
     public DateTime JoinedOn { get; set; } = DateTime.UtcNow;
 
-    [Display(Name = "History ID")]
-    public int? HistoryID { get; set; }
 
-    
 
     //
     /// <summary>
@@ -59,8 +56,8 @@ public class User : IdentityUser
     /// This is so one user only has one product history
     /// - TL
     /// </summary>
-    
+
     // Navigation properties
-    public ProductHistory? ProductHistory { get; set; }
+    public UserHistory? UserHistory { get; set; }
     public ICollection<Request> Requests { get; set; } = new List<Request>();
 }
