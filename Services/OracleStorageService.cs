@@ -86,5 +86,21 @@ namespace GroupProject.Services
 
             return $"https://objectstorage.{region}.oraclecloud.com/n/{namespaceName}/b/{bucketName}/o/{Uri.EscapeDataString(objectKey)}";
         }
+        
+        // Function to delete a file from object storage - TL
+        public async Task DeleteFileAsync(string folder, string fileName)
+        {
+            using var client = GetS3Client();
+            var bucketName = _config["OracleStorage:BucketName"];
+            var objectKey = string.IsNullOrEmpty(folder) ? fileName : $"{folder}/{fileName}";
+
+            var request = new DeleteObjectRequest
+            {
+                BucketName = bucketName,
+                Key = objectKey
+            };
+
+            await client.DeleteObjectAsync(request);
+        }
     }
 }
