@@ -1,5 +1,71 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<GroupProject.Models.User>
+
 @{
+    ViewData["Title"] = "Admin Dashboard";
+    //m user history items if passed via ViewBag or query
+    var recycledItems = ViewBag.RecycledItems as IEnumerable<GroupProject.Models.UserHistoryItem> ?? Enumerable.Empty<GroupProject.Models.UserHistoryItem>();
 }
+
+<link rel="stylesheet" href="~/css/M_StyleSheet.css" asp-append-version="true" />
+
+<div class="container-fluid mt-4 px-4">
+
+    @*m dashboard title banner *@
+    <div>
+        <div class="row align-items-center text-center text-md-start">
+            <div class="col-md-12 d-flex align-items-center justify-content-center justify-content-md-start gap-3">
+                <img src="~/images/snail.png" class="mascotsmall" alt="Mudd the Toaster Snail Mascot" style="width: auto;" />
+                <h1 class="titlepurple fw-bold">Dashboard</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-9">
+            <div class="row">
+
+                @*m user management *@
+                <div class="col-md-6 mb-4">
+                    <div class="card cardpurple h-100">
+                        <h3 class="subtitlepurple text-center fw-bold mb-1">User Management</h3>
+                        <p class="smalltextpurple text-center mb-3">Please select the user to be permanently deleted</p>
+
+                        @*m form for linking admin delete *@
+                        <form asp-controller="Admin" asp-action="DeleteUser" method="get">
+
+                            @*m list of users *@
+                            <div class="bg-white border rounded p-2" style="height: 220px; overflow-y: auto;">
+                                @if (Model == null || !Model.Any())
+                                {
+                                    <p class="smalltextpurple text-center mt-5">No users found</p>
+                                }
+                                else
+                                {
+                                    <div class="list-group list-group-flush">
+                                    // displaying each user in the user model
+                                        @foreach (var user in Model)
+                                        {
+                                            <label class="list-group-item list-group-item-action d-flex align-items-center gap-2 py-2" style="cursor: pointer;">
+                                                <input type="radio" name="id" value="@user.Id" class="form-check-input mt-0" required />
+
+                                                <span class="smalltextpurple">@user.FirstName @user.LastName (@user.Email)</span>
+                                            </label>
+                                        }
+                                    </div>
+                                }
+                            </div>
+
+                            @*m delete submit button *@
+                            <button type="submit" class="btnpurple-long-big w-100">
+                                Delete User Account
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
