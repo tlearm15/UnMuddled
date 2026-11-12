@@ -35,7 +35,7 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
         PopulateCategories();
         return View();
     }
-
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(Request request, List<IFormFile> imageFiles)
@@ -43,42 +43,62 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
         if (!ModelState.IsValid)
         {
             PopulateCategories(request.CategoryID, request.RoomTag);
+            TempData["ErrorMessage"] = "Please correct the errors in the form.";
             return View(request);
         }
 
-        request.UserID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        request.Status = RequestStatus.Pending;
-        request.SubmittedOn = DateTime.UtcNow;
-        request.ItemID = null;
-
-        // Save request first to generate RequestID in the database
-        dbCtx.Requests.Add(request);
-        await dbCtx.SaveChangesAsync();
-
-        // Handle multi-image upload to Oracle Object Storage
-        if (imageFiles != null && imageFiles.Count > 0)
+        try
         {
-            bool isFirst = true;
-            foreach (var file in imageFiles)
-            {
-                if (file.Length > 0)
-                {
-                    string imageUrl = await storageService.UploadFileAsync(file, "requests");
+            request.UserID = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            request.Status = RequestStatus.Pending;
+            request.SubmittedOn = DateTime.UtcNow;
+            request.ItemID = null;
 
-                    dbCtx.Images.Add(new Image
-                    {
-                        ImageURL = imageUrl,
-                        IsPrimary = isFirst, // First image is marked primary optionally
-                        RequestID = request.RequestID
-                    });
-
-                    isFirst = false;
-                }
-            }
+            dbCtx.Requests.Add(request);
             await dbCtx.SaveChangesAsync();
-        }
 
-        return RedirectToAction(nameof(Index));
+            if (imageFiles != null && imageFiles.Count > 0)
+            {
+                bool isFirst = true;
+                int index = 1;
+
+                foreach (var file in imageFiles)
+                {
+                    if (file.Length > 0)
+                    {
+                        string extension = Path.GetExtension(file.FileName);
+                        string customFileName = $"{request.RequestID}_{index}{extension}";
+
+                        string imageUrl = await storageService.UploadFileAsync(file, "requests", customFileName);
+
+                        if (isFirst)
+                        {
+                            request.ImageUrl = imageUrl;
+                        }
+
+                        dbCtx.Images.Add(new Image
+                        {
+                            ImageURL = imageUrl,
+                            IsPrimary = isFirst,
+                            RequestID = request.RequestID
+                        });
+
+                        isFirst = false;
+                        index++;
+                    }
+                }
+                await dbCtx.SaveChangesAsync();
+            }
+
+            TempData["SuccessMessage"] = "Your request was submitted successfully!";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            PopulateCategories(request.CategoryID, request.RoomTag);
+            TempData["ErrorMessage"] = "An error occurred while uploading your images. Please try again.";
+            return View(request);
+        }
     }
 
     [Authorize(Roles = "Staff, Admin")]
@@ -126,7 +146,6 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
             return NotFound();
         }
 
-        // Convert approved request into a live Item
         var newItem = new Item
         {
             ItemName = request.ItemName,
@@ -137,9 +156,8 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
         };
 
         dbCtx.Items.Add(newItem);
-        await dbCtx.SaveChangesAsync(); // Generates newItem.ItemID
+        await dbCtx.SaveChangesAsync();
 
-        // Reassign uploaded images from request over to the new item
         if (request.Images != null && request.Images.Any())
         {
             foreach (var image in request.Images)
