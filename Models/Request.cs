@@ -44,4 +44,7 @@ public class Request
     [Display(Name = "Room Tag")]
     //Sets RoomTag from the enum, defaulting to Other if none selected - DMQ
     public RoomTag RoomTag { get; set; } = RoomTag.Other;
+    
+    //TL - Requests has a collectino of images
+    public ICollection<Image> Images { get; set; } = new List<Image>();
 }
