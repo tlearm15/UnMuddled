@@ -495,3 +495,52 @@ p {
     }
 }
 
+.cardpurple {
+    background-color: #CBC2D0;
+    border-radius: 10px;
+    margin-top: 20px;
+    padding: 10px;
+    color: #382B38;
+}
+
+/*m admin sidebar navigation*/
+.menu-card {
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+/*m styling for each individual item in te menu list*/
+.menu-item {
+    display: block;
+    padding: 10px 16px;
+    color: #38313A;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    background-color: #ffffff;
+    border-bottom: 1px solid #B6A6B8;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/*m main making it so thatthe last item in the nav list dfoesnt have a border*/
+.menu-item:last-child {
+    border-bottom: none;
+}
+
+.menu-item:hover {
+    background-color: #CBC2D0;
+    color: #242926;
+}
+
+.menu-item-active {
+    background-color: #CBC2D0;
+    color: #242926;
+    font-weight: 700;
+}
+
+.admin-menu-item-active:hover {
+    background-color: #B6A6B8;
+    color: #242926;
+}
+

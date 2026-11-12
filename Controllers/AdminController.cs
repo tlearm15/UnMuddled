@@ -26,9 +26,22 @@ namespace GroupProject.Controllers
             roleManager = rm;
         }
         // GET: AdminController
-        public ActionResult Index()
+        //m below is code for the admin dashboard
+        public async Task<IActionResult> Index()
         {
-            return View();
+            //m getting all users from the db for the user management list
+            List<User> users = await db.Users.ToListAsync();
+
+            //m getting recently recycled items from user histroy items
+            //m with item and user details
+            var recentHistory = await db.UserHistoryItems.Include(uhi => uhi.Item).Include(uhi => uhi.UserHistory).ThenInclude(uh => uh.User)
+                .OrderByDescending(uhi => uhi.DateDisposed).ToListAsync();
+
+            //m passing recent history list to the view via ViewBag
+            ViewBag.RecycledItems = recentHistory;
+
+            //m passing the sers list for the view
+            return View(users);
         }
 
         public IActionResult UserList()
@@ -244,7 +257,7 @@ namespace GroupProject.Controllers
             //Checks if id is loggedin users id
             if (id == userManager.GetUserId(User))
             {
-                return RedirectToAction("UserList");
+                return RedirectToAction("Index");
             }
 
             return View(user);
@@ -263,7 +276,8 @@ namespace GroupProject.Controllers
             //Ensure it is not own id -RW
             if (id == userManager.GetUserId(User))
             {
-                return RedirectToAction("UserList");
+                // m adding in index redirect 
+                return RedirectToAction("Index", "Admin");
             }
             //Finds user attached to id -RW
             User? user = await userManager.FindByIdAsync(id);
@@ -285,7 +299,8 @@ namespace GroupProject.Controllers
                 return View("DeleteUser", user);
             }
             //Deletion success. Returns to User List page
-            return RedirectToAction("UserList", "Admin");
+            // m adding in index redirect instead of UserList redirect
+            return RedirectToAction("Index", "Admin");
             // POST: AdminController/Delete/5
 
         } 

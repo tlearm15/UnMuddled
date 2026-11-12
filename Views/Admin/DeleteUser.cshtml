@@ -1,13 +1,14 @@
 ﻿@model User
 
+@* m added style sheet, styled button, removed first and last name data that did not display  *@
+ <link rel="stylesheet" href="~/css/M_StyleSheet.css" />
+
 <h2>Delete User</h2>
 
 <div asp-validation-summary="All" class="text-danger"></div>
 
 <h3>Are you sure you want to delete this account?</h3>
 
-<p><strong>First Name:</strong> @Model.FirstName</p>
-<p><strong>Last Name:</strong> @Model.LastName</p>
 <p><strong>Email:</strong> @Model.Email</p>
 <p><strong>Role:</strong> @Model.UserRole</p>
 
@@ -21,10 +22,10 @@
 
     <input type="hidden" name="id" value="@Model.Id" />
 
-    <button type="submit">Confirm Delete</button>
+    <button class="btndustygreen" type="submit">Confirm Delete</button>
 
     <a asp-controller="Admin"
-       asp-action="UserList">
+       asp-action="Index">
         Cancel
     </a>
 

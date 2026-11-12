@@ -1,0 +1,72 @@
+@model GroupProject.ViewModels.TwoFAViewModel
+@{
+    ViewData["Title"] = "Verify Code";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@* - Display TempData from resend in a popup, same styling as Login *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert cardpurple alert-dismissible fade show shadow-sm" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<link rel="stylesheet" href="~/css/j_stylesheet.css" />
+
+@* - Main body for the 2FA code entry page, form inside a green card like Login *@
+<main class="layout">
+    <div class="carddustygreen">
+        <div class="login-register-wrapper">
+            <div class="login-register-form">
+                <h2 class="text-center mb-4">Two-Factor Verification</h2>
+
+                <p class="text-center smalltextpurple">
+                    We've sent a 6-digit verification code to @Model.MaskedEmail.
+                    Please enter it below to finish logging in.
+                </p>
+
+                @* - Form for entering the emailed code *@
+                <form asp-action="TwoFactorAuth" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="fw-bold text-decoration-underline smalltextpurple"></div>
+
+                    @* - Code input *@
+                    <div class="mb-3">
+                        <label asp-for="Code" class="form-label"></label>
+                        <input asp-for="Code" class="form-control text-center" autocomplete="one-time-code" inputmode="numeric" />
+                        <span asp-validation-for="Code" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                    </div>
+
+                    @* - Checkbox allows skipping 2FA on this device for a while, Identity manages the cookie *@
+                    <div class="form-check mb-3 d-flex justify-content-center">
+                        <label class="form-check-label">
+                            <input asp-for="RememberDevice" class="form-check-input" />
+                            @Html.DisplayNameFor(a => a.RememberDevice)
+                        </label>
+                    </div>
+
+                    <input type="submit" value="Verify Code" class="btn btnpurple-long w-100 text-white" />
+
+                    <p class="text-center mt-3">
+                        Didn't get the code?
+                        <a asp-controller="Account" asp-action="TwoFactorResend" class="fw-bold smalltextpurple">Resend code</a>
+                         | 
+                        <a asp-controller="Account" asp-action="Login" class="fw-bold smalltextpurple">Back to login</a>
+                    </p>
+                </form>
+            </div>
+            @* - Snail image next to form on desktop, same as Login *@
+            <div class="login-register-image">
+                <img src="~/images/snail.png" class="mascot" alt="Snail Toaster" />
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
