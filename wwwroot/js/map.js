@@ -383,6 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const lngInput = document.getElementById('Longitude');
 
             const value = searchInput?.value.trim().replace(/\s+/g, ' ') || '';
+            if (searchInput) searchInput.value = value;
 
             const hasValidCurrentLocation =
                 useCurrentCheckbox?.checked &&
