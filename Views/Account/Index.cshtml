@@ -41,8 +41,6 @@
                     <h3 class="titlepurple-var" style="justify-content: flex-start; margin-bottom: 5px;">
                         @displayName
                     </h3>
-                    @*m display total items recycled dynamically from database *@
-                    <p style="margin: 0; font-weight: 500;">@itemTotalCount Items Recently Recycled</p>
                 </div>
             </div>
 
@@ -55,6 +53,9 @@
                 <a asp-controller="Account" asp-action="ChangePassword"
                    class="btnpurple-long-big"
                    style="text-decoration:none; display:flex; align-items:center; justify-content:center; width: 100%;">Edit Password</a>
+                <a asp-controller="History" asp-action="Index"
+                   class="btnpurple-long-big"
+                   style="text-decoration:none; display:flex; align-items:center; justify-content:center; width: 100%;">View History</a>
             </div>
 
         </div>
@@ -64,17 +65,17 @@
         @*m recently recycled items *@
         <div style="text-align: left; margin-bottom: 20px;">
             <h3 class="titlepurple-var" style="justify-content: flex-start; margin-bottom: 5px;">Recently Recycled</h3>
-            <p class="smalltextpurple" style="margin: 0;">Below is a list of every item the user has logged as recycled</p>
+            <p class="smalltextpurple" style="margin: 0;">Below is a list of the last 3 items you have recycled</p>
         </div>
 
         @*m list for database recycled items *@
         <div style="display: flex; flex-direction: column; gap: 0px;">
             @if (recycledItems.Any())
             {
-                foreach (var item in recycledItems)
+                @foreach (var item in recycledItems.Take(3)) //wm - setting this to 3 as to not overwhelm the profile page
                 {
-                    var firstImage = item.Images?.FirstOrDefault();
-                    // setting category to be general if there is no catefgory name already
+                    //wm - getting the image for the item and assigning it to a variable
+                    var firstImage = item.Images?.FirstOrDefault(img => img.IsPrimary) ?? item.Images?.FirstOrDefault();                    // setting category to be general if there is no catefgory name already
                     string categoryName = item.Category?.CategoryName ?? "General";
 
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #7d6b83;">
@@ -82,7 +83,8 @@
                             <div style="width: 80px; height: 70px; border: 2px solid; display: flex; align-items: center; justify-content: center; border-radius: 4px;">
                                 @if (firstImage != null)
                                 {
-                                    //code here for ITEM IMAGES
+                                    //wm - displaying the image for the item
+                                    <img src="@firstImage.ImageURL" alt="@item.ItemName" style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;" />
                                 }
                                 else
                                 //m fallback text if no image exists in databse for this item
