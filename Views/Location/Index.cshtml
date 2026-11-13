@@ -128,7 +128,7 @@
 
                 @* JM: List View *@
                 <div id="listViewContainer" class="d-none">
-                    <section class="card p-3" aria-label="Recycling locations list">
+                    <section class="card p-2" aria-label="Recycling locations list">
                         @if (Model.Locations.Any())
                         {
                             <ul class="card cardpurple">
@@ -140,7 +140,7 @@
                                         <strong>#@(i + 1) @loc.LocationName</strong>
                                         @if (!string.IsNullOrWhiteSpace(formattedAddress))
                                         {
-                                            <div class="fw-bold smalltextgreen">@formattedAddress</div>
+                                            <div class="fw-bold smalltextpurple">@formattedAddress</div>
                                         }
                                     </li>
                                 }
