@@ -27,10 +27,16 @@
 </style>
 <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
 
-<main class="layout">
-    <div class="text-center mb-2">
-        <h1 class="titlepurple-var">Where to Recycle</h1>
-        <p> Not sure where to recycle your item? Use our recycling locator </p>
+<main class="layout p-2">
+    <div class="row align-items-center p-2">
+        <div class="col-md-3 text-center mb-3">
+            <img src="~/images/snail.png" class="mascot img-fluid" alt="Toaster Snail Mascot" style="max-height: 150px; width: auto; margin:30px;"/>
+        </div>
+        <div class="col-md-8 text-center text-md-center">
+            <h1 class="subtitlepurple">Where to Recycle</h1>
+            <p> Not sure where to recycle your item? Use our recycling locator </p>
+            <a asp-controller="Item" asp-action="Index" class="btnpurple btn-lg"> How to Recycle</a>
+        </div>
     </div>
     <div class="container-fluid">
         <div class="row g-2">
@@ -87,9 +93,9 @@
                     </form>
                 </div>
             </div>
-            
-            
-            
+
+
+
             <div class="col-md-8">
                 @* JM: View switcher bar - user can choose seeing it on map or list view *@
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -105,10 +111,10 @@
                         @(Model.Locations.Any() ? $"Showing {Model.Locations.Count} location(s)" : "Results")
                     </span>
                 </div>
-                
+
                 @* JM: Map notice will display warning message above map / list view *@
                 <div id="mapNotice" class="alert alert-dark mb-2 d-none" role="alert"></div>
-                
+
                 @* JM: Map View (Default) *@
                 <div id="mapViewContainer">
                     <div class="card">
