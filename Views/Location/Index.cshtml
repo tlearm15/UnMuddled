@@ -25,6 +25,7 @@
 <style>
     #map { height: 500px; width: 100%; border-radius: 8px; }
 </style>
+<link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
 
 <main class="layout">
     <div class="text-center mb-2">
@@ -69,7 +70,10 @@
 
                         @* jm: location search via user's current address using check box *@
                         <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="useCurrentLocation" onchange="toggleCurrentLocation(this)"/>
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="useCurrentLocation"
+                                   @(Model is { Latitude: not null, Longitude: not null } ? "checked" : "")/>
                             <label class="form-check-label" for="useCurrentLocation">
                                 Use my current location
                             </label>
@@ -78,20 +82,22 @@
 
                         @* jm: button submits form and findings locations near them *@
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btnpurple btn-lg text-white">Search</button>
+                            <button type="submit" id="SearchBtn" class="btn btnpurple btn-lg text-white">Search</button>
                         </div>
                     </form>
                 </div>
             </div>
-
+            
+            
+            
             <div class="col-md-8">
                 @* JM: View switcher bar - user can choose seeing it on map or list view *@
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <div class="btn-group" role="group" aria-label="Switch results view">
-                        <button type="button" id="mapViewBtn" class="btn text-white btn-sm btnpurple" aria-pressed="true">
+                        <button type="button" id="mapViewBtn" class="btn btn-sm btnpurple active" aria-pressed="true">
                             Map View
                         </button>
-                        <button type="button" id="listViewBtn" class="btn btn-sm btnwhite border-0" aria-pressed="false">
+                        <button type="button" id="listViewBtn" class="btn btn-sm bg-white text-dark border" aria-pressed="false">
                             List View
                         </button>
                     </div>
@@ -99,6 +105,9 @@
                         @(Model.Locations.Any() ? $"Showing {Model.Locations.Count} location(s)" : "Results")
                     </span>
                 </div>
+                
+                @* JM: Map notice will display warning message above map / list view *@
+                <div id="mapNotice" class="alert alert-dark mb-2 d-none" role="alert"></div>
                 
                 @* JM: Map View (Default) *@
                 <div id="mapViewContainer">
@@ -110,8 +119,8 @@
                         </div>
                     </div>
                 </div>
-                
-                @* JM: List View (Default) *@
+
+                @* JM: List View *@
                 <div id="listViewContainer" class="d-none">
                     <section class="card p-3" aria-label="Recycling locations list">
                         @if (Model.Locations.Any())
@@ -137,30 +146,30 @@
                         }
                     </section>
                 </div>
-                
-                
+
+
             </div>
         </div>
     </div>
 
 </main>
 
-@* JM:  JS LOGIC FOR leaflet *@
-<script>
-    //JM: initialise the map (defaults to Glasgow)
-    const map = L.map('map').setView([55.8642, -4.2518], 12);
-    const mapElement = document.getElementById('map');
-    let geoRequestId = 0;
-    let userLocationMarker = null;
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-    
-    
-    // JM: parse locations safely from data attribute
-    const rawLocations = mapElement ? mapElement.dataset.locations : '[]';
-    const locations = JSON.parse(rawLocations || '[]');
-
-
-</script>
+<script src="~/js/map.js" asp-append-version="true"></script>
+@* <script> *@
+@*     $1$ //JM: initialise the map (defaults to Glasgow) #1# *@
+@*     $1$ const map = L.map('map').setView([55.8642, -4.2518], 12); #1# *@
+@*     $1$ const mapElement = document.getElementById('map'); #1# *@
+@*     $1$ let geoRequestId = 0; #1# *@
+@*     $1$ let userLocationMarker = null; #1# *@
+@*     $1$ #1# *@
+@*     $1$ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { #1# *@
+@*     $1$     attribution: '&copy; OpenStreetMap contributors' #1# *@
+@*     $1$ }).addTo(map); #1# *@
+@*     $1$ #1# *@
+@*     $1$ #1# *@
+@*     $1$ // JM: parse locations safely from data attribute #1# *@
+@*     $1$ const rawLocations = mapElement ? mapElement.dataset.locations : '[]'; #1# *@
+@*     $1$ const locations = JSON.parse(rawLocations || '[]'); #1# *@
+@*     $1$ #1# *@
+@* *@
+@* </script> *@
