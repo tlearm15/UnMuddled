@@ -214,7 +214,7 @@ namespace GroupProject.Controllers
                 .Replace("%", @"\%")
                 .Replace("_", @"\_");
                 
-            string search = $"%{searchEscape.ToUpperInvariant()}%";
+string search = $"{searchEscape.ToUpperInvariant()}%";
 
             // Return 20 max nearby recycling locations
             return await query
