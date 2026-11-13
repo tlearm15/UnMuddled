@@ -1,22 +1,9 @@
 ﻿using GroupProject.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Diagnostics.Metrics;
-using System.Runtime.Intrinsics.X86;
 using GroupProject.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Threading.Tasks;
 
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers
 {
@@ -121,7 +108,7 @@ namespace GroupProject.Controllers
             }
             
             //JM: reload items list dropdown
-            model.Items = await GetItemsListAsync();
+            // model.Items = await GetItemsListAsync();
             return View(model);
         }
         
@@ -213,8 +200,8 @@ namespace GroupProject.Controllers
                 .Replace(@"\", @"\\")
                 .Replace("%", @"\%")
                 .Replace("_", @"\_");
-                
-string search = $"{searchEscape.ToUpperInvariant()}%";
+            
+            string search = $"{searchEscape.ToUpperInvariant()}%";
 
             // Return 20 max nearby recycling locations
             return await query
