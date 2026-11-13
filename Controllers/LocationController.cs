@@ -214,12 +214,12 @@ namespace GroupProject.Controllers
                 .Replace("%", @"\%")
                 .Replace("_", @"\_");
                 
-            string search = $"%{searchEscape}%";
+            string search = $"%{searchEscape.ToUpperInvariant()}%";
 
             // Return 20 max nearby recycling locations
             return await query
-                .Where(d => EF.Functions.Like(d.Postcode, search, @"\") ||
-                            EF.Functions.Like(d.Town, search, @"\"))
+                .Where(d => EF.Functions.Like(d.Postcode.ToUpper(), search, @"\") ||
+                            EF.Functions.Like(d.Town.ToUpper(), search, @"\"))
                 .OrderBy(d => d.Town) // JM: Might change to  nearest location in future updates
                 .ThenBy(d => d.LocationName)
                 .ThenBy(d => d.DisposalID)
