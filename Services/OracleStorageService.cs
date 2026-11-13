@@ -41,7 +41,7 @@ namespace GroupProject.Services
         }
 
         //function to upload the image to object storage - TL
-        public async Task<string> UploadFileAsync(IFormFile file)
+        public async Task<string> UploadFileAsync(IFormFile file, string folder = "requests", string? customFileName = null)
         {
             //if file is null or empty - TL
             if (file == null || file.Length == 0)
@@ -52,9 +52,14 @@ namespace GroupProject.Services
             //create new variable using functino above - TL
             using var client = GetS3Client();
 
-            //file name for the file, this can be changed later and is just temporary - TL
-            var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+            //file name for the file - TL
+            var fileName = !string.IsNullOrEmpty(customFileName) 
+                ? customFileName 
+                : $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+
+            var objectKey = string.IsNullOrEmpty(folder) ? fileName : $"{folder}/{fileName}";
             //getting appropriate values from config - TL
+
             var bucketName = _config["OracleStorage:BucketName"];
             var namespaceName = _config["OracleStorage:Namespace"];
             var region = _config["OracleStorage:Region"];
@@ -69,7 +74,7 @@ namespace GroupProject.Services
             var request = new PutObjectRequest
             {
                 InputStream = memoryStream,
-                Key = uniqueFileName,
+                Key = objectKey,
                 BucketName = bucketName,
                 CannedACL = S3CannedACL.PublicRead,
                 UseChunkEncoding = false,
@@ -79,8 +84,23 @@ namespace GroupProject.Services
             //upload image - TL
             await client.PutObjectAsync(request);
 
-            //returns user to a page with the image displayed - TL
-            return $"https://objectstorage.{region}.oraclecloud.com/n/{namespaceName}/b/{bucketName}/o/{uniqueFileName}";
+            return $"https://objectstorage.{region}.oraclecloud.com/n/{namespaceName}/b/{bucketName}/o/{Uri.EscapeDataString(objectKey)}";
+        }
+        
+        // Function to delete a file from object storage - TL
+        public async Task DeleteFileAsync(string folder, string fileName)
+        {
+            using var client = GetS3Client();
+            var bucketName = _config["OracleStorage:BucketName"];
+            var objectKey = string.IsNullOrEmpty(folder) ? fileName : $"{folder}/{fileName}";
+
+            var request = new DeleteObjectRequest
+            {
+                BucketName = bucketName,
+                Key = objectKey
+            };
+
+            await client.DeleteObjectAsync(request);
         }
     }
 }

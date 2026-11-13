@@ -4,6 +4,17 @@
 <ul class="navbar-nav ms-auto">
     @if (signInManager.IsSignedIn(User))
     {
+        @*m dashboard link fopr if the admin or staff role *@
+        if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Dashboard</a>
+            </li>
+        }
+
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Account" asp-action="Index">Profile</a>
+        </li>
         <li class="nav-item">
             <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
                 @Html.AntiForgeryToken()

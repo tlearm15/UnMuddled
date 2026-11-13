@@ -99,12 +99,17 @@ namespace GroupProject.Migrations
                     b.Property<bool>("IsPrimary")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("ItemID")
+                    b.Property<int?>("ItemID")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("RequestID")
                         .HasColumnType("integer");
 
                     b.HasKey("ImageID");
 
                     b.HasIndex("ItemID");
+
+                    b.HasIndex("RequestID");
 
                     b.ToTable("Images");
                 });
@@ -187,6 +192,9 @@ namespace GroupProject.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("RoomTag")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -280,6 +288,9 @@ namespace GroupProject.Migrations
                     b.Property<string>("PostCode")
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
+
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -488,11 +499,15 @@ namespace GroupProject.Migrations
                 {
                     b.HasOne("GroupProject.Models.Item", "Item")
                         .WithMany("Images")
-                        .HasForeignKey("ItemID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ItemID");
+
+                    b.HasOne("GroupProject.Models.Request", "Request")
+                        .WithMany("Images")
+                        .HasForeignKey("RequestID");
 
                     b.Navigation("Item");
+
+                    b.Navigation("Request");
                 });
 
             modelBuilder.Entity("GroupProject.Models.Item", b =>
@@ -650,6 +665,11 @@ namespace GroupProject.Migrations
                     b.Navigation("Requests");
 
                     b.Navigation("UserHistoryItems");
+                });
+
+            modelBuilder.Entity("GroupProject.Models.Request", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("GroupProject.Models.User", b =>

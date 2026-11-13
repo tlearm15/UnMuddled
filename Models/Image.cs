@@ -17,6 +17,10 @@ public class Image
     public bool IsPrimary { get; set; }
 
     [Display(Name = "Item ID")]
-    public int ItemID { get; set; }
+    public int? ItemID { get; set; } //TL - Made nullable so images can be attatched to requests
     public Item? Item { get; set; }
+    
+    [Display(Name = "Request ID")]
+    public int? RequestID { get; set; } //TL - Images can be attatched to requests
+    public Request? Request { get; set; }
 }

@@ -40,4 +40,11 @@ public class Request
     [DataType(DataType.DateTime)]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
     public DateTime SubmittedOn { get; set; } = DateTime.UtcNow;
+
+    [Display(Name = "Room Tag")]
+    //Sets RoomTag from the enum, defaulting to Other if none selected - DMQ
+    public RoomTag RoomTag { get; set; } = RoomTag.Other;
+    
+    //TL - Requests has a collectino of images
+    public ICollection<Image> Images { get; set; } = new List<Image>();
 }

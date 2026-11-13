@@ -74,4 +74,18 @@ public class EmailService(ILogger<EmailService> logger) : IEmailSender<User>
             _logger.LogError("Failure Email to {Recipient}. Status Code: {StatusCode}", recipient, response.StatusCode);
         }
     }
+    /// <summary>
+    /// TQ - Sends temp 2FA code to user's email
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="email"></param>
+    /// <param name="code"></param>
+    /// <returns></returns>
+    public Task SendTwoFactorCodeAsync(User user, string email, string code)
+    {
+        return SendEmailAsync(email, "Your UnMuddled verification code",
+            $@"<h2>Your verification code</h2>
+               <p style='font-size:24px; letter-spacing:4px; font-weight:bold;'>{code}</p>
+               <p>This code expires shortly. If you didn't request it, ignore this email — never share this code with anyone.</p>");
+    }
 }

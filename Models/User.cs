@@ -47,8 +47,10 @@ public class User : IdentityUser
     [DataType(DataType.DateTime)]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
     public DateTime JoinedOn { get; set; } = DateTime.UtcNow;
-
-
+    
+    [Display(Name = "Profile Picture URL")]
+    public string? ProfilePictureUrl { get; set; }
+    
 
     //
     /// <summary>
