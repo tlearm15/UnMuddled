@@ -58,10 +58,11 @@ public class AccountController : Controller
             .FirstOrDefaultAsync(uh => uh.UserId == user.Id);
 
         //m getting recycled items
+        //wm - updating this to order by descending so that it displays most recently recycled
         var recycledItems = userHistory?.UserHistoryItems?
-            .Select(uhi => uhi.Item)
-            .Where(i => i != null)
-            .OrderByDescending(i => i.DateAdded)
+            .Where(uhi => uhi.Item != null)
+            .OrderByDescending(uhi => uhi.DateDisposed)
+            .Select(uhi => uhi.Item!)
             .ToList() ?? new List<Item>();
 
         //m passing the recycled items to the view
