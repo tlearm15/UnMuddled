@@ -231,27 +231,24 @@ public class MemoryDbContext : UnMuddledDbContext
 
 ## Run Commands
 
-After creating all test projects:
+After checking out a `testing-*` branch (tests are per-branch):
 
 ```bash
-# Encryption tests
-cd UnMuddled.Tests.Encryption/NUnit/
-dotnet test --filter "FullyQualifiedName~Encryption"
-dotnet test --filter "FullyQualifiedName~Integration"
+# Encryption tests (branch testing-7-user-address-encryption)
+dotnet test GroupProject.Tests.Encryption/GroupProject.Tests.Encryption.csproj
 
-# Request tests
-cd ../UnMuddled.Tests.Requests/NUnit/
-dotnet test --filter "FullyQualifiedName~Request"
+# Request tests (branch testing-11-requesting-a-new-item)
+dotnet test GroupProject.Tests.Requests/GroupProject.Tests.Requests.csproj
 
-# 2FA tests
-cd ../../UnMuddled.Tests.2FA/NUnit/
-dotnet test --filter "FullyQualifiedName~TwoFactor"
+# 2FA tests (branch testing-24-feature-optional---user-2fa)
+dotnet test GroupProject.Tests.TwoFA/GroupProject.Tests.TwoFA.csproj
 
-# All tests (in parallel if desired)
-cd /mnt/Crucial/Projects/programming/apps/UnMuddled
-dotnet build --no-restore
-dotnet test --collect:"XPlat Code Coverage"
+# All tests on the current branch
+dotnet test
 ```
+
+Results so far (14/11/2026): 37 + 21 + 24 = **82 tests, all passing**.
+Manual smoke tests: see `SMOKE_TESTS.md`. Defect log: `BUGS.md`.
 
 ---
 
@@ -275,16 +272,30 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ## Traceability Matrix (Part 2 - Summary Document Requirement)
 
+> Outcomes updated 14/11/2026 after execution of the automated suites. Encryption rows
+> verified by `GroupProject.Tests.Encryption` (37 tests, all passing) on
+> `testing-7-user-address-encryption`. Request rows verified by
+> `GroupProject.Tests.Requests` (21 tests, all passing) on
+> `testing-11-requesting-a-new-item` — note the duplicate/daily-limit logic does not
+> exist on that branch yet (see BUGS.md). 2FA rows verified by `GroupProject.Tests.TwoFA`
+> (24 tests, all passing) on `testing-24-feature-optional---user-2fa`.
+
 | Requirement/Feature | Test Evidence Item | Location | Outcome Status |
 |---------------------|-------------------|----------|----------------|
-| Encrypt user addresses in DB | `EncryptionServiceTests.cs::EncryptDecryptRoundTripTest` | `/UnMuddled.Tests.Encryption/NUnit/Services/` | [TBD] |
-| Tamper detection on ciphertext | `EncryptionServiceTests.cs::TamperingTest` | `/UnMuddled.Tests.Encryption/NUnit/Services/` | [TBD] |
-| Legacy plaintext address support | `LegacyDataCompatibilityTests.cs` | `/UnMuddled.Tests.Encryption/NUnit/Integration/` | [TBD] |
-| Item request form validation | `RequestValidationTests.cs` | `/UnMuddled.Tests.Requests/NUnit/Models/` | [TBD] |
-| Duplicate request prevention | `DuplicateRequestLogicTests.cs` | `/UnMuddled.Tests.Requests/NUnit/Models/` | [TBD] |
-| Staff approve/reject workflow | `RequestControllerIntegrationTests.cs::ApproveRejectTest` | `/UnMuddled.Tests.Requests/NUnit/Controllers/` | [TBD] |
-| Login redirects to 2FA page | `AccountControllerTwoFactorTests.cs::LoginWith2FARedirectTest` | `/UnMuddled.Tests.2FA/NUnit/Controllers/` | [TBD] |
-| OTP code generation via email | `LoginWithTwoFactorIntegrationTests.cs` | `/UnMuddled.Tests.2FA/NUnit/E2E/` | [TBD] |
+| Encrypt user addresses in DB | `EncryptionServiceTests` + `AddressFieldConversionTests` | `/GroupProject.Tests.Encryption/` | **Passed** |
+| Tamper detection on ciphertext | `EncryptionServiceTests::TamperedCiphertext_NeverDecryptsToOriginal` (+3 more) | `/GroupProject.Tests.Encryption/Services/` | **Passed** |
+| Legacy plaintext address support | `LegacyDataCompatibilityTests` (3 tests) | `/GroupProject.Tests.Encryption/Integration/` | **Passed** |
+| Address survives app restart | `AddressPersistenceIntegrationTests::UserData_SurvivesApplicationRestart` | `/GroupProject.Tests.Encryption/Integration/` | **Passed** |
+| Key validation (32 bytes) | `EncryptionKeyProviderTests` (7 tests) | `/GroupProject.Tests.Encryption/Services/` | **Passed** |
+| Item request form validation | `RequestValidationTests` (10 tests) | `/GroupProject.Tests.Requests/Models/` | **Passed** |
+| Duplicate request prevention | N/A — logic not implemented on branch 11 | — | **Not yet tested (feature missing)** |
+| Daily request limits | N/A — logic not implemented on branch 11 | — | **Not yet tested (feature missing)** |
+| Request submission saves Pending | `RequestControllerUnitTests` + `RequestSubmissionIntegrationTests::ValidSubmission_...` | `/GroupProject.Tests.Requests/` | **Passed** |
+| Staff approve/reject workflow | N/A — workflow not on branch 11 (see branch 23) | — | **Not yet tested (feature missing)** |
+| Staff-only ListRequests access | `RequestSubmissionIntegrationTests` (401/403/authorization tests) | `/GroupProject.Tests.Requests/Integration/` | **Passed** |
+| Login redirects to 2FA page | `LoginWithTwoFactorIntegrationTests::Login_2FAEnabled_RedirectsToVerificationCodePage` | `/GroupProject.Tests.TwoFA/Integration/` | **Passed** |
+| OTP code generation via email | `CodeGenerationVerificationTests` (4 tests) | `/GroupProject.Tests.TwoFA/Integration/` | **Passed** |
+| OTP verification + RememberDevice | `LoginWithTwoFactorIntegrationTests` (CorrectCode/WrongCode/RememberDevice/Resend) | `/GroupProject.Tests.TwoFA/Integration/` | **Passed** |
 
 ---
 
