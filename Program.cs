@@ -125,3 +125,6 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+// Exposes the implicit Program class to the test assembly (WebApplicationFactory<Program>).
+public partial class Program { }

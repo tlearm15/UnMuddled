@@ -33,4 +33,11 @@
       <Folder Include="Images\" />
     </ItemGroup>
 
+    <!-- Test projects live in subdirectories of the repo; without this the Web SDK
+         globs their .cs files into the app compilation and they fail (no NUnit ref). -->
+    <ItemGroup>
+      <Compile Remove="GroupProject.Tests.*/**/*.cs" />
+      <Content Remove="GroupProject.Tests.*/**" />
+    </ItemGroup>
+
 </Project>
