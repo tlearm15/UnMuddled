@@ -713,7 +713,7 @@ img {
 }
 
 
-/*jm: Purple olour for bootstrap table hover*/
+/*jm: Purple colour for bootstrap table hover*/
 .table-hover tbody tr:hover {
     --bs-table-hover-bg: #CBC2D0;
     --bs-table-hover-color: #242926;
