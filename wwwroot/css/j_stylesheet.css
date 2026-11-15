@@ -738,3 +738,17 @@ img {
     --bs-table-bg: #5A465C;
     --bs-table-color: #E9EAF0;
 }
+
+/* jm: custom purple focus ring for inputs, textareas, and selects */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: #5A465C;
+    box-shadow: 0 0 0 0.25rem rgba(90, 70, 92, 0.25);
+}
+
+/* jm: custom purple form check */
+.form-check-input:checked {
+    background-color: #5A465C;
+    border-color: #5A465C;
+}
