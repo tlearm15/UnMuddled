@@ -5,11 +5,28 @@
 
 <link rel="stylesheet" href="~/css/j_stylesheet.css"/>
 
-<h2>Requests</h2>
-
-<table class="table table-striped">
-    <thead>
-    <tr>
+<div class="layout">
+  <div class="row g-2 mb-3">
+    <div class="col-sm-8">
+      <h1 class="subtitlepurple">Item Requests</h1>
+    </div>
+    @* jm: Dropdown menu to filter requests *@
+    <div class="col-sm-4 purple-select">
+      <label class="form-label" style="color: #242926">Filter by Status</label>
+      @* jm: js for filtering activated by id & when user select on dropdown option *@
+      <select id="requestFilter" class="form-select" aria-label="Filter by Requests" onchange="filterRequests()">
+        <option value="all">All</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </div>
+  </div>
+  <div class="table-responsive-md">
+    <table class="table align-middle mb-0 table-hover">
+      <caption>List of item requests.</caption>
+      <thead class="thead-purple">
+      <tr>
         <th>@Html.DisplayNameFor(m => m[0].RequestID)</th>
         <th>@Html.DisplayNameFor(m => m[0].User)</th>
         <th>@Html.DisplayNameFor(m => m[0].ItemName)</th>
@@ -17,22 +34,57 @@
         <th>@Html.DisplayNameFor(m => m[0].Status)</th>
         <th>@Html.DisplayNameFor(m => m[0].SubmittedOn)</th>
         <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var request in Model)
-    {
+      </tr>
+      </thead>
+      <tbody style="background-color: #B6A6B8" id="tableBody">
+      @foreach (var request in Model)
+      {
         <tr>
-            <td>@request.RequestID</td>
-            <td>@request.User?.Email</td>
-            <td>@request.ItemName</td>
-            <td>@request.Category?.CategoryName</td>
-            <td>@request.Status</td>
-            <td>@request.SubmittedOn.ToShortDateString()</td>
-            <td>
-                <a asp-action="ViewRequest" asp-route-id="@request.RequestID">View</a>
-            </td>
+          <td>@request.RequestID</td>
+          <td>@request.User?.Email</td>
+          <td>@request.ItemName</td>
+          <td>@request.Category?.CategoryName</td>
+          <td>@request.Status</td>
+          <td>@request.SubmittedOn.ToShortDateString()</td>
+          <td>
+            <a asp-action="ViewRequest" asp-route-id="@request.RequestID" style="color: #242926">View</a>
+          </td>
         </tr>
-    }
-    </tbody>
-</table>
+      }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@* jm: js for request status filtering*@
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+        const requestFilter  = document.getElementById('requestFilter');
+        const tableBody   = document.getElementById('tableBody');
+
+        /* jm:
+        Filter the requests based on the selected status.
+        Loops through each row in the table body and checks if the status cell matches the selected filter.
+        If it matches, the row is shown; otherwise, it is hidden.
+         */
+        function applyFilter() {
+          const requestStatus  = requestFilter.value.toLowerCase();
+
+          tableBody.querySelectorAll('tr').forEach(function (row) {
+            const text     = row.textContent.toLowerCase();
+
+            // jm: Get the status cell text content, if it exists. If not, set it to an empty string.
+            const statusCell = row.cells[4]
+              ? row.cells[4].textContent.toLowerCase()
+              : '';
+            
+            // jm: Check if the status matches the filter or if the filter is set to 'all'.
+            const matchesStatus = requestStatus === 'all' || statusCell.includes(requestStatus);
+
+            row.classList.toggle('d-none', ! matchesStatus);
+          });
+        }
+        // jm: Attach the applyFilter function to the change event of the requestFilter dropdown.
+        requestFilter.addEventListener('change', applyFilter);
+      });
+</script>
