@@ -48,4 +48,9 @@ public class HomeController : Controller
     }
     
 
+    // jm contact page for the site
+    public IActionResult Contact()
+    {
+        return View();
+    }
 }
