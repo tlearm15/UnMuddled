@@ -185,9 +185,9 @@ h2 {
 /*jm setting up the 2 different button styles for the site, green and purple*/
 .btndustygreen {
     display: inline-block;
-    background-color: #93A3A2;
+    background-color: #93A3A2 !important;
     border: solid 2px;
-    border-color: #717E7E;
+    border-color: #717E7E !important;
     border-radius: 0.625rem;
     font-weight: 600;
     font-size: 1rem;
@@ -195,7 +195,7 @@ h2 {
     height: 30px;
     width: 350px;
     padding-inline: 0.625rem;
-    color: #1E0F2E;
+    color: #1E0F2E !important;
     text-decoration: none;
     text-align: center;
     height: auto;
@@ -204,9 +204,9 @@ h2 {
 
 .btndustygreen-long {
     display: inline-block;
-    background-color: #93A3A2;
+    background-color: #93A3A2 !important;
     border: solid 2px;
-    border-color: #717E7E;
+    border-color: #717E7E !important;
     border-radius: 0.625rem;
     font-weight: 600;
     font-size: 1rem;
@@ -214,25 +214,29 @@ h2 {
     height: 30px;
     width: 350px;
     padding-inline: 0.625rem;
-    color: #1E0F2E;
+    color: #1E0F2E !important;
     text-decoration: none;
     text-align: center;
     height: auto;
     width: 150px;
 }
 
-.btndustygreen:hover, .btndustygreen-long:hover {
+.btndustygreen:hover, .btndustygreen-long:hover,
+.btndustygreen:focus, .btndustygreen-long:focus,
+.btndustygreen:active, .btndustygreen-long:active
+{
     display: inline-block;
     transform: scale(1.02);
-    background-color: #829190;
+    background-color: #829190 !important;
+    color: #1E0F2E !important;
 
 }
 
 .btnpurple {
     display: inline-block;
-    background-color: #5A465C;
+    background-color: #5A465C !important;
     border: solid 2px;
-    border-color: #382B38;
+    border-color: #382B38 !important;
     border-radius: 0.625rem;
     font-weight: 600;
     font-size: 1rem;
@@ -240,7 +244,7 @@ h2 {
     height: 30px;
     width: 350px;
     padding-inline: 0.625rem;
-    color: #E9EAF0;
+    color: #E9EAF0 !important;
     text-decoration: none;
     text-align: center;
     height: auto;
@@ -249,9 +253,9 @@ h2 {
 
 .btnpurple-long {
     display: inline-block;
-    background-color: #5A465C;
+    background-color: #5A465C !important;
     border: solid 2px;
-    border-color: #382B38;
+    border-color: #382B38 !important;
     border-radius: 0.625rem;
     font-weight: 600;
     font-size: 1rem;
@@ -259,25 +263,28 @@ h2 {
     height: 30px;
     width: 350px;
     padding-inline: 0.625rem;
-    color: #E9EAF0;
+    color: #E9EAF0 !important;
     text-decoration: none;
     text-align: center;
     height: auto;
     width: 150px;
 }
 
-.btnpurple:hover, .btnpurple-long:hover {
+.btnpurple:hover, .btnpurple-long:hover,
+.btnpurple:focus, .btnpurple-long:focus,
+.btnpurple:active, .btnpurple-long:active {
     display: inline-block;
     transform: scale(1.02);
-    background-color: #443445;
+    background-color: #443445 !important;
+    color: #E9EAF0 !important;
 }
 
 /*jm white button*/
 .btnwhite {
     display: inline-block;
-    background-color: #E9EAF0;
+    background-color: #E9EAF0 !important;
     border: solid 2px;
-    border-color: #5F695D;
+    border-color: #5F695D !important;
     border-radius: 0.625rem;
     font-weight: 600;
     font-size: 1rem;
@@ -285,7 +292,7 @@ h2 {
     height: 30px;
     width: 350px;
     padding-inline: 0.625rem;
-    color: #3A4338;
+    color: #3A4338 !important;
     text-decoration: none;
     text-align: center;
     height: auto;
@@ -295,9 +302,9 @@ h2 {
 /*jm white button long*/
 .btnwhite-long {
     display: inline-block;
-    background-color: #E9EAF0;
+    background-color: #E9EAF0 !important;
     border: solid 2px;
-    border-color: #382B38;
+    border-color: #382B38 !important;
     border-radius: 0.625rem;
     font-weight: 600;
     font-size: 1rem;
@@ -305,17 +312,20 @@ h2 {
     height: 30px;
     width: 350px;
     padding-inline: 0.625rem;
-    color: #3A4338;
+    color: #3A4338 !important;
     text-decoration: none;
     text-align: center;
     height: auto;
     width: 150px;
 }
 /*jm white button hover affect*/
-.btnwhite:hover, .btnwhite-long:hover {
+.btnwhite:hover, .btnwhite-long:hover,
+.btnwhite:focus, .btnwhite-long:focus,
+.btnwhite:active, .btnwhite-long:active {
     display: inline-block;
     transform: scale(1.02);
-    background-color: #D5D7E0;
+    background-color: #D5D7E0 !important;
+    color: #3A4338 !important;
 }
 
 .linegreen {
@@ -712,6 +722,10 @@ img {
     font-weight: 600;
 }
 
+/*jm: Purple colour for leaflet map marker*/
+.leaflet-marker-icon {
+    filter: hue-rotate(50deg) saturate(1.6);
+}
 
 /*jm: Purple colour for bootstrap table hover*/
 .table-hover tbody tr:hover {
