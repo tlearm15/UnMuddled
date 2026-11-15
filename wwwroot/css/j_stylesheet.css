@@ -221,10 +221,14 @@ h2 {
     width: 150px;
 }
 
-.btndustygreen:hover, .btndustygreen-long:hover {
+.btndustygreen:hover, .btndustygreen-long:hover,
+.btndustygreen:focus, .btndustygreen-long:focus,
+.btndustygreen:active, .btndustygreen-long:active
+{
     display: inline-block;
     transform: scale(1.02);
     background-color: #829190 !important;
+    color: #1E0F2E !important;
 
 }
 
@@ -268,22 +272,19 @@ h2 {
 
 .btnpurple:hover, .btnpurple-long:hover,
 .btnpurple:focus, .btnpurple-long:focus,
-.btnpurple:active, .btnpurple-long:active
-{
+.btnpurple:active, .btnpurple-long:active {
     display: inline-block;
     transform: scale(1.02);
     background-color: #443445 !important;
     color: #E9EAF0 !important;
 }
 
-
-
 /*jm white button*/
 .btnwhite {
     display: inline-block;
-    background-color: #E9EAF0;
+    background-color: #E9EAF0 !important;
     border: solid 2px;
-    border-color: #5F695D;
+    border-color: #5F695D !important;
     border-radius: 0.625rem;
     font-weight: 600;
     font-size: 1rem;
@@ -291,7 +292,7 @@ h2 {
     height: 30px;
     width: 350px;
     padding-inline: 0.625rem;
-    color: #3A4338;
+    color: #3A4338 !important;
     text-decoration: none;
     text-align: center;
     height: auto;
@@ -301,9 +302,9 @@ h2 {
 /*jm white button long*/
 .btnwhite-long {
     display: inline-block;
-    background-color: #E9EAF0;
+    background-color: #E9EAF0 !important;
     border: solid 2px;
-    border-color: #382B38;
+    border-color: #382B38 !important;
     border-radius: 0.625rem;
     font-weight: 600;
     font-size: 1rem;
@@ -311,17 +312,20 @@ h2 {
     height: 30px;
     width: 350px;
     padding-inline: 0.625rem;
-    color: #3A4338;
+    color: #3A4338 !important;
     text-decoration: none;
     text-align: center;
     height: auto;
     width: 150px;
 }
 /*jm white button hover affect*/
-.btnwhite:hover, .btnwhite-long:hover {
+.btnwhite:hover, .btnwhite-long:hover,
+.btnwhite:focus, .btnwhite-long:focus,
+.btnwhite:active, .btnwhite-long:active {
     display: inline-block;
     transform: scale(1.02);
-    background-color: #D5D7E0;
+    background-color: #D5D7E0 !important;
+    color: #3A4338 !important;
 }
 
 .linegreen {
@@ -718,6 +722,33 @@ img {
     font-weight: 600;
 }
 
+/*jm: Purple colour for leaflet map marker*/
 .leaflet-marker-icon {
     filter: hue-rotate(50deg) saturate(1.6);
+}
+
+/*jm: Purple colour for bootstrap table hover*/
+.table-hover tbody tr:hover {
+    --bs-table-hover-bg: #CBC2D0;
+    --bs-table-hover-color: #242926;
+}
+
+/*jm: Purple thead colour for bootstrap table*/
+.thead-purple {
+    --bs-table-bg: #5A465C;
+    --bs-table-color: #E9EAF0;
+}
+
+/* jm: custom purple focus ring for inputs, textareas, and selects */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+    border-color: #5A465C;
+    box-shadow: 0 0 0 0.25rem rgba(90, 70, 92, 0.25);
+}
+
+/* jm: custom purple form check */
+.form-check-input:checked {
+    background-color: #5A465C;
+    border-color: #5A465C;
 }
