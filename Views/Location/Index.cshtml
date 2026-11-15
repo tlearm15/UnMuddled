@@ -1,0 +1,180 @@
+﻿@model GroupProject.ViewModels.LocationViewModel 
+
+@{
+    ViewData["Title"] = "Where to Recycle";
+
+    // JM: converts location list into JSON string format for JavaScript parse
+    var serializedLocations = System.Text.Json.JsonSerializer.Serialize(
+        Model.Locations.Select(l => new
+        {
+            name = l.LocationName,
+            lat = l.Latitude,
+            lng = l.Longitude,
+            address = string.Join(", ", new[] { l.Town, l.Postcode }.Where(s => !string.IsNullOrWhiteSpace(s)))
+        })
+    );
+}
+
+@* jm: added styling sheet for components *@
+<link rel="stylesheet" href="~/css/j_stylesheet.css" />
+@* jm: leaflet CSS for map *@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous">
+@* jm: leaflet JS for map *@
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+<style>
+    #map { height: 500px; width: 100%; border-radius: 8px; }
+</style>
+
+<main class="layout">
+    <div class="row align-items-center">
+        <div class="col-md-3 text-center mb-3">
+            <img src="~/images/snail.png" class="mascot img-fluid" alt="Toaster Snail Mascot" style="max-height: 150px; width: auto; margin:30px;"/>
+        </div>
+        <div class="col-md-8 text-center text-md-center">
+            <h1 class="subtitlepurple">Where to Recycle</h1>
+            <p> Not sure where to recycle your item? Use our recycling locator </p>
+            <a asp-controller="Item" asp-action="Index" class="btnpurple btn-lg"> How to Recycle</a>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row g-2">
+            <div class="col-md-4 mb-4">
+                <div class="carddustygreen p-4">
+                    <h5>Search</h5>
+
+                    <form asp-action="Index" method="post" id="searchForm">
+                        <div asp-validation-summary="ModelOnly" class="fw-bold text-decoration-underline smalltextpurple"></div>
+                        @* jm: item selection *@
+                        <div class="purple-select mb-2">
+                            <label asp-for="SelectedItemId" class="form-label">Select the Item you'd like to Recycle </label>
+                            <select asp-for="SelectedItemId" asp-items="Model.Items" class="form-select">
+                                <option value=""> Select an Item </option>
+                            </select>
+                            <span asp-validation-for="SelectedItemId" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                        </div>
+                        @* jm: location search via user input *@
+                        <div class="mb-2">
+                            <label asp-for="LocationSearch" class="form-label">Enter town or postcode</label>
+                            <input asp-for="LocationSearch" class="form-control"/>
+                            <span asp-validation-for="LocationSearch" class="fw-bold text-decoration-underline smalltextpurple"></span>
+                        </div>
+
+                        @* @* jm: location search via user's saved address using check box  *@
+                        @*    TO DO Logic to only show this if user is logged in and has address *@
+                        @* <div class="form-check mb-4"> *@
+                        @*     <input asp-for="UseSavedAddress" class="form-check-input" type="checkbox" id="useSavedAddress" role="switch"/> *@
+                        @*     <label class="form-check-label" for="useSavedAddress"> *@
+                        @*         Use my saved address *@
+                        @*     </label> *@
+                        @* </div> *@
+
+                        @* jm: hidden fields for geolocation *@
+                        <input type="hidden" asp-for="Latitude" id="Latitude"/>
+                        <input type="hidden" asp-for="Longitude" id="Longitude"/>
+
+                        @* jm: location search via user's current address using check box *@
+                        <div class="form-check mb-3">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="useCurrentLocation"
+                                   @(Model is { Latitude: not null, Longitude: not null } ? "checked" : "")/>
+                            <label class="form-check-label" for="useCurrentLocation">
+                                Use my current location
+                            </label>
+                            <div id="locationStatus" class="form-text text-muted"></div>
+                        </div>
+
+                        @* jm: button submits form and findings locations near them *@
+                        <div class="d-grid gap-2">
+                            <button type="submit" id="SearchBtn" class="btn btnpurple btn-lg text-white">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-8">
+                @* JM: View switcher bar - user can choose seeing it on map or list view *@
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="btn-group" role="group" aria-label="Switch results view">
+                        <button type="button" id="mapViewBtn" class="btn btn-sm btnpurple active" aria-pressed="true">
+                            Map View
+                        </button>
+                        <button type="button" id="listViewBtn" class="btn btn-sm bg-white text-dark border" aria-pressed="false">
+                            List View
+                        </button>
+                    </div>
+                    <span class="fw-semibold">
+                        @(Model.Locations.Any() ? $"Showing {Model.Locations.Count} location(s)" : "Results")
+                    </span>
+                </div>
+
+                @* JM: Map notice will display warning message above map / list view *@
+                <div id="mapNotice" class="alert alert-dark mb-2 d-none" role="alert"></div>
+
+                @* JM: Map View (Default) *@
+                <div id="mapViewContainer">
+                    <div class="card">
+                        <div id="map"
+                             role="region"
+                             aria-label="Recycling locations map"
+                             data-locations="@serializedLocations">
+                        </div>
+                    </div>
+                </div>
+
+                @* JM: List View *@
+                <div id="listViewContainer" class="d-none">
+                    <section class="card p-2" aria-label="Recycling locations list">
+                        @if (Model.Locations.Any())
+                        {
+                            <ul class="card cardpurple">
+                                @for (int i = 0; i < Model.Locations.Count; i++)
+                                {
+                                    var loc = Model.Locations[i];
+                                    var formattedAddress = string.Join(", ", new[] { loc.Town, loc.Postcode }.Where(s => !string.IsNullOrWhiteSpace(s)));
+                                    <li class="list-group-item">
+                                        <strong>#@(i + 1) @loc.LocationName</strong>
+                                        @if (!string.IsNullOrWhiteSpace(formattedAddress))
+                                        {
+                                            <div class="fw-bold smalltextpurple">@formattedAddress</div>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No recycling locations to display yet. Select an item or location to search to see results.</p>
+                        }
+                    </section>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script src="~/js/map.js" asp-append-version="true"></script>
+@* <script> *@
+@*     $1$ //JM: initialise the map (defaults to Glasgow) #1# *@
+@*     $1$ const map = L.map('map').setView([55.8642, -4.2518], 12); #1# *@
+@*     $1$ const mapElement = document.getElementById('map'); #1# *@
+@*     $1$ let geoRequestId = 0; #1# *@
+@*     $1$ let userLocationMarker = null; #1# *@
+@*     $1$ #1# *@
+@*     $1$ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { #1# *@
+@*     $1$     attribution: '&copy; OpenStreetMap contributors' #1# *@
+@*     $1$ }).addTo(map); #1# *@
+@*     $1$ #1# *@
+@*     $1$ #1# *@
+@*     $1$ // JM: parse locations safely from data attribute #1# *@
+@*     $1$ const rawLocations = mapElement ? mapElement.dataset.locations : '[]'; #1# *@
+@*     $1$ const locations = JSON.parse(rawLocations || '[]'); #1# *@
+@*     $1$ #1# *@
+@* *@
+@* </script> *@
