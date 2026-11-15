@@ -711,3 +711,16 @@ img {
     border: solid 1px #717E7E;
     font-weight: 600;
 }
+
+
+/*jm: Purple olour for bootstrap table hover*/
+.table-hover tbody tr:hover {
+    --bs-table-hover-bg: #CBC2D0;
+    --bs-table-hover-color: #242926;
+}
+
+/*jm: Purple thead colour for bootstrap table*/
+.thead-purple {
+    --bs-table-bg: #5A465C;
+    --bs-table-color: #E9EAF0;
+}
