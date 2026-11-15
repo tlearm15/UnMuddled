@@ -1,4 +1,4 @@
-@model GroupProject.Models.Request
+@model GroupProject.ViewModels.RequestViewModel
 
 @{
     ViewData["Title"] = "Request a new item";
@@ -49,7 +49,6 @@
             </div>
             
             @* jm: Room tag drop down list, user can select room tag for requested item *@
-            @*jm- temp until form is fixed by BE *@
             <div class="col-md-6 purple-select">
                 <label asp-for="RoomTag" class="form-label"></label>
                 <select asp-for="RoomTag" class="form-select" asp-items="ViewBag.RoomTags">
