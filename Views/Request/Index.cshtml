@@ -72,8 +72,9 @@
                      ondrop="handleDrop(event)">
                     
                     <label for="imageFiles" class="form-label">Upload photos of your item here (optional)</label>
-                    <input type="file" name="imageFiles" id="imageFiles" class="form-control d-none" accept="image/*" multiple onchange="previewImages(this)" />
-                    
+                    < type="file" name="imageFiles" id="imageFiles" class="form-control d-none"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple
+                    onchange="previewImages(this)" />
                     <h6 class="fw-bold mb-1">Drop Images here or click to upload</h6>
                     <button type="button" class="btn btnpurple px-4 text-white mb-3"
                             onclick="event.stopPropagation();document.getElementById('imageFiles').click()">
@@ -83,6 +84,9 @@
                     @* Preview *@
                     <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 justify-content-center mt-3"></div>
                 </div>
+                <span data-valmsg-for="imageFiles" data-valmsg-replace="true"
+                      class="fw-bold smalltextgreen text d-block mt-1"></span>
+                <span id="clientFileError" class="fw-bold smalltextgreen text d-none mt-1"></span>
             </div>
 
             @* jm: Submits request item form *@
@@ -92,6 +96,58 @@
 </main>
 
 <script>
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+    function showFileError(message) {
+        const inlineError = document.getElementById('clientFileError');
+        if (inlineError) {
+            inlineError.textContent = message;
+            inlineError.classList.remove('d-none');
+            inlineError.classList.add('d-block');
+        }
+    }
+
+    function clearFileError() {
+        const inlineError = document.getElementById('clientFileError');
+        if (inlineError) {
+            inlineError.textContent = '';
+            inlineError.classList.add('d-none');
+            inlineError.classList.remove('d-block');
+        }
+    }
+
+    function validateImageFiles(files) {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size === 0) {
+                showFileError('One of the uploaded files is empty.');
+                return false;
+            }
+
+            const fileName = file.name.toLowerCase();
+            const hasValidExtension = ALLOWED_EXTENSIONS.some(ext => fileName.endsWith(ext));
+            if (!hasValidExtension) {
+                showFileError('Invalid file extension. Only JPG, PNG and WebP images are allowed.');
+                return false;
+            }
+
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                showFileError('Invalid file type. Please upload JPG, PNG or WebP images only.');
+                return false;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                showFileError('Each image must be smaller than 5 MB.');
+                return false;
+            }
+        }
+
+        clearFileError();
+        return true;
+    }
+
     function handleDrop(event) {
         event.preventDefault();
         const zone = document.getElementById('uploadZone');
@@ -99,6 +155,10 @@
 
         const input = document.getElementById('imageFiles');
         if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+            if (!validateImageFiles(event.dataTransfer.files)) {
+                input.value = '';
+                return;
+            }
             input.files = event.dataTransfer.files;
             previewImages(input);
         }
@@ -106,9 +166,15 @@
 
     function previewImages(input) {
         const container = document.getElementById('imagePreviewContainer');
-        container.innerHTML = ''; // Clear previous previews
 
-        if (input.files) {
+        if (input.files && input.files.length > 0) {
+            if (!validateImageFiles(input.files)) {
+                input.value = '';
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = ''; // Clear previous previews
             Array.from(input.files).forEach(file => {
                 const reader = new FileReader();
                 reader.onload = function (e) {
