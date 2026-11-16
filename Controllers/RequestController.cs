@@ -1,11 +1,11 @@
+using System.Security.Claims;
+using GroupProject.Helpers;
 using GroupProject.Models;
 using GroupProject.Services;
-using GroupProject.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace GroupProject.Controllers;
 
@@ -19,7 +19,7 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
             nameof(Category.CategoryID),
             nameof(Category.CategoryName),
             selected);
-        
+
         ViewBag.RoomTags = Enum.GetValues<RoomTag>()
             .Select(r => new SelectListItem
             {
@@ -35,7 +35,7 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
         PopulateCategories();
         return View();
     }
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(Request request, List<IFormFile> imageFiles)
@@ -45,6 +45,26 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
             PopulateCategories(request.CategoryID, request.RoomTag);
             TempData["ErrorMessage"] = "Please correct the errors in the form.";
             return View(request);
+        }
+
+        //TL - if imagefile is not null
+        if (imageFiles != null && imageFiles.Count > 0)
+        {
+            //TL - for each image, check file length, run ImageValidator function and if image is not valid return an error to the page
+            foreach (var file in imageFiles)
+            {
+                if (file.Length > 0)
+                {
+                    var (isValid, errorMessage) = ImageValidator.ValidateImage(file);
+                    if (!isValid)
+                    {
+                        ModelState.AddModelError("imageFiles", errorMessage!);
+                        PopulateCategories(request.CategoryID, request.RoomTag);
+                        TempData["ErrorMessage"] = errorMessage;
+                        return View(request);
+                    }
+                }
+            }
         }
 
         try
@@ -66,7 +86,7 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
                 {
                     if (file.Length > 0)
                     {
-                        string extension = Path.GetExtension(file.FileName);
+                        string extension = Path.GetExtension(file.FileName).ToLowerInvariant();
                         string customFileName = $"{request.RequestID}_{index}{extension}";
 
                         string imageUrl = await storageService.UploadFileAsync(file, "requests", customFileName);
@@ -87,6 +107,7 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
                         index++;
                     }
                 }
+
                 await dbCtx.SaveChangesAsync();
             }
 
@@ -111,7 +132,7 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
             .OrderBy(r => r.Status)
             .ThenByDescending(r => r.SubmittedOn)
             .ToList();
-        
+
         return View("List", requests);
     }
 
@@ -171,7 +192,7 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
         request.ItemID = newItem.ItemID;
 
         await dbCtx.SaveChangesAsync();
-        
+
         return RedirectToAction(nameof(ViewRequest), new { id });
     }
 
@@ -185,10 +206,10 @@ public class RequestController(UnMuddledDbContext dbCtx, IStorageService storage
         {
             return NotFound();
         }
-        
+
         request.Status = RequestStatus.Rejected;
         await dbCtx.SaveChangesAsync();
-        
+
         return RedirectToAction(nameof(ViewRequest), new { id });
     }
 }
