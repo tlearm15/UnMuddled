@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using GroupProject.Helpers;
 using GroupProject.Models;
 using GroupProject.Services;
 using GroupProject.ViewModels;
@@ -290,9 +291,20 @@ public class AccountController : Controller
 
         else if (model.ProfilePicture != null && model.ProfilePicture.Length > 0)
         {
+            //TL - Runs ImageValidator's ValidateImage function to check filetype
+            var (isValid, errorMessage) = ImageValidator.ValidateImage(model.ProfilePicture);
+            if (!isValid)
+            {
+                ModelState.AddModelError(nameof(model.ProfilePicture), errorMessage!);
+                //TL - Sets models profile picture to the users original so no new change is saved
+                model.ProfilePictureUrl = user.ProfilePictureUrl;
+                ViewBag.MaskedEmail = MaskEmail(user.Email ?? string.Empty);
+                return View(model);
+            }
+
             try
             {
-                string extension = Path.GetExtension(model.ProfilePicture.FileName);
+                string extension = Path.GetExtension(model.ProfilePicture.FileName).ToLowerInvariant();
                 string customFileName = $"profile_{user.Id}{extension}";
 
                 string imageUrl =
@@ -302,6 +314,7 @@ public class AccountController : Controller
             catch (Exception)
             {
                 ModelState.AddModelError(string.Empty, "Failed to upload profile picture.");
+                model.ProfilePictureUrl = user.ProfilePictureUrl;
                 ViewBag.MaskedEmail = MaskEmail(user.Email ?? string.Empty);
                 return View(model);
             }
@@ -557,6 +570,13 @@ public class AccountController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        var (isValid, errorMessage) = ImageValidator.ValidateImage(profilePicture);
+        if (!isValid)
+        {
+            TempData["ErrorMessage"] = errorMessage;
+            return RedirectToAction(nameof(Index));
+        }
+
         var user = await userManager.GetUserAsync(User);
         if (user == null)
         {
@@ -566,7 +586,7 @@ public class AccountController : Controller
         try
         {
             // Unique naming convention for profile pictures using User ID
-            string extension = Path.GetExtension(profilePicture.FileName);
+            string extension = Path.GetExtension(profilePicture.FileName).ToLowerInvariant();
             string customFileName = $"profile_{user.Id}{extension}";
 
             // Upload to the "profile" folder in Oracle Object Storage
