@@ -22,6 +22,7 @@ public class ItemController : Controller
         var items = _context.Items
             .AsNoTracking()
             .Include(i => i.Category)
+            .Include(i => i.Images)
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
@@ -68,6 +69,7 @@ public class ItemController : Controller
     {
         var item = await _context.Items
             .Include(i => i.Category)
+            .Include(i => i.Images)
             .FirstOrDefaultAsync(i => i.ItemID == id);
 
         if (item is null)
@@ -88,6 +90,7 @@ public class ItemController : Controller
 
         return View();
     }
+
     //JL -  CREATES A NEW ITEM AND SAVES IT TO THE DATABASE IF THE MODEL STATE IS VALID, OTHERWISE RETURNS THE VIEW WITH THE CATEGORY DROPDOWN LIST POPULATED
     [HttpPost]
     [ValidateAntiForgeryToken]

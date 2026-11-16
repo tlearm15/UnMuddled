@@ -1,7 +1,9 @@
-﻿@model GroupProject.Models.Item
+﻿@model Item
 
 @{
     ViewData["Title"] = Model?.ItemName ?? "Item Details";
+    var IsPrimary = Model?.Images?.FirstOrDefault(img => img.IsPrimary)
+                    ?? Model?.Images?.FirstOrDefault();
 }
 
 <link rel="stylesheet" href="~/css/M_StyleSheet.css" />
@@ -14,10 +16,10 @@
 
             <div class="col-md-5 mb-4 mb-md-0 text-center">
                 <div class="item-card-img-box d-flex align-items-center justify-content-center" style="height: 320px">
-                    @if (Model.Images != null && Model.Images.Any())
-                    //m if the items first image isnt null then display
+                    @if (IsPrimary != null && !string.IsNullOrEmpty(IsPrimary.ImageURL))
                     {
-                        
+                        <img src="@IsPrimary.ImageURL" alt="@Model.ItemName" class="img-fluid"
+                             style="max-height: 100%; max-width: 100%; object-fit: contain;"/>
                     }
                     else
                     //m if the items image is null then display text

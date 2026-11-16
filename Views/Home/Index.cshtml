@@ -1,26 +1,26 @@
-﻿@model IEnumerable<GroupProject.Models.Item>
+﻿@model IEnumerable<Item>
 
 @{
     ViewData["Title"] = "UnMuddled Home";
     string currentRoom = ViewData["CurrentRoom"] as string ?? "Living Room";
 
     //m creating a local list that falls back to hardcoded mock items for styling if the database is empty
-    var displayItems = Model?.ToList() ?? new List<GroupProject.Models.Item>();
+    var displayItems = Model?.ToList() ?? new List<Item>();
 
     //m if there are no items found in the database for the living room then add mock items for front-end styling purposes
     if (!displayItems.Any() && string.Equals(currentRoom, "Living Room", StringComparison.OrdinalIgnoreCase))
     {
-        displayItems.Add(new GroupProject.Models.Item
+        displayItems.Add(new Item
         {
             ItemName = "DvD Player",
             RoomTag = RoomTag.LivingRoom,
         });
-        displayItems.Add(new GroupProject.Models.Item
+        displayItems.Add(new Item
         {
             ItemName = "TV Remote",
             RoomTag = RoomTag.LivingRoom,
         });
-        displayItems.Add(new GroupProject.Models.Item
+        displayItems.Add(new Item
         {
             ItemName = "PS3",
             RoomTag = RoomTag.LivingRoom,
@@ -85,19 +85,21 @@
             <div style="display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 950px; margin: 20px auto; flex-wrap: wrap; gap: 20px;">
                 @foreach (var item in displayItems)
                 {
-                    var firstImage = item.Images?.FirstOrDefault();
+                    var firstImage = item.Images?.FirstOrDefault(img => img.IsPrimary)
+                                         ?? item.Images?.FirstOrDefault();
 
                     <div class="item-card">
                         <h4 class="item-card-title">@item.ItemName</h4>
 
                         <div class="item-card-img-box">
-                            @if (firstImage != null)
+                            @if (firstImage != null && !string.IsNullOrEmpty(firstImage.ImageURL))
                             //m if the items first image isnt null then display
                             {
-                                <img src="~/images/@firstImage" class="item-card-img" alt="@item.ItemName" />
+                                <img src="@firstImage.ImageURL" class="item-card-img" alt="@item.ItemName"
+                                     style="width: 100%; height: 100%; object-fit: cover;"/>
                             }
                             else
-                            //m if the items first image is null then display text
+                                //m if the items image is null then display text
                             {
                                 <span class="tinytextgreen">Sorry, No Image Available</span>
                             }
@@ -107,7 +109,7 @@
                             <span class="item-tag">@item.RoomTag</span>
 
                             <span class="item-tag">
-                                @(item.Category != null ? item.Category.GetType().GetProperty("CategoryName")?.GetValue(item.Category) ?? "General" : "General")
+                                @(item.Category?.CategoryName ?? "General")
                             </span>
                         </div>
                     </div>
