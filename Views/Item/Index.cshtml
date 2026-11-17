@@ -1,4 +1,4 @@
-﻿@model IEnumerable<GroupProject.Models.Item>
+﻿@model IEnumerable<Item>
 
 @{
     ViewData["Title"] = "E-Waste Items Catalogue";
@@ -24,8 +24,7 @@
 
         @*m locator action button column *@
         <div class="col-md-3 text-center text-md-end mt-md-0 p-5">
-@*             unsure where this will be linked, needs ammending 
- *@            <a asp-controller="Location" asp-action="Index" class="btnpurple-long-big"> Where to Recycle</a>
+            <a asp-controller="Location" asp-action="Index" class="btnpurple-long-big"> Where to Recycle</a>
         </div>
 
     </div>
@@ -44,7 +43,8 @@
         {
             foreach (var item in Model)
             {
-                var firstImage = item.Images?.FirstOrDefault();
+                var firstImage = item.Images?.FirstOrDefault(img => img.IsPrimary)
+                                 ?? item.Images?.FirstOrDefault();
 
                 <div class="col-lg-4 col-md-6 mb-3">
 
@@ -52,11 +52,12 @@
 
                         <h4 class="item-card-title text-center">@item.ItemName</h4>
 
-                        <div class="item-card-img-box">
-                            @if (firstImage != null)
+                        <div class="item-card-img-box text-center">
+                            @if (firstImage != null && !string.IsNullOrEmpty(firstImage.ImageURL))
                             {
-@*                                 unsure how images are being handled, left blank here, must be ammended
- *@                            }
+                                <img src="@firstImage.ImageURL" alt="@item.ItemName" class="img-fluid"
+                                     style="width: 100%; height: 100%; object-fit: cover;"/>
+                            }
                             else
                             {
                                 <span class="tinytextgreen text-muted">Sorry, No Image Available</span>

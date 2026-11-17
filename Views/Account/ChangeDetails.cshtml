@@ -190,6 +190,23 @@
     </form>
 
     <script>
+        //TL - ensures that only images are allowed to be uploaded (client-side)
+        const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
+        //TL - Validates passed in file is one of the types defined above
+        function validateImageFile(file) {
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                alert('Invalid file type. Please upload a JPG, PNG, or WebP image.');
+                return false;
+            }
+            if (file.size > MAX_FILE_SIZE) {
+                alert('File is too large. Maximum allowed size is 5 MB.');
+                return false;
+            }
+            return true;
+        }
+
         function handleDrop(event) {
             event.preventDefault();
             const zone = document.getElementById('uploadZone');
@@ -197,6 +214,11 @@
 
             const input = document.getElementById('ProfilePicture');
             if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+                const file = event.dataTransfer.files[0];
+                if (!validateImageFile(file)) {
+                    input.value = ''; // Clear input
+                    return;
+                }
                 input.files = event.dataTransfer.files;
                 previewImage(input);
             }
@@ -207,6 +229,13 @@
             container.innerHTML = '';
 
             if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (!validateImageFile(file)) {
+                    input.value = ''; // Reset invalid selection
+                    container.innerHTML = '';
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     const img = document.createElement('img');
@@ -214,8 +243,8 @@
                     img.style.width = '70px';
                     img.style.height = 'auto';
                     container.appendChild(img);
-                }
-                reader.readAsDataURL(input.files[0]);
+                };
+                reader.readAsDataURL(file);
             }
         }
     </script>

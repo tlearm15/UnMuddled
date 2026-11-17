@@ -1,11 +1,7 @@
 ﻿using GroupProject.Models;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-//WM - Adding entity framework core for database ops
 using Microsoft.EntityFrameworkCore;
+//WM - Adding entity framework core for database ops
 
 namespace GroupProject.Services
 {
@@ -20,6 +16,7 @@ namespace GroupProject.Services
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<SeedService>>();
+            var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
             try
             {
@@ -104,7 +101,7 @@ namespace GroupProject.Services
                     }
                     else
                     {
-                        var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                        var errors = string.Join("; ", staffResult.Errors.Select(e => e.Description));
                         logger.LogError($"Error creating staff user: {errors}");
                         throw new InvalidOperationException($"Error creating staff user: {errors}");
                     }
@@ -133,11 +130,12 @@ namespace GroupProject.Services
                     }
                     else
                     {
-                        var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                        var errors = string.Join("; ", memberResult.Errors.Select(e => e.Description));
                         logger.LogError($"Error creating user user: {errors}");
                         throw new InvalidOperationException($"Error creating 'Member' user: {errors}");
                     }
                 }
+
                 logger.LogInformation("Seeding e-waste categories, locations, and history.");
 
                 if (!context.Categories.Any())
@@ -153,8 +151,16 @@ namespace GroupProject.Services
                 if (!context.DisposalLocations.Any())
                 {
                     context.DisposalLocations.AddRange(
-                        new DisposalLocation { LocationName = "Glasgow Central Recycling", Town = "Glasgow", Postcode = "G1 1AA", Latitude = 55.8642m, Longitude = -4.2518m },
-                        new DisposalLocation { LocationName = "Local E-Waste Drop-off", Town = "Glasgow", Postcode = "G2 2BB", Latitude = 55.8600m, Longitude = -4.2500m }
+                        new DisposalLocation
+                        {
+                            LocationName = "Glasgow Central Recycling", Town = "Glasgow", Postcode = "G1 1AA",
+                            Latitude = 55.8642m, Longitude = -4.2518m
+                        },
+                        new DisposalLocation
+                        {
+                            LocationName = "Local E-Waste Drop-off", Town = "Glasgow", Postcode = "G2 2BB",
+                            Latitude = 55.8600m, Longitude = -4.2500m
+                        }
                     );
                     await context.SaveChangesAsync();
                 }
@@ -184,7 +190,18 @@ namespace GroupProject.Services
                 var catMobile = context.Categories.First(c => c.CategoryName == "Mobile Devices");
                 var locCentral = context.DisposalLocations.First(l => l.LocationName == "Glasgow Central Recycling");
 
-                Item item1 = null, item2 = null, item3 = null, item4 = null, item5 = null, item6 = null, item7 = null, item8 = null, item9 = null, item10 = null, item11 = null, item12 = null;
+                Item item1 = null,
+                    item2 = null,
+                    item3 = null,
+                    item4 = null,
+                    item5 = null,
+                    item6 = null,
+                    item7 = null,
+                    item8 = null,
+                    item9 = null,
+                    item10 = null,
+                    item11 = null,
+                    item12 = null;
 
                 bool item1Exists = await context.Items.AnyAsync(i => i.ItemName == "Broken Toaster");
                 if (!item1Exists)
@@ -192,7 +209,8 @@ namespace GroupProject.Services
                     item1 = new Item
                     {
                         ItemName = "Broken Toaster",
-                        Description = "Ensure Appliance is Cool. Damaged Heating Element will not prevent Recycling. Take to nearest Recycling centre",
+                        Description =
+                            "Ensure Appliance is Cool. Damaged Heating Element will not prevent Recycling. Take to nearest Recycling centre",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Kitchen,
@@ -208,7 +226,8 @@ namespace GroupProject.Services
                     item2 = new Item
                     {
                         ItemName = "Old Smartphone",
-                        Description = "If there is any obvious battery damage, do not attempt to power on or plug device in. Contact recycling centre and disclose any damage and follow advice.",
+                        Description =
+                            "If there is any obvious battery damage, do not attempt to power on or plug device in. Contact recycling centre and disclose any damage and follow advice.",
                         IsRecyclable = true,
                         CategoryID = catMobile.CategoryID,
                         RoomTag = RoomTag.Bedroom,
@@ -224,7 +243,8 @@ namespace GroupProject.Services
                     item3 = new Item
                     {
                         ItemName = "HP Laptop",
-                        Description = "If battery can be removed safely, please do so. Then take to Recycling Centre of WEEE Collection point to be recycled",
+                        Description =
+                            "If battery can be removed safely, please do so. Then take to Recycling Centre of WEEE Collection point to be recycled",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Office,
@@ -240,7 +260,8 @@ namespace GroupProject.Services
                     item4 = new Item
                     {
                         ItemName = "Dell Computer",
-                        Description = "Do not dispose in house bins. Take to Electronics Recycling Centre or WEEE Collection Point ",
+                        Description =
+                            "Do not dispose in house bins. Take to Electronics Recycling Centre or WEEE Collection Point ",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Office,
@@ -256,7 +277,8 @@ namespace GroupProject.Services
                     item5 = new Item
                     {
                         ItemName = "IPhone Duo",
-                        Description = "If any battery damage, do not power on or attempt to plug device in. Contact Recycling Centre and report any Battery Damage and follow advice for recycling.",
+                        Description =
+                            "If any battery damage, do not power on or attempt to plug device in. Contact Recycling Centre and report any Battery Damage and follow advice for recycling.",
                         IsRecyclable = true,
                         CategoryID = catMobile.CategoryID,
                         RoomTag = RoomTag.Bedroom,
@@ -272,7 +294,8 @@ namespace GroupProject.Services
                     item6 = new Item
                     {
                         ItemName = "Samsung Smart Fridge",
-                        Description = "Only to be Recycled at Authorized Centres, Retailers or Take-back services. Check with Manufacturer or Local Recycling centres for adivce.",
+                        Description =
+                            "Only to be Recycled at Authorized Centres, Retailers or Take-back services. Check with Manufacturer or Local Recycling centres for adivce.",
                         IsRecyclable = false,
                         CategoryID = catAppliances.CategoryID,
                         RoomTag = RoomTag.Kitchen,
@@ -288,7 +311,8 @@ namespace GroupProject.Services
                     item7 = new Item
                     {
                         ItemName = "Smoke Detector",
-                        Description = "CAUTION:Some Smoke Detectors contain small amounts of Radioactive material.\nIf safe to do so, remove battery. DO NOT, needlessly dismantle. Take to Recycling Centre that accepts Smoke Alarms to ensure proper, safe disposal.",
+                        Description =
+                            "CAUTION:Some Smoke Detectors contain small amounts of Radioactive material.\nIf safe to do so, remove battery. DO NOT, needlessly dismantle. Take to Recycling Centre that accepts Smoke Alarms to ensure proper, safe disposal.",
                         IsRecyclable = false,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.Other,
@@ -304,7 +328,8 @@ namespace GroupProject.Services
                     item8 = new Item
                     {
                         ItemName = "LCD Television",
-                        Description = "Do not place in general Electronics Collections. Take to Recycling Centre that accepts these Screen Types to ensure safe disposal",
+                        Description =
+                            "Do not place in general Electronics Collections. Take to Recycling Centre that accepts these Screen Types to ensure safe disposal",
                         IsRecyclable = false,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
@@ -320,7 +345,8 @@ namespace GroupProject.Services
                     item9 = new Item
                     {
                         ItemName = "DvD Player",
-                        Description = "If safe to do so, remove any disk from player. DO NOT Dismantle player. Take to Recycling Centre for Recycling.",
+                        Description =
+                            "If safe to do so, remove any disk from player. DO NOT Dismantle player. Take to Recycling Centre for Recycling.",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
@@ -336,7 +362,8 @@ namespace GroupProject.Services
                     item10 = new Item
                     {
                         ItemName = "TV Remote",
-                        Description = "Remove Batteries and Dispose in Battery collection points. Take Remote to small electricals facility",
+                        Description =
+                            "Remove Batteries and Dispose in Battery collection points. Take Remote to small electricals facility",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
@@ -352,7 +379,8 @@ namespace GroupProject.Services
                     item11 = new Item
                     {
                         ItemName = "PS3",
-                        Description = "If safe to do so, remove any Disk inside console. DO NOT Dismantle. Take to Electrical Recycling Centre.",
+                        Description =
+                            "If safe to do so, remove any Disk inside console. DO NOT Dismantle. Take to Electrical Recycling Centre.",
                         IsRecyclable = true,
                         CategoryID = catElectronics.CategoryID,
                         RoomTag = RoomTag.LivingRoom,
@@ -368,7 +396,8 @@ namespace GroupProject.Services
                     item12 = new Item
                     {
                         ItemName = "Air Conditioning Unit",
-                        Description = "Contact Recycling Centre that accepts these units and follow advice given.\nCAUTION: Do not attempt to move due to Toxi Refrigerants. DO NOT Cut Pipes or Dismantle any part of Unit.",
+                        Description =
+                            "Contact Recycling Centre that accepts these units and follow advice given.\nCAUTION: Do not attempt to move due to Toxi Refrigerants. DO NOT Cut Pipes or Dismantle any part of Unit.",
                         IsRecyclable = false,
                         CategoryID = catAppliances.CategoryID,
                         RoomTag = RoomTag.Other,
@@ -378,28 +407,130 @@ namespace GroupProject.Services
                     context.ItemDisposals.Add(new ItemDisposal { Item = item12, DisposalID = locCentral.DisposalID });
                 }
 
+                // Save newly added items so their ItemIDs are generated before linking history or images
+                await context.SaveChangesAsync();
+
                 if (userHistory != null)
                 {
-                    await context.SaveChangesAsync();
-
                     // WM - creating the junction table so i can link items to the user's history and disposal locs
-                    if (item1 != null && item2 != null && item3 != null && item4 != null && item5 != null && item6 != null && item7 != null && item8 != null && item9 != null && item10 != null && item11 != null && item12 != null)
+                    if (item1 != null && item2 != null && item3 != null && item4 != null && item5 != null &&
+                        item6 != null && item7 != null && item8 != null && item9 != null && item10 != null &&
+                        item11 != null && item12 != null)
                     {
                         context.UserHistoryItems.AddRange(
-                            new UserHistoryItem { ItemId = item1.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item1.DateAdded },
-                            new UserHistoryItem { ItemId = item2.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item2.DateAdded },
-                            new UserHistoryItem { ItemId = item3.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item3.DateAdded },
-                            new UserHistoryItem { ItemId = item4.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item4.DateAdded },
-                            new UserHistoryItem { ItemId = item5.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item5.DateAdded },
-                            new UserHistoryItem { ItemId = item6.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item6.DateAdded },
-                            new UserHistoryItem { ItemId = item7.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item7.DateAdded },
-                            new UserHistoryItem { ItemId = item8.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item8.DateAdded },
-                            new UserHistoryItem { ItemId = item9.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item9.DateAdded },
-                            new UserHistoryItem { ItemId = item10.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item10.DateAdded },
-                            new UserHistoryItem { ItemId = item11.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item11.DateAdded },
-                            new UserHistoryItem { ItemId = item12.ItemID, UserHistoryId = userHistory.UserHistoryId, DateDisposed = item12.DateAdded }
+                            new UserHistoryItem
+                            {
+                                ItemId = item1.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item1.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item2.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item2.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item3.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item3.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item4.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item4.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item5.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item5.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item6.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item6.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item7.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item7.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item8.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item8.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item9.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item9.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item10.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item10.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item11.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item11.DateAdded
+                            },
+                            new UserHistoryItem
+                            {
+                                ItemId = item12.ItemID, UserHistoryId = userHistory.UserHistoryId,
+                                DateDisposed = item12.DateAdded
+                            }
                         );
                         await context.SaveChangesAsync();
+                    }
+                }
+
+                // TL - Link seed images by matching item names directly to seed_{index}.jpg in Oracle Object Storage
+                var region = config["OracleStorage:Region"];
+                var namespaceName = config["OracleStorage:Namespace"];
+                var bucketName = config["OracleStorage:BucketName"];
+
+                var seedImageMap = new Dictionary<string, int>
+                {
+                    { "Broken Toaster", 1 },
+                    { "Old Smartphone", 2 },
+                    { "HP Laptop", 3 },
+                    { "Dell Computer", 4 },
+                    { "IPhone Duo", 5 },
+                    { "Samsung Smart Fridge", 6 },
+                    { "Smoke Detector", 7 },
+                    { "LCD Television", 8 },
+                    { "DvD Player", 9 },
+                    { "TV Remote", 10 },
+                    { "PS3", 11 },
+                    { "Air Conditioning Unit", 12 }
+                };
+
+                var allItems = await context.Items.Include(i => i.Images).ToListAsync();
+                foreach (var item in allItems)
+                {
+                    if (seedImageMap.TryGetValue(item.ItemName, out int seedIndex))
+                    {
+                        string fileName = $"seed_{seedIndex}.jpg";
+                        string folder = "items";
+                        string objectKey = $"{folder}/{fileName}";
+
+                        string imageUrl =
+                            $"https://objectstorage.{region}.oraclecloud.com/n/{namespaceName}/b/{bucketName}/o/{Uri.EscapeDataString(folder)}/{Uri.EscapeDataString(fileName)}";
+
+                        var existingImage = item.Images.FirstOrDefault(img => img.IsPrimary) ??
+                                            item.Images.FirstOrDefault();
+                        if (existingImage != null)
+                        {
+                            existingImage.ImageURL = imageUrl;
+                        }
+                        else
+                        {
+                            context.Images.Add(new Image
+                            {
+                                ItemID = item.ItemID,
+                                ImageURL = imageUrl,
+                                IsPrimary = true
+                            });
+                        }
                     }
                 }
 
