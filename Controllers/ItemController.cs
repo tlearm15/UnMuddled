@@ -17,6 +17,8 @@ public class ItemController : Controller
     }
 
     //JL - GETS THE ITEMS AND FILTERS THEM BASED ON THE SEARCH TERM, CATEGORY, ROOM TAG, AND RECYCLABLE STATUS 
+
+    [AllowAnonymous]
     public async Task<IActionResult> Index(string? searchTerm, int? categoryId, RoomTag? roomTag, bool? isRecyclable)
     {
         var items = _context.Items
@@ -65,6 +67,8 @@ public class ItemController : Controller
     }
 
     // JL - GETS THE DETAILS OF A SPECIFIC ITEM BASED ON ITS ID 
+
+    [AllowAnonymous]
     public async Task<IActionResult> Details(int id)
     {
         var item = await _context.Items
