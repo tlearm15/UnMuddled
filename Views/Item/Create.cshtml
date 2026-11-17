@@ -14,36 +14,88 @@
     </div>
     <div class="row justify-content-center w-100">
         <div class="col-md-8">
-            <div class="cardpurple p-4">
+            <div class="carddustygreen p-4">
                 <form asp-controller="Item" asp-action="Create" method="post" class="mb-1">
                 @Html.AntiForgeryToken()
                 <div asp-validation-summary="ModelOnly" class="fw-bold smalltextpurple text"></div>
                 
                 <div class="row g-3">
+                    
+                    @* jm: Item name and is it recylable inputs *@
                     <div class="col-md-12">
                         <label asp-for="ItemName" class="form-label"></label>
-                        <input asp-for="ItemName" class="form-control"/>
+                        <div class="input-group">
+                            <input asp-for="ItemName" class="form-control" max-length="80"/>
+                            <div class="input-group-text">
+                                <input asp-for="IsRecyclable" class="form-check-input mt-0 me-2" type="checkbox"/>
+                                <label asp-for="IsRecyclable" class="form-check-label mb-0">Is it Recyclable?</label>
+                            </div>
+                        </div>
                         <span asp-validation-for="ItemName" class="fw-bold smalltextpurple text"></span>
+                        <span asp-validation-for="IsRecyclable" class="fw-bold smalltextpurple text"></span>
                     </div>
+
+                    @* jm: Category Select *@
                     <div class="col-md-6 col-sm-12">
                         <div class="purple-select">
-                            <label asp-for="CategoryID" class="form-label"></label>
+                            <label asp-for="CategoryID" class="form-label">Category</label>
                             <select asp-for="CategoryID" class="form-select" asp-items="ViewBag.Categories">
-                                <option value=""> Select a category </option>
+                                <option value=""> Select a Category </option>
                             </select>
                             <span asp-validation-for="CategoryID" class="fw-bold smalltextpurple text"></span>
                         </div>
                     </div>
+
+                    @* jm: Room Select *@
                     <div class="col-md-6 col-sm-12">
                         <div class="purple-select">
-                            <label asp-for="RoomTag" class="form-label"></label>
+                            <label asp-for="RoomTag" class="form-label">Room Tag</label>
                             <select asp-for="RoomTag" class="form-select" asp-items="ViewBag.RoomTags">
                                 <option value=""> Select a Room </option>
                             </select>
                             <span asp-validation-for="RoomTag" class="fw-bold smalltextpurple text"></span>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Create</button>
+
+                    @* jm: Description input *@
+                    <div class="col-md-12">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" placeholder="Enter recycling description of the product... Max 450 characters."></textarea>
+                        <span asp-validation-for="Description" class="fw-bold smalltextpurple text"></span>
+                    </div>
+
+                    @* jm: Image Upload *@
+                    <div class="col-12-3">
+                        <div class="upload-zone p-4 text-center border rounded" id="uploadZone" onclick="document.getElementById('imageFiles').click()"
+                             ondragover="event.preventDefault();this.classList.add('dragover')"
+                             ondragleave="this.classList.remove('dragover')"
+                             ondrop="handleDrop(event)">
+
+                            <label for="imageFiles" class="form-label">Upload photos of your item here (optional)</label>
+                            <input type="file" name="imageFiles" id="imageFiles" class="form-control d-none"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple
+                                   onchange="previewImages(this)"/>
+                            <h6 class="fw-bold mb-1">Drop Images here or click to upload</h6>
+                            <button type="button" class="btn btnpurple px-4 text-white mb-3"
+                                    onclick="event.stopPropagation();document.getElementById('imageFiles').click()">
+                                Upload Photos
+                            </button>
+
+                            @* Preview *@
+                            <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 justify-content-center mt-3"></div>
+                        </div>
+                        <span data-valmsg-for="imageFiles" data-valmsg-replace="true"
+                              class="fw-bold smalltextgreen text d-block mt-1"></span>
+                        <span id="clientFileError" class="fw-bold smalltextgreen text d-none mt-1"></span>
+                    </div>
+
+                    @* jm: Cancel button takes to dashboard, create button creates item *@
+                    <div class="d-flex justify-content-between  align-items-center">
+                        <a asp-controller="Admin" asp-action="Index" class="btn btnwhite-long">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btnpurple-long">Create</button>
+                    </div>
                 </div>
                 
                 </form>
@@ -51,3 +103,101 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+    function showFileError(message) {
+        const inlineError = document.getElementById('clientFileError');
+        if (inlineError) {
+            inlineError.textContent = message;
+            inlineError.classList.remove('d-none');
+            inlineError.classList.add('d-block');
+        }
+    }
+
+    function clearFileError() {
+        const inlineError = document.getElementById('clientFileError');
+        if (inlineError) {
+            inlineError.textContent = '';
+            inlineError.classList.add('d-none');
+            inlineError.classList.remove('d-block');
+        }
+    }
+
+    function validateImageFiles(files) {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size === 0) {
+                showFileError('One of the uploaded files is empty.');
+                return false;
+            }
+
+            const fileName = file.name.toLowerCase();
+            const hasValidExtension = ALLOWED_EXTENSIONS.some(ext => fileName.endsWith(ext));
+            if (!hasValidExtension) {
+                showFileError('Invalid file extension. Only JPG, PNG and WebP images are allowed.');
+                return false;
+            }
+
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                showFileError('Invalid file type. Please upload JPG, PNG or WebP images only.');
+                return false;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                showFileError('Each image must be smaller than 5 MB.');
+                return false;
+            }
+        }
+
+        clearFileError();
+        return true;
+    }
+
+    function handleDrop(event) {
+        event.preventDefault();
+        const zone = document.getElementById('uploadZone');
+        zone.classList.remove('dragover');
+
+        const input = document.getElementById('imageFiles');
+        if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+            if (!validateImageFiles(event.dataTransfer.files)) {
+                input.value = '';
+                return;
+            }
+            input.files = event.dataTransfer.files;
+            previewImages(input);
+        }
+    }
+
+    function previewImages(input) {
+        const container = document.getElementById('imagePreviewContainer');
+
+        if (input.files && input.files.length > 0) {
+            if (!validateImageFiles(input.files)) {
+                input.value = '';
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = ''; // Clear previous previews
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '80px';
+                    img.style.height = '80px';
+                    img.style.objectFit = 'cover';
+                    img.className = 'rounded border shadow-sm';
+                    container.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+</script>
