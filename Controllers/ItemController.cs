@@ -87,7 +87,9 @@ public class ItemController : Controller
             _context.Categories.OrderBy(c => c.CategoryName).ToList(),
             nameof(Category.CategoryID),
             nameof(Category.CategoryName));
-
+        
+        //JM - Populates the RoomTag dropdown list with the values from the RoomTag enum
+        ViewBag.RoomTags = new SelectList(Enum.GetValues<RoomTag>());
         return View();
     }
 
@@ -104,6 +106,8 @@ public class ItemController : Controller
                 nameof(Category.CategoryName),
                 item.CategoryID);
 
+            //JM - Populates the RoomTag dropdown list with the values from the RoomTag enum and selects the current value of item.RoomTag
+            ViewBag.RoomTags = new SelectList(Enum.GetValues<RoomTag>(), item.RoomTag);
             return View(item);
         }
 
