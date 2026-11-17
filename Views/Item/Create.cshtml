@@ -1,0 +1,25 @@
+﻿@model GroupProject.Models.Item
+@using GroupProject.Models
+
+@{
+    ViewData["Title"] = "Create Item";
+}
+
+@* jm: styling sheet for components *@
+<link rel="stylesheet" href="~/css/j_stylesheet.css" />
+
+<div class="container layout align-items-center">
+    <div class="text-center">
+        <h1 class="titlepurple-var">Create a new item</h1>
+    </div>
+    <div class="row justify-content-center w-100">
+        <div class="col-md-8">
+            <div class="cardpurple p-4">
+                <form asp-controller="Item" asp-action="Create" method="post" class="mb-1">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="fw-bold smalltextpurple text"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
