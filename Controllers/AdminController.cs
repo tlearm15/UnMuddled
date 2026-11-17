@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Staff")]
     public class AdminController : Controller
     {
         //Get instance of the database context
