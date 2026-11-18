@@ -532,23 +532,20 @@ img {
     display: flex;
     justify-content: space-between;
     width: 100%;
-  
     height: 3rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    
     align-items: center;
     color: #3A4338;
     padding-block: 0.625rem;
     padding-inline: 0.625rem;
     border-radius: 0.625rem;
-
     cursor: pointer;
     font-weight: 700;
-    background: white;
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23FFF' class='size-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E%0A")
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23FFF' class='size-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E%0A")
     right 10px center / 20px no-repeat;
+    
     @supports (appearance: base-select) {
         padding-inline: 10px;
         background-image: none;
@@ -604,6 +601,55 @@ img {
             }
         }
     }
+}
+
+
+.purple-select .purple-select-btn {
+    height: 3rem;
+    color: #3A4338;
+    padding: 0.625rem;
+    border-radius: 0.625rem;
+    border: 1px solid #ced4da;
+    font-weight: 700;
+    background: white;
+    cursor: pointer;
+}
+
+
+.purple-select .purple-select-btn::after {
+    content: "";
+    border: 0;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='%23FFF' class='size-6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E%0A")    transition: rotate 0.2s ease-out;
+}
+
+.purple-select .purple-select-btn[aria-expanded="true"]::after {
+    rotate: 180deg;
+}
+
+
+.purple-select .dropdown-menu {
+    margin-top: 0.625rem !important;
+    border: 2px solid #382B38;
+    border-radius: 0.625rem;
+}
+
+.purple-select .dropdown-item {
+    border-top: 1px solid #5A465C;
+    transition: color 0.2s ease-out, background 0.2s ease-out;
+}
+
+.purple-select li:first-child .dropdown-item {
+    border-top: 0;
+}
+
+.purple-select .dropdown-item:hover,
+.purple-select .dropdown-item:focus,
+.purple-select .dropdown-item:has(input:checked) {
+    background-color: #5A465C;
+    color: white;
 }
 
 /* jm: wraps input and button, position: relative keeps button inside box */

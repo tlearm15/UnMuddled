@@ -94,13 +94,29 @@ public class ItemController : Controller
         
         //JM - Populates the RoomTag dropdown list with the values from the RoomTag enum
         ViewBag.RoomTags = new SelectList(Enum.GetValues<RoomTag>());
+        
+        //JM - Populates DisposalLocations dropdown list with the values from the DisposalLocation table
+        // The DisplayText is formatted to show the LocationName followed by the address details for the dropdown.
+        // Multiple locations can be selected
+        ViewBag.DisposalLocations = new MultiSelectList(
+            _context.DisposalLocations
+                .OrderBy(d => d.LocationName)
+                .Select(d => new
+                {
+                    d.DisposalID,
+                    DisplayText = $"{d.LocationName}, {d.Postcode}"
+                })
+                .ToList(),
+            "DisposalID",
+            "DisplayText"
+        );
         return View();
     }
 
     //JL -  CREATES A NEW ITEM AND SAVES IT TO THE DATABASE IF THE MODEL STATE IS VALID, OTHERWISE RETURNS THE VIEW WITH THE CATEGORY DROPDOWN LIST POPULATED
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Item item)
+    public async Task<IActionResult> Create(Item item, int[]? selectedDisposalIds)
     {
         if (!ModelState.IsValid)
         {
@@ -112,7 +128,38 @@ public class ItemController : Controller
 
             //JM - Populates the RoomTag dropdown list with the values from the RoomTag enum and selects the current value of item.RoomTag
             ViewBag.RoomTags = new SelectList(Enum.GetValues<RoomTag>(), item.RoomTag);
+            
+            //JM - Populates the DisposalLocations dropdown list with the values from the DisposalLocation table and selects the current value of item.DisposalID
+            // The DisplayText is formatted to show the LocationName followed by the address details for the dropdown.
+            // Multiple locations can be selected
+            // selectedDisposalIds used to keep the selected disposal locations when the form is re-rendered due to validation errors
+            ViewBag.DisposalLocations = new MultiSelectList(
+                await _context.DisposalLocations
+                    .OrderBy(d => d.LocationName)
+                    .Select(d => new
+                    {
+                        d.DisposalID,
+                        DisplayText = $"{d.LocationName}, {d.Postcode}"
+                    })
+                    .ToListAsync(),
+                "DisposalID",
+                "DisplayText",
+                selectedDisposalIds);
             return View(item);
+        }
+        
+        //JM - Link the selected disposal locations to the item by creating ItemDisposal objects and adding them to the ItemDisposals collection of the item
+        //length > 0 check ensures that the array is not empty before iterating through it
+        if (selectedDisposalIds != null && selectedDisposalIds.Length > 0)
+        //if (selectedDisposalIds is { Length: > 0 })
+        {
+            foreach (var disposalId in selectedDisposalIds)
+            {
+                item.ItemDisposals.Add(new ItemDisposal
+                {
+                    DisposalID = disposalId
+                });
+            }
         }
 
         _context.Add(item);
