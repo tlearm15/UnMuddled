@@ -1,0 +1,268 @@
+﻿@model GroupProject.Models.Item
+@using GroupProject.Models
+
+@{
+    ViewData["Title"] = "Create Item";
+}
+
+@* jm: styling sheet for components *@
+<link rel="stylesheet" href="~/css/j_stylesheet.css" />
+
+<div class="container layout align-items-center">
+    <div class="text-center">
+        <h1 class="titlepurple-var">Create a new item</h1>
+    </div>
+    <div class="row justify-content-center w-100">
+        <div class="col-md-8">
+            <div class="carddustygreen p-4">
+                <form asp-controller="Item" asp-action="Create" method="post" enctype="multipart/form-data" class="mb-1">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="fw-bold smalltextpurple text"></div>
+                <div class="row g-3">
+                    @* jm: Item name and is it recylable inputs *@
+                    <div class="col-md-12">
+                        <label asp-for="ItemName" class="form-label"></label>
+                        <div class="input-group">
+                            <input asp-for="ItemName" class="form-control" max-length="80"/>
+                            <div class="input-group-text">
+                                <input asp-for="IsRecyclable" class="form-check-input mt-0 me-2" type="checkbox"/>
+                                <label asp-for="IsRecyclable" class="form-check-label mb-0">Is it Recyclable?</label>
+                            </div>
+                        </div>
+                        <span asp-validation-for="ItemName" class="fw-bold smalltextpurple text"></span>
+                        <span asp-validation-for="IsRecyclable" class="fw-bold smalltextpurple text"></span>
+                    </div>
+
+                    @* jm: Category Select *@
+                    <div class="col-md-6 col-sm-12 mt-0 mb-0">
+                        <div class="purple-select">
+                            <label asp-for="CategoryID" class="form-label">Category</label>
+                            <select asp-for="CategoryID" class="form-select" asp-items="ViewBag.Categories">
+                                <option value=""> Select a Category </option>
+                            </select>
+                            <span asp-validation-for="CategoryID" class="fw-bold smalltextpurple text"></span>
+                        </div>
+                    </div>
+
+                    @* jm: Room Select *@
+                    <div class="col-md-6 col-sm-12 mt-0 mb-0">
+                        <div class="purple-select">
+                            <label asp-for="RoomTag" class="form-label">Room Tag</label>
+                            <select asp-for="RoomTag" class="form-select" asp-items="ViewBag.RoomTags">
+                                <option value=""> Select a Room </option>
+                            </select>
+                            <span asp-validation-for="RoomTag" class="fw-bold smalltextpurple text"></span>
+                        </div>
+                    </div>
+
+                    @* jm: Disposal Locations multi-select dropdown *@
+                    <div class="col-md-12 purple-select mt-0 mb-0">
+                        <label class="form-label">Disposal Locations</label>
+                        @* jm: Custom dropdown for disposal locations, allows multiple selections *@
+                        <div class="dropdown">
+                            <button class="purple-select-btn dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center"
+                                    type="button"
+                                    id="disposalDropdown"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-auto-close="outside"
+                                    aria-expanded="false">
+                                <span id="disposalDropdownLabel" class="text-truncate">Select Disposal Location(s)</span>
+                            </button>
+
+                            @* jm: Dropdown menu with checkboxes, for each location display a checkbox and the location name, if selected show in the button label *@
+                            <ul class="dropdown-menu w-100 p-0 overflow-auto" aria-labelledby="disposalDropdown" style="max-height: 220px;">
+                                @if (ViewBag.DisposalLocations is MultiSelectList locations)
+                                {
+                                    foreach (var item in locations)
+                                    {
+                                        <li>
+                                            <label class="dropdown-item d-flex align-items-center gap-2 py-2 px-3 m-0" style="cursor: pointer;">
+                                                <input class="form-check-input m-0 disposal-checkbox"
+                                                       type="checkbox"
+                                                       name="selectedDisposalIds"
+                                                       value="@item.Value"
+                                                       @(item.Selected ? "checked" : null) />
+                                                <span>@item.Text</span>
+                                            </label>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    @* jm: Description input *@
+                    <div class="col-md-12">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" placeholder="Enter recycling description of the product... Max 450 characters."></textarea>
+                        <span asp-validation-for="Description" class="fw-bold smalltextpurple text"></span>
+                    </div>
+
+                    
+
+                    @* jm: Image Upload *@
+                    <div class="col-12">
+                        <div class="upload-zone p-4 text-center border rounded" id="uploadZone" onclick="document.getElementById('imageFiles').click()"
+                             ondragover="event.preventDefault();this.classList.add('dragover')"
+                             ondragleave="this.classList.remove('dragover')"
+                             ondrop="handleDrop(event)">
+
+                            <label for="imageFiles" class="form-label">Upload photos of your item here (optional)</label>
+                            <input type="file" name="imageFiles" id="imageFiles" class="form-control d-none"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" multiple
+                                   onchange="previewImages(this)"/>
+                            <h6 class="fw-bold mb-1">Drop Images here or click to upload</h6>
+                            <button type="button" class="btn btnpurple px-4 text-white mb-3"
+                                    onclick="event.stopPropagation();document.getElementById('imageFiles').click()">
+                                Upload Photos
+                            </button>
+
+                            @* Preview *@
+                            <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 justify-content-center mt-3"></div>
+                        </div>
+                        <span data-valmsg-for="imageFiles" data-valmsg-replace="true"
+                              class="fw-bold smalltextgreen text d-block mt-1"></span>
+                        <span id="clientFileError" class="fw-bold smalltextgreen text d-none mt-1"></span>
+                    </div>
+                </div>
+                    
+                    @* jm: Cancel button takes to dashboard, create button creates item *@
+                    <div class="d-flex justify-content-between  align-items-center">
+                        <a asp-controller="Admin" asp-action="Index" class="btn btnwhite-long">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btnpurple-long">Create</button>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+    const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
+    const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+    function showFileError(message) {
+        const inlineError = document.getElementById('clientFileError');
+        if (inlineError) {
+            inlineError.textContent = message;
+            inlineError.classList.remove('d-none');
+            inlineError.classList.add('d-block');
+        }
+    }
+
+    function clearFileError() {
+        const inlineError = document.getElementById('clientFileError');
+        if (inlineError) {
+            inlineError.textContent = '';
+            inlineError.classList.add('d-none');
+            inlineError.classList.remove('d-block');
+        }
+    }
+
+    function validateImageFiles(files) {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.size === 0) {
+                showFileError('One of the uploaded files is empty.');
+                return false;
+            }
+
+            const fileName = file.name.toLowerCase();
+            const hasValidExtension = ALLOWED_EXTENSIONS.some(ext => fileName.endsWith(ext));
+            if (!hasValidExtension) {
+                showFileError('Invalid file extension. Only JPG, PNG and WebP images are allowed.');
+                return false;
+            }
+
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                showFileError('Invalid file type. Please upload JPG, PNG or WebP images only.');
+                return false;
+            }
+
+            if (file.size > MAX_FILE_SIZE) {
+                showFileError('Each image must be smaller than 5 MB.');
+                return false;
+            }
+        }
+
+        clearFileError();
+        return true;
+    }
+
+    function handleDrop(event) {
+        event.preventDefault();
+        const zone = document.getElementById('uploadZone');
+        zone.classList.remove('dragover');
+
+        const input = document.getElementById('imageFiles');
+        if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+            if (!validateImageFiles(event.dataTransfer.files)) {
+                input.value = '';
+                return;
+            }
+            input.files = event.dataTransfer.files;
+            previewImages(input);
+        }
+    }
+
+    function previewImages(input) {
+        const container = document.getElementById('imagePreviewContainer');
+
+        if (input.files && input.files.length > 0) {
+            if (!validateImageFiles(input.files)) {
+                input.value = '';
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = ''; // Clear previous previews
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '80px';
+                    img.style.height = '80px';
+                    img.style.objectFit = 'cover';
+                    img.className = 'rounded border shadow-sm';
+                    container.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+</script>
+
+@* jm: Custom dropdown for disposal locations, allows multiple selections
+        Displays the selected options in the dropdown button *@
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const label = document.getElementById("disposalDropdownLabel");
+            const checkboxes = document.querySelectorAll(".disposal-checkbox");
+
+            // jm: Update the label based on selected checkboxes
+            function updateLabel() {
+                //jm: Get the text of all selected checkboxes
+                const selected = Array.from(checkboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.nextElementSibling.textContent.trim());
+
+                // jm: Update the label text, showing selected options or a default message
+                label.textContent = selected.length > 0
+                    ? selected.join(", ")
+                    : "Select disposal locations...";
+            }
+
+            //jm: Add event listeners to checkboxes to update the label when selection changes
+            checkboxes.forEach(cb => cb.addEventListener("change", updateLabel));
+            updateLabel(); 
+        });
+    </script>
+}
