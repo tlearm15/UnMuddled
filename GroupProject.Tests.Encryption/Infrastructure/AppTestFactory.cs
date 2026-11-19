@@ -1,3 +1,4 @@
+using System.Data;
 using GroupProject.Services;
 using GroupProject.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -13,8 +14,9 @@ using Microsoft.Extensions.Logging;
 namespace GroupProject.Tests.Encryption.Infrastructure;
 
 /// <summary>
-/// Capturing email sender: records every "sent" email so tests can assert on the
-/// actual content (e.g. confirmation links) without any external dependency.
+/// TQ-
+/// Records emails during tests instead of sending them, so tests can check what was sent
+/// (such as confirmation links) without needing an email service.
 /// </summary>
 public sealed class CapturingEmailSender : IEmailSender<User>
 {
@@ -38,29 +40,30 @@ public sealed class CapturingEmailSender : IEmailSender<User>
         return Task.CompletedTask;
     }
 }
-
 /// <summary>
-/// WebApplicationFactory wired for testing:
-/// - fresh in-memory SQLite database (passed in, so callers control lifetime / "restart" scenarios)
-/// - FakeEncryptionKeyProvider (no ENCRYPTION_KEY env dependency)
-/// - CapturingEmailSender (no SendGrid / network access)
+/// Starts the app for tests with a fresh test database, a fixed encryption key (no
+/// ENCRYPTION_KEY needed) and an email sender that records messages instead of sending them.
+/// The caller can supply the database connection to simulate an app restart.
 /// </summary>
-public sealed class AppTestFactory : WebApplicationFactory<Program>, IDisposable
+public sealed class AppTestFactory : WebApplicationFactory<Program>
 {
-    public FakeEncryptionKeyProvider KeyProvider { get; } = new();
+    private FakeEncryptionKeyProvider KeyProvider { get; } = new();
     public CapturingEmailSender EmailSender { get; } = new();
     private readonly SqliteConnection? _externalConnection;
     private readonly SqliteConnection? _ownedConnection;
-
-    /// <summary>Creates a factory with its own fresh in-memory SQLite database.</summary>
+    /// <summary>
+    /// TQ-
+    /// Creates a test app with its own temporary database.
+    /// </summary>
     public AppTestFactory()
     {
-        _ownedConnection = new SqliteConnection("Data Source=:memory:");
+        _ownedConnection = new SqliteConnection( "Data Source=:memory:" );
         _ownedConnection.Open();
     }
-
-    /// <summary>Creates a factory that uses an EXISTING open SQLite connection.
-    /// Lets a second factory simulate an application restart against the same database.</summary>
+    /// <summary>
+    /// Uses an existing database connection so a second test app can simulate
+    /// restarting the app.
+    /// </summary>
     public AppTestFactory(SqliteConnection existingConnection)
     {
         _externalConnection = existingConnection;
@@ -69,22 +72,19 @@ public sealed class AppTestFactory : WebApplicationFactory<Program>, IDisposable
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Development");
-        // Program.cs unconditionally builds an Npgsql data source from this connection
-        // string; a syntactically valid string keeps that path happy without connecting.
+        // The app expects a database connection string when it starts. A valid-looking one
+        // is enough here because the tests replace the real database later.
         builder.UseSetting("ConnectionStrings:Default", "Host=localhost;Database=testdb;Username=test;Password=test");
-
         builder.ConfigureServices(services =>
         {
-            // Quiet the EF/Identity SQL logs in test output
+            // Keep database logs out of the test output
             services.AddLogging(logging =>
             {
                 logging.ClearProviders();
                 logging.SetMinimumLevel(LogLevel.Warning);
             });
-
-            // Strip the production Npgsql registration (EF Core 9 stores the provider
-            // config in IDbContextOptionsConfiguration<T> alongside DbContextOptions<T>).
-            for (var i = services.Count - 1; i >= 0; i--)
+            // Remove the app's PostgreSQL setup so the test database is used instead.
+            for( var i = services.Count - 1; i >= 0; i-- )
             {
                 var st = services[i].ServiceType;
                 var remove =
@@ -93,7 +93,9 @@ public sealed class AppTestFactory : WebApplicationFactory<Program>, IDisposable
                     (st.IsGenericType
                         && st.GetGenericTypeDefinition() == typeof(IDbContextOptionsConfiguration<>)
                         && st.GetGenericArguments()[0] == typeof(UnMuddledDbContext));
-                if (remove) services.RemoveAt(i);
+                
+                if( remove )
+                    services.RemoveAt(i);
             }
 
             services.AddDbContext<UnMuddledDbContext>(o => o.UseSqlite(_externalConnection ?? _ownedConnection!));
@@ -105,16 +107,30 @@ public sealed class AppTestFactory : WebApplicationFactory<Program>, IDisposable
             services.AddSingleton<IEmailSender<User>>(EmailSender);
         });
     }
-
-    /// <summary>Scope factory convenience for resolving app services (UserManager, DbContext...).</summary>
+    /// <summary>Gets access to the app's services inside a test.</summary>
     public AsyncServiceScope CreateTestScope() => Services.CreateAsyncScope();
+    /// <summary>
+    /// Runs a query against the test database and returns one value, so tests can check
+    /// what was actually stored. An empty database value is returned as null.
+    /// </summary>
+    public object? ExecuteScalar(string sql)
+    {
+        using var scope = CreateTestScope();
+        var db = scope.ServiceProvider.GetRequiredService<UnMuddledDbContext>();
+        var connection = db.Database.GetDbConnection();
+        if( connection.State != ConnectionState.Open )
+            connection.Open();
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = sql;
+        var result = cmd.ExecuteScalar();
+        return result == DBNull.Value ? null : result;
+    }
 
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
+        if( disposing )
             _ownedConnection?.Dispose();
-        }
+        
         base.Dispose(disposing);
     }
 }
