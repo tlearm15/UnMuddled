@@ -1,14 +1,13 @@
-using System.Text;
 using GroupProject.Services;
 using GroupProject.Tests.Encryption.Infrastructure;
 using NUnit.Framework;
 
 namespace GroupProject.Tests.Encryption.Services;
-
 /// <summary>
-/// Unit tests for the AES-GCM encryption logic behind IEncryptionService
-/// (branch 7-user-address-encryption). Uses the public API only:
-/// EncryptOnce / DecryptOrPassthrough / Test.
+/// TQ-
+/// Tests for the encryption service. These check that addresses are scrambled when saved
+/// and readable again when loaded, using only the service's own methods:
+/// EncryptOnce, DecryptOrPassthrough and Test.
 /// </summary>
 [TestFixture]
 public class EncryptionServiceTests
@@ -22,9 +21,7 @@ public class EncryptionServiceTests
         _sut = new EncryptionService();
         _key = new FakeEncryptionKeyProvider().GetKey();
     }
-
-    // ---------------- Round-trip ----------------
-
+    // ---- Encrypting and decrypting ----
     [Test]
     public void EncryptDecryptRoundTrip_OrdinaryText_ReturnsOriginal()
     {
@@ -56,25 +53,21 @@ public class EncryptionServiceTests
     [Test]
     public void EncryptDecryptRoundTrip_LongAddress_Succeeds()
     {
-        var plain = new string('x', 299); // 300-char max DB column, per HasMaxLength(300)
+        var plain = new string('x', 299); // the database column holds at most 300 characters
         var cipher = _sut.EncryptOnce(plain, _key);
         Assert.That(_sut.DecryptOrPassthrough(cipher, _key), Is.EqualTo(plain));
     }
-
-    // ---------------- Tamper detection ----------------
-
+    // ---- Changed or damaged data ----
     [Test]
     public void TamperedCiphertext_NeverDecryptsToOriginal()
     {
         const string plain = "1 High Street, Edinburgh";
         var cipher = _sut.EncryptOnce(plain, _key);
         var bytes = Convert.FromBase64String(cipher);
-        bytes[^1] ^= 0xFF; // flip last ciphertext byte
+        bytes[^1] ^= 0xFF; // change one byte of the encrypted value
         var tampered = Convert.ToBase64String(bytes);
-
-        // DecryptOrPassthrough deliberately does not throw on tamper (Issue #83 legacy
-        // compatibility), but it must NOT hand back the original plaintext either -
-        // the value is corrupt and must not silently look valid.
+        // For older records (Issue #83), this method does not throw when data has been
+        // changed. It must still refuse to return the original text.
         var result = _sut.DecryptOrPassthrough(tampered, _key);
         Assert.That(result, Is.Not.EqualTo(plain));
     }
@@ -85,7 +78,7 @@ public class EncryptionServiceTests
         const string plain = "Flat 2, 22 Hope Street";
         var cipher = Convert.FromBase64String(_sut.EncryptOnce(plain, _key));
 
-        // Flip a byte in the nonce (start), tag (middle) and ciphertext (end).
+        // Change one byte at the start, middle and end of the encrypted value.
         foreach (var index in new[] { 0, 24, cipher.Length - 1 })
         {
             var copy = (byte[])cipher.Clone();
@@ -98,12 +91,10 @@ public class EncryptionServiceTests
     [Test]
     public void SelfCheck_Test_ReturnsTrue()
     {
-        // EncryptionService.Test() exercises round-trip + tamper-must-throw internally.
+        // This built-in check tests encryption and tamper detection internally.
         Assert.That(_sut.Test(), Is.True);
     }
-
-    // ---------------- Wrong key ----------------
-
+    // ---- Wrong key ----
     [Test]
     public void DecryptWithWrongKey_DoesNotThrowAndDoesNotReturnPlaintext()
     {
@@ -116,9 +107,7 @@ public class EncryptionServiceTests
 
         Assert.That(result, Is.Not.EqualTo(plain), "decryption with the wrong key must not yield the plaintext");
     }
-
-    // ---------------- EncryptOnce: no double encryption (Issue #83) ----------------
-
+    // ---- Encrypting twice (Issue #83) ----
     [Test]
     public void EncryptOnce_AlreadyCiphertext_ReturnsUnchanged()
     {
@@ -141,16 +130,13 @@ public class EncryptionServiceTests
         Assert.That(_sut.DecryptOrPassthrough(c1, _key), Is.EqualTo(plain));
         Assert.That(_sut.DecryptOrPassthrough(c2, _key), Is.EqualTo(plain));
     }
-
-    // ---------------- Ciphertext shape ----------------
-
+    // ---- What encrypted values look like ----
     [Test]
     public void Ciphertext_IsBase64_PackedNonceTagCipher()
     {
         var cipher = _sut.EncryptOnce("Shape check", _key);
         var bytes = Convert.FromBase64String(cipher); // throws if not valid base64
-
-        // 12-byte nonce (max) + 16-byte tag (max) + ciphertext >= plaintext length
+        // Encrypted values carry extra information, so they are longer than the original text.
         Assert.That(bytes.Length, Is.GreaterThanOrEqualTo(12 + 16 + "Shape check".Length));
     }
 
