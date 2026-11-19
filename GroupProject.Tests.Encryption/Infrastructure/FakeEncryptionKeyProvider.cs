@@ -3,12 +3,12 @@ using GroupProject.Services;
 namespace GroupProject.Tests.Encryption.Infrastructure;
 
 /// <summary>
-/// Fixed, deterministic 256-bit test key.
-/// Never reads environment variables, so unit/integration tests never depend on ENCRYPTION_KEY.
+/// A fixed test encryption key. It never reads the environment, so tests do not depend on
+/// the ENCRYPTION_KEY setting being present.
 /// </summary>
 public sealed class FakeEncryptionKeyProvider : IEncryptionKeyProvider
 {
-    // Non-zero, fixed key so ciphertext is stable across test runs.
+    // A fixed, non-empty key keeps the encrypted test values predictable.
     private static readonly byte[] TestKey =
     [
         0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
@@ -17,10 +17,5 @@ public sealed class FakeEncryptionKeyProvider : IEncryptionKeyProvider
         0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20
     ];
 
-    public byte[] GetKey() => _key ?? TestKey;
-
-    private byte[]? _key;
-
-    /// <summary>Overrides the key for special-case tests (e.g. key rotation scenarios).</summary>
-    public void OverrideKey(byte[] key) => _key = key;
+    public byte[] GetKey() => TestKey;
 }
