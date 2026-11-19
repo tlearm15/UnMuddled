@@ -4,58 +4,28 @@ using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace GroupProject.Tests.Encryption.Integration;
-
 /// <summary>
-/// Pre-migration compatibility (Issue #83): rows written before the AddressEncryption
-/// feature hold PLAINTEXT addresses. They must load without error (passthrough) and
-/// coexist with encrypted rows written after the feature.
+/// TQ-
+/// Older accounts saved addresses as plain text before encryption was added (Issue #83).
+/// These tests check that those accounts still load and that old and new addresses work
+/// side by side.
 /// </summary>
 [TestFixture]
 public class LegacyDataCompatibilityTests
 {
     [Test]
-    public void LegacyPlaintextRow_LoadsUnchanged_WithoutError()
+    public void LegacyPlaintextRows_LoadAlongsideEncryptedRows()
     {
         using var db = new SqliteTestDb();
-
-        // Create a normal user first (satisfies identity schema), then overwrite the
-        // address columns with plaintext, simulating a pre-migration row.
-        db.Context.Users.Add(new User
-        {
-            UserName = "legacy@test.com",
-            Email = "legacy@test.com",
-            AddressLine1 = "placeholder"
-        });
-        db.Context.SaveChanges();
-        db.Context.Database.ExecuteSqlRaw(
-            "UPDATE AspNetUsers SET AddressLine1='12 Legacy Street', City='Dundee', PostCode='DD1 1BB' WHERE UserName='legacy@test.com'");
-        db.Context.ChangeTracker.Clear();
-
-        using var fresh = db.CreateFreshContext();
-        var user = fresh.Users.First(u => u.UserName == "legacy@test.com");
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(user.AddressLine1, Is.EqualTo("12 Legacy Street"),
-                "legacy plaintext must pass through unchanged");
-            Assert.That(user.City, Is.EqualTo("Dundee"));
-            Assert.That(user.PostCode, Is.EqualTo("DD1 1BB"));
-        });
-    }
-
-    [Test]
-    public void MixedEncryptedAndLegacyRows_LoadTogether()
-    {
-        using var db = new SqliteTestDb();
-
-        // Encrypted row (written post-feature, through the converter)
+        // New account: the address is scrambled when saved.
         db.Context.Users.Add(new User
         {
             UserName = "modern@test.com",
             Email = "modern@test.com",
             AddressLine1 = "50 Modern Avenue, Fife"
         });
-        // Legacy row, immediately corrupted down to plaintext
+        // Old account: create a user normally, then put plain text straight into the
+        // database to mimic a record saved before encryption existed.
         db.Context.Users.Add(new User
         {
             UserName = "legacy@test.com",
@@ -63,8 +33,9 @@ public class LegacyDataCompatibilityTests
             AddressLine1 = "placeholder"
         });
         db.Context.SaveChanges();
+
         db.Context.Database.ExecuteSqlRaw(
-            "UPDATE AspNetUsers SET AddressLine1='51 Legacy Lane, Fife' WHERE UserName='legacy@test.com'");
+            "UPDATE AspNetUsers SET AddressLine1='12 Legacy Street', City='Dundee', PostCode='DD1 1BB' WHERE UserName='legacy@test.com'");
         db.Context.ChangeTracker.Clear();
 
         using var fresh = db.CreateFreshContext();
@@ -75,8 +46,10 @@ public class LegacyDataCompatibilityTests
         {
             Assert.That(modern.AddressLine1, Is.EqualTo("50 Modern Avenue, Fife"),
                 "encrypted row must decrypt");
-            Assert.That(legacy.AddressLine1, Is.EqualTo("51 Legacy Lane, Fife"),
-                "legacy plaintext row must pass through and coexist with encrypted rows");
+            Assert.That(legacy.AddressLine1, Is.EqualTo("12 Legacy Street"),
+                "legacy plaintext must pass through unchanged");
+            Assert.That(legacy.City, Is.EqualTo("Dundee"));
+            Assert.That(legacy.PostCode, Is.EqualTo("DD1 1BB"));
         });
     }
 
@@ -95,9 +68,8 @@ public class LegacyDataCompatibilityTests
         db.Context.Database.ExecuteSqlRaw(
             "UPDATE AspNetUsers SET AddressLine1='7 Old Close, Perth' WHERE UserName='legacy2@test.com'");
         db.Context.ChangeTracker.Clear();
-
-        // Saving the UNCHANGED plaintext value would be a no-op for EF's change tracker
-        // (no UPDATE, no encryption) - the user actually edits their address:
+        // Re-saving the same plain text would not count as a change, so this test
+        // edits the address as a user would:
         using (var updateCtx = db.CreateFreshContext())
         {
             var user = updateCtx.Users.First(u => u.UserName == "legacy2@test.com");

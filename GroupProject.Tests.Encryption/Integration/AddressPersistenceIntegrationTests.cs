@@ -2,17 +2,13 @@ using GroupProject.Models;
 using GroupProject.Tests.Encryption.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace GroupProject.Tests.Encryption.Integration;
-
 /// <summary>
-/// Data persistence: save an encrypted user, "stop the app" (dispose the factory /
-/// drop all contexts), "restart" (a brand-new app + context over the same database),
-/// reload the user and verify the data survived intact and decrypts correctly.
+/// TQ-
+/// Tests that saved addresses survive the app stopping and starting again.
 /// </summary>
 [TestFixture]
 public class AddressPersistenceIntegrationTests
@@ -24,13 +20,11 @@ public class AddressPersistenceIntegrationTests
     [Test]
     public void UserData_SurvivesApplicationRestart()
     {
-        // Open the database OUTSIDE the app so it can outlive the "process"
+        // Keep the test database open outside the app so it survives a simulated restart
         using var connection = new SqliteConnection("Data Source=:memory:");
         connection.Open();
-
         User? reloaded;
-
-        // ---- First "process": create user, then stop the app ----
+        // ---- First run: create a user, then close the app ----
         using (var firstRun = new AppTestFactory(connection))
         {
             using var scope = firstRun.CreateTestScope();
@@ -48,9 +42,8 @@ public class AddressPersistenceIntegrationTests
                 PostCode = PostCode
             }, "Password123!").GetAwaiter().GetResult();
             Assert.That(created.Succeeded, "user creation must succeed");
-        } // firstRun.Dispose() == app stopped; all contexts dropped
-
-        // ---- Second "process": restart over the same database ----
+        } // closing the factory is like stopping the app
+        // ---- Second run: start the app again over the same database ----
         using (var secondRun = new AppTestFactory(connection))
         {
             using var scope = secondRun.CreateTestScope();
@@ -67,12 +60,11 @@ public class AddressPersistenceIntegrationTests
             Assert.That(reloaded.PostCode, Is.EqualTo(PostCode));
         });
     }
-
     /// <summary>
-    /// Second "process" runs against the same database; the stored address must be
-    /// CIPHERTEXT on disk - i.e. anyone with only the database (no key) cannot read
-    /// the address. (Key-rotation behaviour is covered by the unit-level wrong-key tests;
-    /// see BUGS.md for the EF model-cache caveat around swapping key providers at runtime.)
+    /// Checks that after a restart the saved address is still scrambled in the database,
+    /// so someone with only a copy of the database cannot read it. The wrong-key case is
+    /// covered by the unit tests; see BUGS.md for a note about changing keys while the app
+    /// is running.
     /// </summary>
     [Test]
     public void RestartedApp_StoredAddress_IsNeverPlaintextOnDisk()
@@ -96,13 +88,8 @@ public class AddressPersistenceIntegrationTests
 
         using (var secondRun = new AppTestFactory(connection))
         {
-            using var scope = secondRun.CreateTestScope();
-            var db = scope.ServiceProvider.GetRequiredService<UnMuddledDbContext>();
-            var dbConnection = db.Database.GetDbConnection();
-            dbConnection.Open();
-            using var cmd = dbConnection.CreateCommand();
-            cmd.CommandText = "SELECT AddressLine1 FROM AspNetUsers WHERE Email='ciphercheck@test.com'";
-            var stored = cmd.ExecuteScalar() as string;
+            var stored = secondRun.ExecuteScalar(
+                "SELECT AddressLine1 FROM AspNetUsers WHERE Email='ciphercheck@test.com'") as string;
 
             Assert.That(stored, Is.Not.Null.And.Not.EqualTo(Address),
                 "after an app restart the address must still be ciphertext on disk, never plaintext");
