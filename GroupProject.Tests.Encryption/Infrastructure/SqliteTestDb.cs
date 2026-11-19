@@ -1,18 +1,16 @@
 using GroupProject.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace GroupProject.Tests.Encryption.Infrastructure;
-
 /// <summary>
-/// A completely fresh in-memory SQLite database per instance (i.e. per test).
-/// The open SqliteConnection keeps the :memory: database alive; disposing this
-/// object discards the database entirely, so no state leaks between tests.
+/// TQ-
+/// A brand-new empty test database for each test. The connection stays open while the test
+/// runs; disposing this object throws the database away, so tests do not affect each other.
 /// </summary>
 public sealed class SqliteTestDb : IDisposable
 {
-    public SqliteConnection Connection { get; }
+    private SqliteConnection Connection { get; }
     public UnMuddledDbContext Context { get; }
 
     public SqliteTestDb()
@@ -31,10 +29,9 @@ public sealed class SqliteTestDb : IDisposable
 
         Context.Database.EnsureCreated();
     }
-
     /// <summary>
-    /// A second, independent DbContext over the SAME database - used to prove data
-    /// survives a fresh context (simulating an app restart re-opening the DB).
+    /// Opens a second connection to the same database, like restarting the app and
+    /// reopening its data.
     /// </summary>
     public UnMuddledDbContext CreateFreshContext()
     {
@@ -46,10 +43,10 @@ public sealed class SqliteTestDb : IDisposable
             new FakeEncryptionKeyProvider(),
             new GroupProject.Services.EncryptionService());
     }
-
-    /// <summary>Runs a scalar SQL query directly on the connection, bypassing EF and its converters,
-    /// so tests can assert on what is physically stored in the database.
-    /// SQL NULL is normalised to a real null reference.</summary>
+    /// <summary>
+    /// Runs a query against the test database and returns one value, so tests can check
+    /// what was actually stored. An empty database value is returned as null.
+    /// </summary>
     public object? ExecuteScalar(string sql)
     {
         using var cmd = Connection.CreateCommand();
@@ -57,7 +54,9 @@ public sealed class SqliteTestDb : IDisposable
         var result = cmd.ExecuteScalar();
         return result == DBNull.Value ? null : result;
     }
-
+    /// <summary>
+    /// Closes the database after the test.
+    /// </summary>
     public void Dispose()
     {
         Context.Dispose();
