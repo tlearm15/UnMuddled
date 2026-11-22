@@ -4,6 +4,10 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+		<!-- WM - Exclude test projects so that the arent included in the build but present in solution -->
+		<!-- This ia workaround because I want to have my tests visible in git as evidence but i do not want them to cause issues in building.-->
+		<!-- can be safely ignored if you're reading this-->
+		<DefaultItemExcludes>$(DefaultItemExcludes);GroupProject.Tests\**</DefaultItemExcludes>
     </PropertyGroup>
 
     <ItemGroup>

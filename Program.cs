@@ -125,3 +125,7 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+//WM - added this partial class to allow integration tests for testing my history page.
+//it's needed for webapplicationfactory
+public partial class Program { }
