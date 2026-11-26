@@ -53,6 +53,22 @@ var dataSource = dataSourceBuilder.Build();
 builder.Services.AddDbContext<UnMuddledDbContext>(options =>
     options.UseNpgsql(dataSource));
 
+//JM - Register typed HttpClient for postcodes.io API (UK postcode lookup)
+builder.Services.AddHttpClient("PostcodesIo", client =>
+{
+    client.BaseAddress = new Uri("https://api.postcodes.io/");
+    client.Timeout = TimeSpan.FromSeconds(5);
+});
+
+//JM - Register typed HttpClient for Nominatim API (Town and City lookup)
+builder.Services.AddHttpClient("Nominatim", client =>
+{
+    client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("UnMuddledRecyclingApp/1.0");
+    client.Timeout = TimeSpan.FromSeconds(5);
+});
+
+builder.Services.AddScoped<IGeocodeService, GeocodeService>();
 
 //adds sendrid to builder services -TL
 builder.Services.AddTransient<ISendGridClient>(provider =>
